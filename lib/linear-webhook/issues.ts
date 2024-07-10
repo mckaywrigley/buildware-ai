@@ -10,7 +10,7 @@ export async function handleIssueWebhook(
 ) {
   const issue = await linearClient.issue(data.id)
 
-  const hasAILabel = checkForAILabel(data.labels.map(label => label.name))
+  const hasAILabel = await checkForAILabel(data.labels.map(label => label.name))
 
   if (hasAILabel) {
     switch (action) {

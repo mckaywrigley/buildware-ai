@@ -165,7 +165,7 @@ export const removeAILabel = async (issue: Issue, labelToRemove: string) => {
   }
 }
 
-export const checkForAILabel = (labelNames: string[]) => {
+export const checkForAILabel = async (labelNames: string[]) => {
   const aiLabels = [STANDARD_AI_LABEL, CODE_AI_LABEL, PLAN_AI_LABEL]
   return labelNames.some(label => aiLabels.includes(label))
 }
