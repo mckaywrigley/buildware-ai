@@ -5,7 +5,9 @@ import { GitHubRepository } from "@/lib/types/github"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 
-export default async function NewProjectPage({
+export const revalidate = 0
+
+export default async function SetupPage({
   params
 }: {
   params: { projectId: string }
