@@ -1,0 +1,47 @@
+"use server"
+
+import { auth } from "@clerk/nextjs/server"
+import { eq } from "drizzle-orm"
+import { revalidatePath } from "next/cache"
+import { db } from "../db"
+import {
+  InsertEmbeddedFile,
+  embeddedFilesTable
+} from "../schema/embedded-files-schema"
+
+export async function createEmbeddedFiles(
+  data: Omit<InsertEmbeddedFile, "userId">[]
+) {
+  const { userId } = auth()
+  if (!userId) throw new Error("User not authenticated")
+
+  try {
+    await db.insert(embeddedFilesTable).values(
+      data.map(file => ({
+        ...file,
+        userId
+      }))
+    )
+    revalidatePath("/")
+  } catch (error) {
+    console.error("Error inserting records into embedded_files:", error)
+    throw error
+  }
+}
+
+export async function deleteAllEmbeddedFilesByEmbeddedBranchId(
+  embeddedBranchId: string
+) {
+  const { userId } = auth()
+  if (!userId) throw new Error("User not authenticated")
+
+  try {
+    await db
+      .delete(embeddedFilesTable)
+      .where(eq(embeddedFilesTable.embeddedBranchId, embeddedBranchId))
+    revalidatePath("/")
+  } catch (error) {
+    console.error("Error deleting records from embedded_files:", error)
+    throw error
+  }
+}

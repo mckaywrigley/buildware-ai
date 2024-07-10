@@ -1,0 +1,1 @@
+ALTER TABLE "profiles" ADD COLUMN "linear_user_id" text;

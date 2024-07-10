@@ -1,0 +1,1 @@
+ALTER TABLE "projects" ADD COLUMN "has_setup" boolean DEFAULT false NOT NULL;
