@@ -9,26 +9,26 @@ import { useEffect, useState } from "react"
 import { buttonVariants } from "../ui/button"
 
 const menuItem = [
-  {
-    id: 1,
-    label: "Features",
-    href: "/features"
-  },
-  {
-    id: 2,
-    label: "About",
-    href: "/about"
-  },
+  // {
+  //   id: 1,
+  //   label: "Features",
+  //   href: "/features"
+  // },
+  // {
+  //   id: 2,
+  //   label: "About",
+  //   href: "/about"
+  // },
   {
     id: 3,
     label: "Contribute",
-    href: "/contribute"
-  },
-  {
-    id: 4,
-    label: "Contact Us",
-    href: "/contact"
+    href: "https://github.com/mckaywrigley/buildware-ai"
   }
+  // {
+  //   id: 4,
+  //   label: "Contact Us",
+  //   href: "/contact"
+  // }
 ]
 
 const handleMenuItemClick = (href: string) => {
