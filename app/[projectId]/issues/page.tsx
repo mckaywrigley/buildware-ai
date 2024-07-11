@@ -2,6 +2,8 @@ import { IssuesList } from "@/components/issues/issues-list"
 import { getIssuesByProjectId } from "@/db/queries/issue-queries"
 import { auth } from "@clerk/nextjs/server"
 
+export const revalidate = 0
+
 export default async function IssuesPage({
   params
 }: {

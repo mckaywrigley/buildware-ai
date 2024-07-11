@@ -6,6 +6,8 @@ import {
 import Link from "next/link"
 import { redirect } from "next/navigation"
 
+export const revalidate = 0
+
 export default async function ProjectsPage() {
   const projects = await getProjectsByUserId()
 
