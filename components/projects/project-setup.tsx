@@ -46,7 +46,7 @@ export const ProjectSetup: FC<ProjectSetupProps> = ({
   }
 
   useEffect(() => {
-    if (selectedRepo && project.githubInstallationId) {
+    if (selectedRepo) {
       setIsBranchesLoading(true)
       listBranches(project.githubInstallationId, selectedRepo)
         .then(setBranches)
@@ -94,33 +94,30 @@ export const ProjectSetup: FC<ProjectSetupProps> = ({
     <div className={cn("bg-secondary/50 rounded border", props.className)}>
       <div className="flex h-full max-h-screen flex-col gap-2">
         <div className="w-full min-w-[400px] gap-6 space-y-6 p-12">
-          {[
-            {
-              title: "Connect to GitHub",
-              component: (
-                <ConnectGitHub
-                  isGitHubConnected={!!project.githubInstallationId}
-                />
-              )
-            },
-            ...(process.env.NEXT_PUBLIC_SIMPLE_MODE
-              ? []
-              : [
-                  {
-                    title: "Connect to Linear (optional)",
-                    component: (
-                      <ConnectLinear
-                        isLinearConnected={!!project.linearAccessToken}
-                      />
-                    )
-                  }
-                ])
-          ].map(({ title, component }) => (
-            <div key={title} className="space-y-1">
-              <div className="font-semibold">{title}</div>
-              {component}
-            </div>
-          ))}
+          {process.env.NEXT_PUBLIC_APP_MODE !== "basic" &&
+            [
+              {
+                title: "Connect to GitHub",
+                component: (
+                  <ConnectGitHub
+                    isGitHubConnected={!!project.githubInstallationId}
+                  />
+                )
+              },
+              {
+                title: "Connect to Linear (optional)",
+                component: (
+                  <ConnectLinear
+                    isLinearConnected={!!project.linearAccessToken}
+                  />
+                )
+              }
+            ].map(({ title, component }) => (
+              <div key={title} className="space-y-1">
+                <div className="font-semibold">{title}</div>
+                {component}
+              </div>
+            ))}
 
           {project.githubInstallationId !== 0 && (
             <>

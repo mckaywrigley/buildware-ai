@@ -19,9 +19,7 @@ export default async function SetupPage({
   }
 
   let repos: GitHubRepository[] = []
-  if (project.githubInstallationId) {
-    repos = await listRepos(project.githubInstallationId)
-  }
+  repos = await listRepos(project.githubInstallationId)
 
   return (
     <div className="mx-auto flex h-screen flex-col items-center justify-center">
