@@ -1,6 +1,6 @@
 "use server"
 
-import { auth } from "@clerk/nextjs/server"
+import { getUserId } from "@/lib/actions/auth/auth"
 import { and, eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { db } from "../db"
@@ -13,8 +13,7 @@ import {
 export async function createEmbeddedBranch(
   data: Omit<InsertEmbeddedBranch, "userId">
 ): Promise<SelectEmbeddedBranch> {
-  const { userId } = auth()
-  if (!userId) throw new Error("User not authenticated")
+  const userId = await getUserId()
 
   try {
     const result = await db
@@ -30,15 +29,9 @@ export async function createEmbeddedBranch(
 }
 
 export async function getEmbeddedBranchesByProjectId(projectId: string) {
-  const { userId } = auth()
-  if (!userId) throw new Error("User not authenticated")
-
   try {
     const branches = await db.query.embeddedBranches.findMany({
-      where: and(
-        eq(embeddedBranchesTable.projectId, projectId),
-        eq(embeddedBranchesTable.userId, userId)
-      )
+      where: and(eq(embeddedBranchesTable.projectId, projectId))
     })
     return branches
   } catch (error) {
@@ -47,15 +40,9 @@ export async function getEmbeddedBranchesByProjectId(projectId: string) {
 }
 
 export async function getEmbeddedBranchById(id: string) {
-  const { userId } = auth()
-  if (!userId) throw new Error("User not authenticated")
-
   try {
     const branch = await db.query.embeddedBranches.findFirst({
-      where: and(
-        eq(embeddedBranchesTable.id, id),
-        eq(embeddedBranchesTable.userId, userId)
-      )
+      where: and(eq(embeddedBranchesTable.id, id))
     })
     return branch
   } catch (error) {
@@ -68,9 +55,6 @@ export async function updateEmbeddedBranchById(
   id: string,
   data: Partial<InsertEmbeddedBranch>
 ) {
-  const { userId } = auth()
-  if (!userId) throw new Error("User not authenticated")
-
   try {
     const result = await db
       .update(embeddedBranchesTable)
@@ -94,9 +78,6 @@ export async function findEmbeddedBranch({
   githubRepoFullName: string
   branchName: string
 }) {
-  const { userId } = auth()
-  if (!userId) throw new Error("User not authenticated")
-
   try {
     const branch = await db.query.embeddedBranches.findFirst({
       where: and(

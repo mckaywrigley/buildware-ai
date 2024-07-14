@@ -1,6 +1,6 @@
 "use server"
 
-import { auth } from "@clerk/nextjs/server"
+import { getUserId } from "@/lib/actions/auth/auth"
 import { and, desc, eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { db } from "../db"
@@ -13,33 +13,18 @@ import {
 export async function createProject(
   data: Omit<InsertProject, "userId">
 ): Promise<SelectProject> {
-  if (process.env.NEXT_PUBLIC_SIMPLE_MODE) {
-    try {
-      const [result] = await db
-        .insert(projectsTable)
-        .values({ ...data, userId: "simple" })
-        .returning()
-      revalidatePath("/")
-      return result
-    } catch (error) {
-      console.error("Error creating project record:", error)
-      throw error
-    }
-  } else {
-    const { userId } = auth()
-    if (!userId) throw new Error("User not authenticated")
+  const userId = await getUserId()
 
-    try {
-      const [result] = await db
-        .insert(projectsTable)
-        .values({ ...data, userId })
-        .returning()
-      revalidatePath("/")
-      return result
-    } catch (error) {
-      console.error("Error creating project record:", error)
-      throw error
-    }
+  try {
+    const [result] = await db
+      .insert(projectsTable)
+      .values({ ...data, userId })
+      .returning()
+    revalidatePath("/")
+    return result
+  } catch (error) {
+    console.error("Error creating project record:", error)
+    throw error
   }
 }
 
@@ -57,8 +42,7 @@ export async function getProjectById(
 }
 
 export async function getProjectsByUserId(): Promise<SelectProject[]> {
-  const { userId } = auth()
-  if (!userId) throw new Error("User not authenticated")
+  const userId = await getUserId()
 
   try {
     return db.query.projects.findMany({

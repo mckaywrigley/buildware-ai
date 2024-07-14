@@ -1,6 +1,6 @@
 "use server"
 
-import { auth } from "@clerk/nextjs/server"
+import { getUserId } from "@/lib/actions/auth/auth"
 import { and, desc, eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { db } from "../db"
@@ -9,8 +9,7 @@ import { InsertIssue, SelectIssue, issuesTable } from "../schema/issues-schema"
 export async function createIssue(
   data: Omit<InsertIssue, "userId">
 ): Promise<SelectIssue> {
-  const { userId } = auth()
-  if (!userId) throw new Error("User not authenticated")
+  const userId = await getUserId()
 
   const [issue] = await db
     .insert(issuesTable)
@@ -23,14 +22,8 @@ export async function createIssue(
 export async function getIssuesByProjectId(
   projectId: string
 ): Promise<SelectIssue[]> {
-  const { userId } = auth()
-  if (!userId) throw new Error("User not authenticated")
-
   return db.query.issues.findMany({
-    where: and(
-      eq(issuesTable.userId, userId),
-      eq(issuesTable.projectId, projectId)
-    ),
+    where: and(eq(issuesTable.projectId, projectId)),
     orderBy: desc(issuesTable.createdAt)
   })
 }
@@ -38,11 +31,8 @@ export async function getIssuesByProjectId(
 export async function getIssueById(
   id: string
 ): Promise<SelectIssue | undefined> {
-  const { userId } = auth()
-  if (!userId) throw new Error("User not authenticated")
-
   return db.query.issues.findFirst({
-    where: and(eq(issuesTable.id, id), eq(issuesTable.userId, userId))
+    where: eq(issuesTable.id, id)
   })
 }
 
@@ -50,24 +40,16 @@ export async function updateIssue(
   id: string,
   data: Partial<InsertIssue>
 ): Promise<SelectIssue> {
-  const { userId } = auth()
-  if (!userId) throw new Error("User not authenticated")
-
   const [updatedIssue] = await db
     .update(issuesTable)
     .set(data)
-    .where(and(eq(issuesTable.id, id), eq(issuesTable.userId, userId)))
+    .where(eq(issuesTable.id, id))
     .returning()
   revalidatePath("/")
   return updatedIssue
 }
 
 export async function deleteIssue(id: string): Promise<void> {
-  const { userId } = auth()
-  if (!userId) throw new Error("User not authenticated")
-
-  await db
-    .delete(issuesTable)
-    .where(and(eq(issuesTable.id, id), eq(issuesTable.userId, userId)))
+  await db.delete(issuesTable).where(eq(issuesTable.id, id))
   revalidatePath("/")
 }
