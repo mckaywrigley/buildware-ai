@@ -12,7 +12,6 @@ export default async function ProjectsPage() {
   const projects = await getProjectsByUserId()
 
   const handleCreateProject = async (formData: FormData) => {
-    "use server"
     const project = await createProject({ name: "New Project" })
     return redirect(`/${project.id}`)
   }

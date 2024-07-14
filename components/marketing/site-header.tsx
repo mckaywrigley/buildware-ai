@@ -131,19 +131,24 @@ export function SiteHeader() {
           </nav>
 
           <div className="ml-auto flex h-full items-center md:ml-0">
-            <SignedOut>
-              <div
-                className={cn(
-                  buttonVariants({ variant: "secondary" }),
-                  "mr-6 text-sm"
-                )}
-              >
-                <SignInButton>Login</SignInButton>
-              </div>
-            </SignedOut>
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
+            {process.env.NEXT_PUBLIC_SIMPLE_MODE ? null : (
+              <>
+                <SignedOut>
+                  <div
+                    className={cn(
+                      buttonVariants({ variant: "secondary" }),
+                      "mr-6 text-sm"
+                    )}
+                  >
+                    <SignInButton>Login</SignInButton>
+                  </div>
+                </SignedOut>
+
+                <SignedIn>
+                  <UserButton />
+                </SignedIn>
+              </>
+            )}
           </div>
           <button
             className="ml-6 md:hidden"

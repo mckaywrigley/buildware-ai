@@ -13,19 +13,33 @@ import {
 export async function createProject(
   data: Omit<InsertProject, "userId">
 ): Promise<SelectProject> {
-  const { userId } = auth()
-  if (!userId) throw new Error("User not authenticated")
+  if (process.env.NEXT_PUBLIC_SIMPLE_MODE) {
+    try {
+      const [result] = await db
+        .insert(projectsTable)
+        .values({ ...data, userId: "simple" })
+        .returning()
+      revalidatePath("/")
+      return result
+    } catch (error) {
+      console.error("Error creating project record:", error)
+      throw error
+    }
+  } else {
+    const { userId } = auth()
+    if (!userId) throw new Error("User not authenticated")
 
-  try {
-    const [result] = await db
-      .insert(projectsTable)
-      .values({ ...data, userId })
-      .returning()
-    revalidatePath("/")
-    return result
-  } catch (error) {
-    console.error("Error creating project record:", error)
-    throw error
+    try {
+      const [result] = await db
+        .insert(projectsTable)
+        .values({ ...data, userId })
+        .returning()
+      revalidatePath("/")
+      return result
+    } catch (error) {
+      console.error("Error creating project record:", error)
+      throw error
+    }
   }
 }
 

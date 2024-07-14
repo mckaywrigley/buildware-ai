@@ -103,14 +103,18 @@ export const ProjectSetup: FC<ProjectSetupProps> = ({
                 />
               )
             },
-            {
-              title: "Connect to Linear (optional)",
-              component: (
-                <ConnectLinear
-                  isLinearConnected={!!project.linearAccessToken}
-                />
-              )
-            }
+            ...(process.env.NEXT_PUBLIC_SIMPLE_MODE
+              ? []
+              : [
+                  {
+                    title: "Connect to Linear (optional)",
+                    component: (
+                      <ConnectLinear
+                        isLinearConnected={!!project.linearAccessToken}
+                      />
+                    )
+                  }
+                ])
           ].map(({ title, component }) => (
             <div key={title} className="space-y-1">
               <div className="font-semibold">{title}</div>
