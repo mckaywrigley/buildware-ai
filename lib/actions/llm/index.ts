@@ -1,22 +1,34 @@
 "use server"
 
 import { LLMCost } from "@/lib/utils/llm-cost"
-import { anthropic } from "@ai-sdk/anthropic"
-import { CoreMessage, generateText } from "ai"
+import Anthropic from "@anthropic-ai/sdk"
 
-export const generateAIResponse = async (messages: CoreMessage[]) => {
-  const { text, usage } = await generateText({
-    model: anthropic("claude-3-5-sonnet-20240620"),
+const anthropic = new Anthropic({})
+
+export const generateAIResponse = async (
+  messages: Anthropic.Messages.MessageParam[]
+) => {
+  const message = await anthropic.messages.create({
+    model: "claude-3-5-sonnet-20240620",
+    system:
+      "You are a helpful assistant that can answer questions and help with tasks.",
     messages,
-    maxTokens: parseInt(process.env.NEXT_PUBLIC_MAX_OUTPUT_TOKENS!)
+    max_tokens: parseInt(process.env.NEXT_PUBLIC_MAX_OUTPUT_TOKENS!)
   })
-  console.warn("usage", usage)
+
+  // const { text, usage } = await generateText({
+  //   model: anthropic("claude-3-5-sonnet-20240620"),
+  //   messages,
+  //   maxTokens: parseInt(process.env.NEXT_PUBLIC_MAX_OUTPUT_TOKENS!)
+  // })
+
+  console.warn("usage", message.usage)
   const cost = LLMCost({
     llmId: "claude-3-5-sonnet-20240620",
-    inputTokens: usage.promptTokens,
-    outputTokens: usage.completionTokens
+    inputTokens: message.usage.input_tokens,
+    outputTokens: message.usage.output_tokens
   })
   console.warn("cost", cost)
 
-  return text
+  return message.content[0].type === "text" ? message.content[0].text : ""
 }
