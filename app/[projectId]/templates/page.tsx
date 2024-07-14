@@ -1,6 +1,6 @@
 import { TemplatesList } from "@/components/templates/template-list"
-import { getPromptsByUserId } from "@/db/queries/prompt-queries"
-import { getTemplatesWithPromptsByUserId } from "@/db/queries/template-queries"
+import { getPromptsByProjectId } from "@/db/queries/prompt-queries"
+import { getTemplatesWithPromptsByProjectId } from "@/db/queries/template-queries"
 import { SelectPrompt, SelectTemplate } from "@/db/schema"
 import { auth } from "@clerk/nextjs/server"
 
@@ -26,11 +26,8 @@ export default async function TemplatesPage({
   const { projectId } = params
 
   try {
-    templatesWithPrompts = await getTemplatesWithPromptsByUserId(
-      userId,
-      projectId
-    )
-    prompts = await getPromptsByUserId(projectId)
+    templatesWithPrompts = await getTemplatesWithPromptsByProjectId(projectId)
+    prompts = await getPromptsByProjectId(projectId)
   } catch (error) {
     console.error("Error fetching data:", error)
   }

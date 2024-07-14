@@ -93,12 +93,8 @@ export async function handleAtAIComment(
 
   const aiResponse = await generateAIResponse([
     {
-      role: "system",
-      content: commentPrompt
-    },
-    {
       role: "user",
-      content: strippedBody
+      content: commentPrompt + strippedBody
     }
   ])
 

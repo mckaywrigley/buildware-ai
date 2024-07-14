@@ -1,7 +1,7 @@
 import { CRUDPage } from "@/components/dashboard/reusable/crud-page"
 import EditTemplateForm from "@/components/templates/edit-template-form"
 import { NotFound } from "@/components/utility/not-found"
-import { getPromptsByUserId } from "@/db/queries/prompt-queries"
+import { getPromptsByProjectId } from "@/db/queries/prompt-queries"
 import { getTemplateWithPromptById } from "@/db/queries/template-queries"
 
 export const revalidate = 0
@@ -17,7 +17,7 @@ export default async function EditTemplatePage({
     return <NotFound message="Template not found" />
   }
 
-  const prompts = await getPromptsByUserId(params.projectId)
+  const prompts = await getPromptsByProjectId(params.projectId)
 
   return (
     <CRUDPage

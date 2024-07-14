@@ -15,7 +15,7 @@ export async function createIssueMessageRecord(
   try {
     const [result] = await db
       .insert(issueMessagesTable)
-      .values({ ...data, userId })
+      .values({ ...data })
       .returning()
     revalidatePath("/")
     return result
@@ -56,17 +56,11 @@ export async function updateIssueMessage(
   id: string,
   data: Partial<InsertIssueMessage>
 ): Promise<void> {
-  const userId = await getUserId()
   try {
     await db
       .update(issueMessagesTable)
       .set(data)
-      .where(
-        and(
-          eq(issueMessagesTable.id, id),
-          eq(issueMessagesTable.userId, userId)
-        )
-      )
+      .where(and(eq(issueMessagesTable.id, id)))
     revalidatePath("/")
   } catch (error) {
     console.error(`Error updating issue message ${id}:`, error)
@@ -75,16 +69,10 @@ export async function updateIssueMessage(
 }
 
 export async function deleteIssueMessage(id: string): Promise<void> {
-  const userId = await getUserId()
   try {
     await db
       .delete(issueMessagesTable)
-      .where(
-        and(
-          eq(issueMessagesTable.id, id),
-          eq(issueMessagesTable.userId, userId)
-        )
-      )
+      .where(and(eq(issueMessagesTable.id, id)))
     revalidatePath("/")
   } catch (error) {
     console.error(`Error deleting issue message ${id}:`, error)
