@@ -75,7 +75,3 @@ Built by [Mckay Wrigley](https://twitter.com/mckaywrigley) and [Tyler Bruno](htt
 ## License
 
 Buildware is licensed under the MIT license.
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=mckaywrigley/buildware&type=Date)](https://star-history.com/#mckaywrigley/buildware&Date)
