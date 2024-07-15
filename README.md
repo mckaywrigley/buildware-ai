@@ -1,14 +1,10 @@
 # Buildware
 
-Use AI to ship code faster.
-
-Built by [Mckay Wrigley](https://twitter.com/mckaywrigley) and [Tyler Bruno](https://twitter.com/tylerbruno05).
-
-Update (July 10th, 2024): Setup guide coming soon! Please check back in a few days.
+Buildware helps you ship code faster with AI.
 
 ## Demo
 
-Demo coming soon.
+See the latest demo [here](https://twitter.com/mckaywrigley).
 
 ## Updates
 
@@ -71,6 +67,10 @@ We are working on a guide for contributing.
 ## Contact
 
 Message Mckay on [Twitter/X](https://twitter.com/mckaywrigley) or email him at [mckay@takeoffai.org](mailto:mckay@takeoffai.org).
+
+## Creators
+
+Built by [Mckay Wrigley](https://twitter.com/mckaywrigley) and [Tyler Bruno](https://twitter.com/tylerbruno05).
 
 ## License
 
