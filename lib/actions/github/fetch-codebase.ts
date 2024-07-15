@@ -1,19 +1,13 @@
 "use server"
 
 import { GitHubFile } from "@/lib/types/github"
-import { createAppAuth } from "@octokit/auth-app"
-import { Octokit } from "@octokit/rest"
-
-const GITHUB_APP_ID = process.env.NEXT_PUBLIC_GITHUB_APP_ID!
-const GITHUB_CLIENT_ID = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID!
-const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET!
-const GITHUB_PRIVATE_KEY = process.env.GITHUB_PRIVATE_KEY!
+import { getAuthenticatedOctokit } from "./auth"
 
 export async function fetchCodebaseForBranch(data: {
   githubRepoFullName: string
   path: string
   branch: string
-  installationId: number
+  installationId: number | null
 }) {
   try {
     const contents = await fetchDirectoryContent(data)
@@ -55,24 +49,12 @@ async function fetchDirectoryContent(data: {
   githubRepoFullName: string
   path: string
   branch: string
-  installationId: number
+  installationId: number | null
 }) {
   const [organization, repo] = data.githubRepoFullName.split("/")
 
   try {
-    const auth = createAppAuth({
-      appId: GITHUB_APP_ID,
-      privateKey: GITHUB_PRIVATE_KEY,
-      clientId: GITHUB_CLIENT_ID,
-      clientSecret: GITHUB_CLIENT_SECRET
-    })
-
-    const { token } = await auth({
-      type: "installation",
-      installationId: data.installationId
-    })
-    const octokit = new Octokit({ auth: token })
-
+    const octokit = await getAuthenticatedOctokit(data.installationId)
     const { data: content } = await octokit.repos.getContent({
       owner: organization,
       repo,

@@ -11,7 +11,7 @@ interface EmbedTargetBranchParams {
   projectId: string
   githubRepoFullName: string
   branchName: string
-  installationId: number
+  installationId: number | null
 }
 
 export async function embedTargetBranch({

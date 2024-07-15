@@ -56,12 +56,16 @@ export const ProjectSetup: FC<ProjectSetupProps> = ({
   }, [selectedRepo, project.githubInstallationId])
 
   const isSetupComplete =
-    project.githubInstallationId && projectName && selectedRepo && targetBranch
+    (process.env.NEXT_PUBLIC_APP_MODE === "basic" ||
+      project.githubInstallationId) &&
+    projectName &&
+    selectedRepo &&
+    targetBranch
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!isSetupComplete || !project.githubInstallationId) {
+    if (!isSetupComplete) {
       return
     }
 
