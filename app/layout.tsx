@@ -22,29 +22,39 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const appMode = process.env.NEXT_PUBLIC_APP_MODE
+
+  const content = (
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={cn(
+          "bg-background min-h-screen font-sans antialiased",
+          fontSans.variable
+        )}
+      >
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          disableTransitionOnChange
+        >
+          {children}
+          <Toaster />
+        </ThemeProvider>
+      </body>
+    </html>
+  )
+
+  if (appMode === "basic") {
+    return content
+  }
+
   return (
     <ClerkProvider
       appearance={{
         baseTheme: dark
       }}
     >
-      <html lang="en" suppressHydrationWarning>
-        <body
-          className={cn(
-            "bg-background min-h-screen font-sans antialiased",
-            fontSans.variable
-          )}
-        >
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            disableTransitionOnChange
-          >
-            {children}
-            <Toaster />
-          </ThemeProvider>
-        </body>
-      </html>
+      {content}
     </ClerkProvider>
   )
 }
