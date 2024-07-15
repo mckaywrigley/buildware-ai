@@ -1,55 +1,53 @@
 import { neon } from "@neondatabase/serverless"
 import { config } from "dotenv"
 import { drizzle } from "drizzle-orm/neon-http"
-import {
-  embeddedBranchesRelations,
-  embeddedBranchesTable,
-  embeddedFilesRelations,
-  embeddedFilesTable,
-  issueToPromptsRelations,
-  issuesRelations,
-  issuesTable,
-  issuesToPromptsTable,
-  profilesTable,
-  projectsRelations,
-  projectsTable,
-  promptsRelations,
-  promptsTable,
-  templateRelations,
-  templateToPromptsRelations,
-  templatesTable,
-  templatesToPromptsTable,
-  issueMessagesTable,
-  issueMessagesRelations
-} from "./schema"
+import { drizzle as drizzlePostgres } from "drizzle-orm/postgres-js"
+import postgres from "postgres"
+import * as schema from "./schema"
 
 config({ path: ".env.local" })
 
-const sql = neon(process.env.DATABASE_URL!)
+const databaseUrl = process.env.DATABASE_URL
 
-export const db = drizzle(sql, {
-  schema: {
-    // Tables
-    profiles: profilesTable,
-    projects: projectsTable,
-    issues: issuesTable,
-    templates: templatesTable,
-    prompts: promptsTable,
-    templatesToPrompts: templatesToPromptsTable,
-    embeddedFiles: embeddedFilesTable,
-    embeddedBranches: embeddedBranchesTable,
-    issuesToPrompts: issuesToPromptsTable,
-    issueMessages: issueMessagesTable,
+if (!databaseUrl) {
+  throw new Error("DATABASE_URL is not set")
+}
 
-    // Relations
-    projectsRelations: projectsRelations,
-    issuesRelations: issuesRelations,
-    templateRelations: templateRelations,
-    promptsRelations: promptsRelations,
-    templateToPromptsRelations: templateToPromptsRelations,
-    embeddedFilesRelations: embeddedFilesRelations,
-    embeddedBranchesRelations: embeddedBranchesRelations,
-    issuesToPromptsRelations: issueToPromptsRelations,
-    issueMessagesRelations: issueMessagesRelations
+const dbSchema = {
+  // Tables
+  profiles: schema.profilesTable,
+  projects: schema.projectsTable,
+  issues: schema.issuesTable,
+  templates: schema.templatesTable,
+  prompts: schema.promptsTable,
+  templatesToPrompts: schema.templatesToPromptsTable,
+  embeddedFiles: schema.embeddedFilesTable,
+  embeddedBranches: schema.embeddedBranchesTable,
+  issuesToPrompts: schema.issuesToPromptsTable,
+  issueMessages: schema.issueMessagesTable,
+
+  // Relations
+  projectsRelations: schema.projectsRelations,
+  issuesRelations: schema.issuesRelations,
+  templateRelations: schema.templateRelations,
+  promptsRelations: schema.promptsRelations,
+  templateToPromptsRelations: schema.templateToPromptsRelations,
+  embeddedFilesRelations: schema.embeddedFilesRelations,
+  embeddedBranchesRelations: schema.embeddedBranchesRelations,
+  issuesToPromptsRelations: schema.issueToPromptsRelations,
+  issueMessagesRelations: schema.issueMessagesRelations
+}
+
+function initializeDb(url: string) {
+  const isNeon = url.includes("neon")
+
+  if (isNeon) {
+    const client = neon(url)
+    return drizzle(client, { schema: dbSchema })
+  } else {
+    const client = postgres(url, { prepare: false })
+    return drizzlePostgres(client, { schema: dbSchema })
   }
-})
+}
+
+export const db = initializeDb(databaseUrl)
