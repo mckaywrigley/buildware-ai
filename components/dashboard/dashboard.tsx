@@ -123,11 +123,17 @@ export const Dashboard: FC<DashboardProps> = ({
           <div className="mt-auto border-t p-4">
             <div className="flex items-center justify-between truncate">
               <div className="flex items-center gap-2">
-                <UserButton />
-                {user.user && (
-                  <div className="truncate font-light">
-                    {user.user.firstName || "User Name Placeholder"}
-                  </div>
+                {process.env.NEXT_PUBLIC_APP_MODE === "basic" ? (
+                  <div className="truncate font-light">Basic Mode</div>
+                ) : (
+                  <>
+                    <UserButton />
+                    {user.user && (
+                      <div className="truncate font-light">
+                        {user.user.firstName || "User Name Placeholder"}
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
 

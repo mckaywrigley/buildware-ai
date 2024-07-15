@@ -12,7 +12,9 @@ export async function getUserId() {
 
   const { userId } = auth()
 
-  if (!userId) throw new Error("User not authenticated")
+  if (!userId) {
+    throw new Error("User not authenticated")
+  }
 
   return userId
 }
