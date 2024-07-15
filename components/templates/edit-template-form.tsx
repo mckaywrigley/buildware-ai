@@ -43,10 +43,12 @@ export default function EditTemplateForm({
 
   return (
     <>
-      <TemplateSelect
-        prompts={prompts}
-        templateWithPrompts={templateWithPrompts}
-      />
+      <div className="mb-4">
+        <TemplateSelect
+          prompts={prompts}
+          templateWithPrompts={templateWithPrompts}
+        />
+      </div>
 
       <CRUDForm
         itemName="Template"
