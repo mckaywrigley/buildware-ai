@@ -1,30 +1,29 @@
 import { Dashboard } from "@/components/dashboard/dashboard"
 import { getProjectsByUserId } from "@/db/queries/project-queries"
+import { getAllWorkspaces } from "@/db/queries/workspace-queries"
 
-export default async function ProjectLayout({
+export default async function WorkspaceLayout({
   children,
   params
 }: {
   children: React.ReactNode
-  params: { projectId: string }
+  params: { workspaceId: string }
 }) {
   const projects = await getProjectsByUserId()
-  const project = projects.find(p => p.id === params.projectId)
-
-  if (!project) {
-    return <div>Project not found</div>
-  }
+  const workspaces = await getAllWorkspaces()
 
   const IntegrationStatus = {
-    isGitHubConnected: !!project?.githubInstallationId,
-    isLinearConnected: !!project?.linearAccessToken
+    isGitHubConnected: false,
+    isLinearConnected: false
   }
 
   return (
     <Dashboard
       IntegrationStatus={IntegrationStatus}
       projects={projects}
-      projectId={params.projectId}
+      workspaces={workspaces}
+      workspaceId={params.workspaceId}
+      projectId={projects[0]?.id || ""}
     >
       {children}
     </Dashboard>

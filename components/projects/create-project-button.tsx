@@ -7,9 +7,14 @@ import { PlusIcon } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { FC, HTMLAttributes } from "react"
 
-interface CreateProjectButtonProps extends HTMLAttributes<HTMLDivElement> {}
+interface CreateProjectButtonProps extends HTMLAttributes<HTMLDivElement> {
+  params: {
+    workspaceId: string
+  }
+}
 
 export const CreateProjectButton: FC<CreateProjectButtonProps> = ({
+  params,
   ...props
 }) => {
   const router = useRouter()
@@ -17,7 +22,7 @@ export const CreateProjectButton: FC<CreateProjectButtonProps> = ({
   const handleCreateProject = async () => {
     try {
       const project = await createProject({ name: "New Project" })
-      router.push(`/${project.id}/setup`)
+      router.push(`/${params.workspaceId}/${project.id}/setup`)
     } catch (error) {
       console.error(error)
     }
