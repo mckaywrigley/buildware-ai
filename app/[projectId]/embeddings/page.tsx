@@ -18,8 +18,11 @@ export default async function EmbeddingsPage({
     return <NotFound message="Project not found" />
   }
 
-  if (!project.githubInstallationId) {
-    return <NotFound message="No GitHub installation ID" />
+  if (
+    !project.githubInstallationId &&
+    process.env.NEXT_PUBLIC_APP_MODE !== "basic"
+  ) {
+    return <NotFound message="Please connect your GitHub account" />
   }
 
   if (!project.githubRepoFullName) {

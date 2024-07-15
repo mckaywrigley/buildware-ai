@@ -6,29 +6,13 @@ import { AnimatePresence, motion } from "framer-motion"
 import { AlignJustify, XIcon } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
-import { buttonVariants } from "../ui/button"
+import { Button, buttonVariants } from "../ui/button"
 
 const menuItem = [
-  // {
-  //   id: 1,
-  //   label: "Features",
-  //   href: "/features"
-  // },
-  // {
-  //   id: 2,
-  //   label: "About",
-  //   href: "/about"
-  // },
   {
-    id: 3,
     label: "Contribute",
     href: "https://github.com/mckaywrigley/buildware-ai"
   }
-  // {
-  //   id: 4,
-  //   label: "Contact Us",
-  //   href: "/contact"
-  // }
 ]
 
 const handleMenuItemClick = (href: string) => {
@@ -115,7 +99,7 @@ export function SiteHeader() {
           <nav className="absolute right-1/2 hidden translate-x-1/2 justify-center space-x-8 md:flex">
             {menuItem.map(item => (
               <Link
-                key={item.id}
+                key={item.href}
                 href={item.href}
                 className="text-sm hover:opacity-50"
                 onClick={e => {
@@ -131,7 +115,13 @@ export function SiteHeader() {
           </nav>
 
           <div className="ml-auto flex h-full items-center md:ml-0">
-            {process.env.NEXT_PUBLIC_SIMPLE_MODE ? null : (
+            {process.env.NEXT_PUBLIC_APP_MODE === "basic" ? (
+              <>
+                <Link href="/onboarding">
+                  <Button>My Projects</Button>
+                </Link>
+              </>
+            ) : (
               <>
                 <SignedOut>
                   <div
@@ -194,7 +184,7 @@ export function SiteHeader() {
             {menuItem.map(item => (
               <motion.li
                 variants={mobileLinkVar}
-                key={item.id}
+                key={item.href}
                 className="border-grey-dark border-b py-0.5 pl-6 md:border-none"
               >
                 <Link

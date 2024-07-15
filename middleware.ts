@@ -1,21 +1,29 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server"
 import { NextResponse } from "next/server"
 
-const isProtectedRoute = createRouteMatcher([
-  "/onboarding(.*)",
-  "/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}(.*)" // UUID regex
-])
+const isProtectedRoute = createRouteMatcher(["/onboarding(.*), /projects(.*)"])
+const uuidRegex =
+  /^\/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}(\/.*)?$/
+
+const isBasicMode = process.env.NEXT_PUBLIC_APP_MODE === "basic"
 
 export default clerkMiddleware(async (auth, req) => {
-  const { userId, redirectToSignIn } = auth()
+  if (isBasicMode) {
+    return NextResponse.next()
+  }
 
-  // If the user isn't signed in and the route is private, redirect to sign-in
-  if (!userId && isProtectedRoute(req)) {
+  const { userId, redirectToSignIn } = auth()
+  const path = req.nextUrl.pathname
+  console.log("Current route:", path)
+
+  const isProtected = isProtectedRoute(req) || uuidRegex.test(path)
+  console.log("isProtected", isProtected)
+
+  if (!userId && isProtected) {
     return redirectToSignIn({ returnBackUrl: "/login" })
   }
 
-  // If the user is logged in and the route is protected, let them view.
-  if (userId && isProtectedRoute(req)) {
+  if (userId && isProtected) {
     return NextResponse.next()
   }
 })
