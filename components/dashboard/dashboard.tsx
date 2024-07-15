@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { SelectProject } from "@/db/schema"
 import { cn } from "@/lib/utils"
-import { UserButton, useUser } from "@clerk/nextjs"
+import { UserButton } from "@clerk/nextjs"
 import {
   CircleDot,
   Code,
@@ -71,8 +71,6 @@ export const Dashboard: FC<DashboardProps> = ({
   projectId
 }) => {
   const pathname = usePathname()
-  const user = useUser()
-
   const { isGitHubConnected, isLinearConnected } = IntegrationStatus
 
   const project = projects.find(p => p.id === projectId)
@@ -128,11 +126,12 @@ export const Dashboard: FC<DashboardProps> = ({
                 ) : (
                   <>
                     <UserButton />
-                    {user.user && (
+                    <div className="truncate font-light">Pro Mode</div>
+                    {/* {user?.user && (
                       <div className="truncate font-light">
                         {user.user.firstName || "User Name Placeholder"}
                       </div>
-                    )}
+                    )} */}
                   </>
                 )}
               </div>
