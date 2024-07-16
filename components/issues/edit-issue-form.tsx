@@ -24,18 +24,14 @@ interface Prompt {
 }
 
 export const EditIssueForm: FC<EditIssueFormProps> = ({ issue }) => {
-  const [title, setTitle] = useState("")
-  const [content, setContent] = useState("")
   const [selectedPrompts, setSelectedPrompts] = useState<string[]>([])
   const [allPrompts, setAllPrompts] = useState<Prompt[]>([])
   const router = useRouter()
   const params = useParams()
 
   useEffect(() => {
-    setTitle(issue.name)
-    setContent(issue.content)
     handleAllPromptsByProject(issue.projectId)
-  }, [])
+  }, [issue.projectId])
 
   const handleUpdateIssue = async (formData: FormData) => {
     try {
@@ -108,8 +104,8 @@ export const EditIssueForm: FC<EditIssueFormProps> = ({ issue }) => {
           buttonText="Save"
           onSubmit={handleUpdateIssue}
           data={{
-            title,
-            content
+            title: issue.name,
+            content: issue.content
           }}
         />
       </div>
