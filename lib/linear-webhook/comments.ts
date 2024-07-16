@@ -3,7 +3,7 @@
 import { SelectEmbeddedFile } from "@/db/schema"
 import { LinearWebhookComment } from "@/lib/types/linear/linear-webhook"
 import { Comment, Issue, LinearClient } from "@linear/sdk"
-import { stripIndents } from "common-tags"
+import endent from "endent"
 import { generateAIResponse } from "../actions/llm"
 import { IN_PROGRESS_EMOJI } from "../constants/linear-webhook"
 import { createReaction } from "./reactions"
@@ -124,7 +124,7 @@ export const buildCommentPrompt = async (
     })
   )
 
-  return stripIndents`
+  return endent`
     You are an AI that completes coding tasks.
     
     Here is some context about your assigned task:

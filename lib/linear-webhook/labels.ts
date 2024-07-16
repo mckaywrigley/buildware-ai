@@ -2,7 +2,7 @@
 
 import { getProjectByLinearOrganizationId } from "@/db/queries/project-queries"
 import { Issue, LinearClient } from "@linear/sdk"
-import { stripIndents } from "common-tags"
+import endent from "endent"
 import fs from "fs/promises"
 import { encode } from "gpt-tokenizer"
 import path from "path"
@@ -185,7 +185,7 @@ export const buildLabelAssignmentCodePlanPrompt = async ({
   }[]
   instructionsContext: string
 }): Promise<string> => {
-  const basePrompt = stripIndents`
+  const basePrompt = endent`
     # AI Task Planning Assistant
 
     You are an AI specialized in creating detailed implementation plans for coding tasks.
@@ -231,7 +231,7 @@ export const buildLabelAssignmentCodePlanPrompt = async ({
     <codebase>
   `
 
-  const formatInstructions = stripIndents`
+  const formatInstructions = endent`
     </codebase>
 
     ---
@@ -286,7 +286,7 @@ export const buildLabelAssignmentCodeGenPrompt = async ({
   plan: string
   instructionsContext: string
 }): Promise<string> => {
-  const basePrompt = stripIndents`
+  const basePrompt = endent`
   # AI Expert Developer
 
   You are an expert developer who is tasked with implementing a given task.
