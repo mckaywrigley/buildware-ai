@@ -27,7 +27,7 @@ function limitTokens(
   files: { path: string; content: string }[]
 ): { prompt: string; includedFiles: typeof files; tokensUsed: number } {
   let totalTokens = estimateClaudeSonnet3_5TokenCount(basePrompt)
-  let includedFiles: typeof files = []
+  const includedFiles: typeof files = []
 
   for (const file of files) {
     const fileContent = `# File Path: ${file.path}\n${file.content}`

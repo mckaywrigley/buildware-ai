@@ -12,7 +12,7 @@ export async function fetchCodebaseForBranch(data: {
   try {
     const contents = await fetchDirectoryContent(data)
 
-    let files: GitHubFile[] = []
+    const files: GitHubFile[] = []
 
     const [owner, repo] = data.githubRepoFullName.split("/")
 

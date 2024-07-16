@@ -302,7 +302,7 @@ export const IssueView: React.FC<IssueViewProps> = ({
 
       <div className="space-y-8">
         <div className="text-lg font-semibold">Messages</div>
-        {messages.map((message, index) => (
+        {messages.map(message => (
           <React.Fragment key={message.id}>
             <Card>
               <CardContent className="bg-secondary p-4">

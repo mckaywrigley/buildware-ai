@@ -24,10 +24,10 @@ export const MessageMarkdown: FC<MessageMarkdownProps> = ({
         p({ children }) {
           return <p className="mb-2 last:mb-0">{children}</p>
         },
-        img({ node, ...props }) {
+        img({ ...props }) {
           return <img className="max-w-[67%]" {...props} />
         },
-        code({ node, className, children, ...props }) {
+        code({ className, children, ...props }) {
           const childArray = React.Children.toArray(children)
           const firstChild = childArray[0] as React.ReactElement
           const firstChildAsString = React.isValidElement(firstChild)

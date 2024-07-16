@@ -10,5 +10,5 @@ export default async function IssuesPage({
 }) {
   const issues = await getIssuesByProjectId(params.projectId)
 
-  return <IssuesList issues={issues} projectId={params.projectId} />
+  return <IssuesList issues={issues} />
 }

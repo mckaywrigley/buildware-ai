@@ -21,7 +21,7 @@ export async function GET(req: Request) {
 
   try {
     try {
-      let project = await getProjectById(projectId)
+      const project = await getProjectById(projectId)
 
       if (!project) {
         throw new Error("Project not found")

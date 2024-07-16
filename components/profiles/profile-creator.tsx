@@ -1,7 +1,6 @@
 "use client"
 
 import { createProfile } from "@/db/queries/profile-queries"
-import { createProject } from "@/db/queries/project-queries"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 
@@ -12,8 +11,7 @@ export const ProfileCreator = async () => {
     const handleCreateProfile = async () => {
       try {
         await createProfile({})
-        await createProject({ name: "My project" })
-        router.push("/projects")
+        router.push("/workspaces")
       } catch (error) {
         console.error(error)
       }

@@ -50,7 +50,7 @@ export async function handleAtAIComment(
   const strippedBody =
     comment.body.replace(/@(codebase|ai)\b/g, "").trim() || "begin task"
 
-  let codebaseFiles: Partial<SelectEmbeddedFile & { similarity: number }>[] = []
+  const codebaseFiles: Partial<SelectEmbeddedFile & { similarity: number }>[] = []
 
   if (useCodebase) {
     // const embeddingsQueryText = `${issue.title} ${issue.description} ${strippedBody}`

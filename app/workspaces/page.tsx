@@ -11,7 +11,7 @@ export const revalidate = 0
 export default async function WorkspacesPage() {
   const workspaces = await getWorkspacesByUserId()
 
-  const handleCreateWorkspace = async (formData: FormData) => {
+  const handleCreateWorkspace = async () => {
     "use server"
     const workspace = await createWorkspace({ name: "New Workspace" })
     return redirect(`/${workspace.id}`)

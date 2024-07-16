@@ -3,7 +3,7 @@
 import { SelectWorkspace } from "@/db/schema/workspaces-schema"
 import { cn } from "@/lib/utils"
 import { Check, ChevronDown } from "lucide-react"
-import { useParams, usePathname, useRouter } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { FC, HTMLAttributes, useEffect, useState } from "react"
 import { Button } from "../ui/button"
 import {

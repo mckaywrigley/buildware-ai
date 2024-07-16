@@ -65,8 +65,6 @@ export async function generatePR(
   const changes = []
   for (const file of parsedResponse.files) {
     if (file.status === "new" || file.status === "modified") {
-      let sha: string | undefined
-
       if (file.status === "modified") {
         try {
           // Fetch the current file to get its SHA
@@ -80,8 +78,6 @@ export async function generatePR(
           if (Array.isArray(existingFile)) {
             throw new Error(`Expected file, got directory: ${file.path}`)
           }
-
-          sha = existingFile.sha
         } catch (error: any) {
           if (error.status === 404) {
             console.warn(`File not found: ${file.path}. Treating as new file.`)

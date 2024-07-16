@@ -8,8 +8,7 @@ export default async function PromptsPage({
 }: {
   params: { projectId: string }
 }) {
-  const { projectId } = params
-  const prompts = await getPromptsByProjectId(projectId)
+  const prompts = await getPromptsByProjectId(params.projectId)
 
-  return <PromptsList prompts={prompts} projectId={projectId} />
+  return <PromptsList prompts={prompts} />
 }

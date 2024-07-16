@@ -7,10 +7,9 @@ import { DataList } from "../dashboard/reusable/data-list"
 
 interface IssuesListProps {
   issues: SelectIssue[]
-  projectId: string
 }
 
-export function IssuesList({ issues, projectId }: IssuesListProps) {
+export function IssuesList({ issues }: IssuesListProps) {
   const handleIssueDelete = async (id: string) => {
     await deleteIssue(id)
   }

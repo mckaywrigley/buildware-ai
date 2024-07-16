@@ -2,13 +2,10 @@
 
 import { Button } from "@/components/ui/button"
 import { ArrowRightIcon } from "@radix-ui/react-icons"
-import { useTheme } from "next-themes"
 import Link from "next/link"
 import ShineBorder from "../magicui/shine-border"
 
 export default function MainSection() {
-  const { theme } = useTheme()
-
   return (
     <section>
       <h1 className="text-primary text-balance bg-gradient-to-br bg-clip-text py-6 text-5xl font-medium leading-none tracking-tighter sm:text-6xl md:text-7xl lg:text-8xl">

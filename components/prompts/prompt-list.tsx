@@ -8,10 +8,9 @@ import { DataList } from "../dashboard/reusable/data-list"
 
 interface PromptsListProps {
   prompts: SelectPrompt[]
-  projectId: string
 }
 
-export const PromptsList: FC<PromptsListProps> = ({ prompts, projectId }) => {
+export const PromptsList: FC<PromptsListProps> = ({ prompts }) => {
   const handleDelete = async (id: string) => {
     await deletePrompt(id)
   }

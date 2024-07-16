@@ -4,9 +4,10 @@
   "extends": [
     "next/core-web-vitals",
     "prettier",
-    "plugin:tailwindcss/recommended"
+    "plugin:tailwindcss/recommended",
+    "plugin:@typescript-eslint/recommended"
   ],
-  "plugins": ["tailwindcss"],
+  "plugins": ["tailwindcss", "@typescript-eslint"],
   "rules": {
     "@next/next/no-img-element": "off",
     "jsx-a11y/alt-text": "off",
@@ -14,7 +15,12 @@
     "tailwindcss/enforces-negative-arbitrary-values": "off",
     "tailwindcss/no-contradicting-classname": "off",
     "tailwindcss/no-custom-classname": "off",
-    "react/no-unescaped-entities": "off"
+    "react/no-unescaped-entities": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
+    ],
+    "@typescript-eslint/no-explicit-any": "off"
   },
   "settings": {
     "tailwindcss": {
