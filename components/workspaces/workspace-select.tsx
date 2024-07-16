@@ -16,6 +16,7 @@ import {
 } from "../ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 import { CreateWorkspaceButton } from "./create-workspace-button"
+import { EditWorkspaceButton } from "./edit-workspace-button"
 
 interface WorkspaceSelectProps extends HTMLAttributes<HTMLDivElement> {
   workspaces: SelectWorkspace[]
@@ -86,7 +87,11 @@ export const WorkspaceSelect: FC<WorkspaceSelectProps> = ({ workspaces }) => {
             </CommandGroup>
           </CommandList>
 
-          <CreateWorkspaceButton className="w-full p-2" />
+          <CreateWorkspaceButton className="w-full p-1" />
+          <EditWorkspaceButton
+            workspaceId={workspaceId}
+            className="w-full p-1"
+          />
         </Command>
       </PopoverContent>
     </Popover>

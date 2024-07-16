@@ -52,15 +52,13 @@ export const PromptTemplateView: React.FC<PromptTemplateViewProps> = ({
     <CRUDPage
       pageTitle={item.title}
       backText={`Back to ${type}s`}
-      backLink={`/${item.projectId}/${type}s`}
+      backLink=".."
     >
       <div className="flex justify-start gap-2 mb-4">
         <Button
           variant="outline"
           size="sm"
-          onClick={() =>
-            router.push(`/${item.projectId}/${type}s/${item.id}/edit`)
-          }
+          onClick={() => router.push(`./${item.id}/edit`)}
         >
           <Pencil className="mr-2 h-4 w-4" />
           Edit
@@ -78,8 +76,8 @@ export const PromptTemplateView: React.FC<PromptTemplateViewProps> = ({
             <AlertDialogHeader>
               <AlertDialogTitle>Delete {type}</AlertDialogTitle>
               <AlertDialogDescription>
-                Are you sure you want to delete this {type}? This action
-                cannot be undone.
+                Are you sure you want to delete this {type}? This action cannot
+                be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>

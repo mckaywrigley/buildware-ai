@@ -63,6 +63,21 @@ export async function getProjectByLinearOrganizationId(
   })
 }
 
+export async function getProjectsByWorkspaceId(
+  workspaceId: string
+): Promise<SelectProject[]> {
+  return db.query.projects.findMany({
+    where: eq(projectsTable.workspaceId, workspaceId),
+    orderBy: desc(projectsTable.updatedAt)
+  })
+}
+
+export async function getAllProjects(): Promise<SelectProject[]> {
+  return db.query.projects.findMany({
+    orderBy: desc(projectsTable.updatedAt)
+  })
+}
+
 export async function updateProject(
   id: string,
   data: Partial<InsertProject>

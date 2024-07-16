@@ -54,6 +54,7 @@ interface IssueViewProps {
       title: string
     }
   }[]
+  workspaceId: string
 }
 
 let globalSequence = 1
@@ -61,7 +62,8 @@ let globalSequence = 1
 export const IssueView: React.FC<IssueViewProps> = ({
   item,
   project,
-  attachedPrompts
+  attachedPrompts,
+  workspaceId
 }) => {
   const router = useRouter()
 
@@ -203,7 +205,7 @@ export const IssueView: React.FC<IssueViewProps> = ({
     <CRUDPage
       pageTitle={item.name}
       backText="Back to Issues"
-      backLink={`/${item.projectId}/issues`}
+      backLink={`../issues`}
     >
       <div className="mb-4 flex justify-start gap-2">
         <Button
@@ -234,7 +236,9 @@ export const IssueView: React.FC<IssueViewProps> = ({
           variant="outline"
           size="sm"
           onClick={() =>
-            router.push(`/${item.projectId}/issues/${item.id}/edit`)
+            router.push(
+              `/${workspaceId}/${item.projectId}/issues/${item.id}/edit`
+            )
           }
         >
           <Pencil className="mr-2 size-4" />

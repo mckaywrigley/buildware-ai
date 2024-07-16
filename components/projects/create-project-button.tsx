@@ -21,7 +21,11 @@ export const CreateProjectButton: FC<CreateProjectButtonProps> = ({
 
   const handleCreateProject = async () => {
     try {
-      const project = await createProject({ name: "New Project" })
+      const project = await createProject({
+        name: "New Project",
+        workspaceId: params.workspaceId
+      })
+      router.refresh()
       router.push(`/${params.workspaceId}/${project.id}/setup`)
     } catch (error) {
       console.error(error)
@@ -31,12 +35,11 @@ export const CreateProjectButton: FC<CreateProjectButtonProps> = ({
   return (
     <div className={cn("", props.className)}>
       <Button
-        variant="outline"
         onClick={handleCreateProject}
-        className="w-full"
+        size="icon"
+        className="hover:bg-accent hover:text-accent-foreground bg-black text-white transition-colors"
       >
-        <PlusIcon className="mr-2 size-4" />
-        Create Project
+        <PlusIcon className="size-4" />
       </Button>
     </div>
   )

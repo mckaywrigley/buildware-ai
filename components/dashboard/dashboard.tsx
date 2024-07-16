@@ -19,7 +19,7 @@ import {
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useRouter } from "next/navigation"
-import { FC, useState } from "react"
+import { FC, useState, useEffect } from "react"
 import { ThemeSwitcher } from "../utility/theme-switcher"
 import { WorkspaceSelect } from "../workspaces/workspace-select"
 import {
@@ -31,8 +31,7 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle,
-  DialogTrigger
+  DialogTitle
 } from "@/components/ui/dialog"
 import { CreateProjectButton } from "../projects/create-project-button"
 
@@ -45,9 +44,9 @@ interface DashboardProps {
   children: React.ReactNode
   IntegrationStatus: IntegrationStatus
   workspaces: SelectWorkspace[]
-  projects: SelectProject[]
   workspaceId: string
   projectId: string
+  projects: SelectProject[]
 }
 
 const PROJECT_LINKS = [
@@ -87,8 +86,8 @@ export const Dashboard: FC<DashboardProps> = ({
   children,
   IntegrationStatus,
   workspaces,
-  projects,
-  workspaceId
+  workspaceId,
+  projects
 }) => {
   const pathname = usePathname()
   const router = useRouter()
@@ -101,7 +100,6 @@ export const Dashboard: FC<DashboardProps> = ({
         ? prev.filter(id => id !== projectId)
         : [...prev, projectId]
     )
-    router.push(`/${workspaceId}/${projectId}`)
   }
 
   const filteredProjectLinks = PROJECT_LINKS.map(link => ({
@@ -120,11 +118,7 @@ export const Dashboard: FC<DashboardProps> = ({
           </div>
           <div className="flex items-center justify-between px-4 py-2">
             <h2 className="text-sm font-semibold">Your Projects</h2>
-            <Link href={`/${workspaceId}/projects/create`}>
-              <Button variant="ghost" size="icon">
-                <Plus className="h-4 w-4" />
-              </Button>
-            </Link>
+            <CreateProjectButton params={{ workspaceId }} />
           </div>
 
           <div className="flex-1 overflow-auto">
@@ -138,9 +132,9 @@ export const Dashboard: FC<DashboardProps> = ({
                   <CollapsibleTrigger className="flex w-full items-center justify-between py-2">
                     <span>{project.name}</span>
                     {openProjects.includes(project.id) ? (
-                      <ChevronDown className="h-4 w-4" />
+                      <ChevronDown className="size-4" />
                     ) : (
-                      <ChevronRight className="h-4 w-4" />
+                      <ChevronRight className="size-4" />
                     )}
                   </CollapsibleTrigger>
                   <CollapsibleContent>
@@ -201,9 +195,9 @@ export const Dashboard: FC<DashboardProps> = ({
                 <CollapsibleTrigger className="flex w-full items-center justify-between py-2">
                   <span>{project.name}</span>
                   {openProjects.includes(project.id) ? (
-                    <ChevronDown className="h-4 w-4" />
+                    <ChevronDown className="size-4" />
                   ) : (
-                    <ChevronRight className="h-4 w-4" />
+                    <ChevronRight className="size-4" />
                   )}
                 </CollapsibleTrigger>
                 <CollapsibleContent>

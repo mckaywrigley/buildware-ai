@@ -8,14 +8,16 @@ import {
   SelectWorkspace,
   workspacesTable
 } from "../schema/workspaces-schema"
+import { getUserId } from "@/lib/actions/auth/auth"
 
 export async function createWorkspace(
-  data: InsertWorkspace
+  data: Omit<InsertWorkspace, "userId">
 ): Promise<SelectWorkspace> {
+  const userId = await getUserId()
   try {
     const [result] = await db
       .insert(workspacesTable)
-      .values({ ...data })
+      .values({ ...data, userId })
       .returning()
     revalidatePath("/")
     return result
@@ -39,8 +41,10 @@ export async function getWorkspaceById(
 }
 
 export async function getAllWorkspaces(): Promise<SelectWorkspace[]> {
+  const userId = await getUserId()
   try {
     return await db.query.workspaces.findMany({
+      where: eq(workspacesTable.userId, userId),
       orderBy: desc(workspacesTable.createdAt)
     })
   } catch (error) {

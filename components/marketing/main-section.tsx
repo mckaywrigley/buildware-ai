@@ -21,7 +21,7 @@ export default function MainSection() {
         <br className="hidden md:block" /> letting AI do the repetitive work.
       </p>
 
-      <Link href="/projects">
+      <Link href="/workspaces">
         <Button>
           <span>Get started </span>
           <ArrowRightIcon className="ml-1 size-4" />
