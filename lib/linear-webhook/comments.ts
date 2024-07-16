@@ -1,3 +1,5 @@
+"use server"
+
 import { SelectEmbeddedFile } from "@/db/schema"
 import { LinearWebhookComment } from "@/lib/types/linear/linear-webhook"
 import { Comment, Issue, LinearClient } from "@linear/sdk"
