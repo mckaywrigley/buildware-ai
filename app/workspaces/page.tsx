@@ -13,7 +13,7 @@ export default async function WorkspacesPage() {
 
   const handleCreateWorkspace = async () => {
     "use server"
-    const workspace = await createWorkspace({ name: "New Workspace" })
+    const workspace = await createWorkspace({ name: "My Workspace" })
     return redirect(`/${workspace.id}`)
   }
 

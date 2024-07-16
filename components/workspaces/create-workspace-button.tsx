@@ -1,7 +1,6 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import {
   Dialog,
   DialogContent,
@@ -10,6 +9,7 @@ import {
   DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
 import { createWorkspace } from "@/db/queries/workspace-queries"
 import { cn } from "@/lib/utils"
 import { PlusIcon } from "lucide-react"
@@ -28,7 +28,7 @@ export const CreateWorkspaceButton: FC<CreateWorkspaceButtonProps> = ({
   const handleCreateWorkspace = async () => {
     try {
       const workspace = await createWorkspace({
-        name: workspaceName || "New Workspace"
+        name: workspaceName || "My Workspace"
       })
       router.push(`/${workspace.id}`)
       setOpen(false)
