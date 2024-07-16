@@ -14,7 +14,11 @@ import { workspacesTable } from "./workspaces-schema"
 export const projectsTable = pgTable("projects", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: text("user_id").notNull(),
-  workspaceId: uuid("workspace_id").references(() => workspacesTable.id),
+  workspaceId: uuid("workspace_id")
+    .notNull()
+    .references(() => workspacesTable.id, {
+      onDelete: "cascade"
+    }),
   name: text("name").notNull(),
   hasSetup: boolean("has_setup").default(false).notNull(),
   githubRepoFullName: text("github_repo_full_name"),
