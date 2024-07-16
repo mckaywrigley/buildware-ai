@@ -14,9 +14,15 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog"
 import { Pencil, Trash2 } from "lucide-react"
 import { useRouter } from "next/navigation"
-import React from "react"
+import React, { useState } from "react"
 import { CRUDPage } from "./crud-page"
 
 interface PromptTemplateViewProps {
@@ -28,15 +34,26 @@ interface PromptTemplateViewProps {
   }
   type: "prompt" | "template"
   onDelete: (id: string) => Promise<void>
+  attachedPrompts?: {
+    id: string
+    title: string
+    content: string
+  }[]
 }
 
 export const PromptTemplateView: React.FC<PromptTemplateViewProps> = ({
   item,
   type,
-  onDelete
+  onDelete,
+  attachedPrompts = []
 }) => {
   const router = useRouter()
   const [isDeleteOpen, setIsDeleteOpen] = React.useState(false)
+  const [selectedPrompt, setSelectedPrompt] = useState<{
+    id: string
+    title: string
+    content: string
+  } | null>(null)
 
   const handleDelete = async () => {
     try {
@@ -93,11 +110,47 @@ export const PromptTemplateView: React.FC<PromptTemplateViewProps> = ({
         </AlertDialog>
       </div>
 
+      {attachedPrompts.length > 0 && (
+        <div className="my-6">
+          <div className="mb-2 text-lg font-semibold">Attached Prompts</div>
+          <div className="flex flex-wrap gap-2">
+            {attachedPrompts.map(prompt => (
+              <Button
+                key={prompt.id}
+                variant="outline"
+                size="sm"
+                onClick={() => setSelectedPrompt(prompt)}
+              >
+                {prompt.title}
+              </Button>
+            ))}
+          </div>
+        </div>
+      )}
+
       <Card>
         <CardContent className="bg-secondary/50 p-4">
           <MessageMarkdown content={item.content} />
         </CardContent>
       </Card>
+
+      <Dialog
+        open={!!selectedPrompt}
+        onOpenChange={() => setSelectedPrompt(null)}
+      >
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>{selectedPrompt?.title}</DialogTitle>
+          </DialogHeader>
+          <div className="mt-4">
+            <Card>
+              <CardContent className="bg-secondary/50 p-4">
+                <MessageMarkdown content={selectedPrompt?.content || ""} />
+              </CardContent>
+            </Card>
+          </div>
+        </DialogContent>
+      </Dialog>
     </CRUDPage>
   )
 }
