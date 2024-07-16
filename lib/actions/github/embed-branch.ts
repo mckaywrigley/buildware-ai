@@ -15,7 +15,7 @@ export async function embedBranch(data: {
   githubRepoFullName: string
   branchName: string
   embeddedBranchId: string
-  installationId: number
+  installationId: number | null
 }) {
   const {
     projectId,

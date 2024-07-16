@@ -1,6 +1,6 @@
 "use server"
 
-import { auth } from "@clerk/nextjs/server"
+import { getUserId } from "@/lib/actions/auth/auth"
 import { eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { db } from "../db"
@@ -13,8 +13,7 @@ import {
 export async function createProfile(
   data: Partial<InsertProfile>
 ): Promise<SelectProfile> {
-  const { userId } = auth()
-  if (!userId) throw new Error("User not authenticated")
+  const userId = await getUserId()
 
   const [profile] = await db
     .insert(profilesTable)
@@ -26,8 +25,7 @@ export async function createProfile(
 }
 
 export async function getProfileByUserId(): Promise<SelectProfile | undefined> {
-  const { userId } = auth()
-  if (!userId) throw new Error("User not authenticated")
+  const userId = await getUserId()
 
   return db.query.profiles.findFirst({
     where: eq(profilesTable.userId, userId)
@@ -37,23 +35,7 @@ export async function getProfileByUserId(): Promise<SelectProfile | undefined> {
 export async function updateProfile(
   data: Partial<InsertProfile>
 ): Promise<SelectProfile> {
-  const { userId } = auth()
-  if (!userId) throw new Error("User not authenticated")
-
-  const [updatedProfile] = await db
-    .update(profilesTable)
-    .set(data)
-    .where(eq(profilesTable.userId, userId))
-    .returning()
-  revalidatePath("/")
-  return updatedProfile
-}
-
-export async function updateProfileByUserId(
-  data: Partial<InsertProfile>
-): Promise<SelectProfile> {
-  const { userId } = auth()
-  if (!userId) throw new Error("User not authenticated")
+  const userId = await getUserId()
 
   const [updatedProfile] = await db
     .update(profilesTable)

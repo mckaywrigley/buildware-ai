@@ -3,12 +3,20 @@
 import { SelectProject } from "@/db/schema"
 import { getAuthenticatedOctokit } from "@/lib/actions/github/auth"
 import { AIParsedResponse } from "@/lib/types/ai/ai-issue-response"
+import { makeLocalChanges } from "../local/make-local-changes"
 
 export async function generatePR(
   branchName: string,
   project: SelectProject,
   parsedResponse: AIParsedResponse
 ) {
+  const isLocalMode = process.env.NEXT_PUBLIC_EXECUTION_MODE === "local"
+
+  if (isLocalMode) {
+    await makeLocalChanges(parsedResponse)
+    return null
+  }
+
   const octokit = await getAuthenticatedOctokit(project.githubInstallationId!)
   const [owner, repo] = project.githubRepoFullName!.split("/")
 

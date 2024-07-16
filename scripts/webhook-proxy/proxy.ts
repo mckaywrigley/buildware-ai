@@ -6,7 +6,7 @@ dotenv.config({ path: ".env.local" })
 const port = process.env.PORT || 3000
 
 const smee = new SmeeClient({
-  source: process.env.SMEE_URL!,
+  source: process.env.WEBHOOK_URL!,
   target: `http://localhost:${port}/api/linear/webhook`, // LINEAR TEST
   logger: console
 })

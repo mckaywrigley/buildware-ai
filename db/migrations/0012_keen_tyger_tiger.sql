@@ -1,1 +1,0 @@
-ALTER TABLE "projects" ADD COLUMN "github_repo" text;

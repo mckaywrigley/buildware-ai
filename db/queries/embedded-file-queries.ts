@@ -1,6 +1,6 @@
 "use server"
 
-import { auth } from "@clerk/nextjs/server"
+import { getUserId } from "@/lib/actions/auth/auth"
 import { eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { db } from "../db"
@@ -12,8 +12,7 @@ import {
 export async function createEmbeddedFiles(
   data: Omit<InsertEmbeddedFile, "userId">[]
 ) {
-  const { userId } = auth()
-  if (!userId) throw new Error("User not authenticated")
+  const userId = await getUserId()
 
   try {
     await db.insert(embeddedFilesTable).values(
@@ -32,9 +31,6 @@ export async function createEmbeddedFiles(
 export async function deleteAllEmbeddedFilesByEmbeddedBranchId(
   embeddedBranchId: string
 ) {
-  const { userId } = auth()
-  if (!userId) throw new Error("User not authenticated")
-
   try {
     await db
       .delete(embeddedFilesTable)

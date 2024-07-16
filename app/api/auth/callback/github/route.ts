@@ -1,5 +1,4 @@
 import { getProjectById, updateProject } from "@/db/queries/project-queries"
-import console from "console"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 

@@ -33,9 +33,7 @@ export default function EditTemplateForm({
         templateWithPrompts.projectId
       )
       router.refresh()
-      router.push(
-        `/${templateWithPrompts.projectId}/templates/${templateWithPrompts.id}`
-      )
+      router.push(`../${templateWithPrompts.id}`)
     } catch (error) {
       console.error("Failed to update prompt:", error)
     }
@@ -43,10 +41,12 @@ export default function EditTemplateForm({
 
   return (
     <>
-      <TemplateSelect
-        prompts={prompts}
-        templateWithPrompts={templateWithPrompts}
-      />
+      <div className="mb-4">
+        <TemplateSelect
+          prompts={prompts}
+          templateWithPrompts={templateWithPrompts}
+        />
+      </div>
 
       <CRUDForm
         itemName="Template"
