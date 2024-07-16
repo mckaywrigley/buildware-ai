@@ -1,6 +1,6 @@
 import { Dashboard } from "@/components/dashboard/dashboard"
 import { getProjectsByWorkspaceId } from "@/db/queries/project-queries"
-import { getAllWorkspaces } from "@/db/queries/workspace-queries"
+import { getWorkspacesByUserId } from "@/db/queries/workspace-queries"
 
 export const revalidate = 0
 
@@ -11,7 +11,7 @@ export default async function WorkspaceLayout({
   children: React.ReactNode
   params: { workspaceId: string; projectId: string }
 }) {
-  const workspaces = await getAllWorkspaces()
+  const workspaces = await getWorkspacesByUserId()
   const projects = await getProjectsByWorkspaceId(params.workspaceId)
 
   const IntegrationStatus = {

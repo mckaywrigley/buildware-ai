@@ -1,11 +1,7 @@
 import { Button } from "@/components/ui/button"
 import {
-  createProject,
-  getProjectsByUserId
-} from "@/db/queries/project-queries"
-import {
-  getAllWorkspaces,
-  createWorkspace
+  createWorkspace,
+  getWorkspacesByUserId
 } from "@/db/queries/workspace-queries"
 import Link from "next/link"
 import { redirect } from "next/navigation"
@@ -13,7 +9,7 @@ import { redirect } from "next/navigation"
 export const revalidate = 0
 
 export default async function WorkspacesPage() {
-  const workspaces = await getAllWorkspaces()
+  const workspaces = await getWorkspacesByUserId()
 
   const handleCreateWorkspace = async (formData: FormData) => {
     "use server"

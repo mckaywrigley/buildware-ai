@@ -9,7 +9,7 @@ export const revalidate = 0
 export default async function IssuePage({
   params
 }: {
-  params: { issueId: string }
+  params: { issueId: string; projectId: string; workspaceId: string }
 }) {
   const issue = await getIssueById(params.issueId)
 
@@ -30,7 +30,7 @@ export default async function IssuePage({
       item={issue}
       project={project}
       attachedPrompts={attachedPrompts}
-      workspaceId={project.workspaceId!}
+      workspaceId={params.workspaceId}
     />
   )
 }

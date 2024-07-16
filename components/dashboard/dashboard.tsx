@@ -1,27 +1,6 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { SelectWorkspace, SelectProject } from "@/db/schema"
-import { cn } from "@/lib/utils"
-import { UserButton } from "@clerk/nextjs"
-import {
-  CircleDot,
-  Code,
-  Menu,
-  Pencil,
-  Plus,
-  Settings,
-  StickyNote,
-  ChevronDown,
-  ChevronRight
-} from "lucide-react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { useRouter } from "next/navigation"
-import { FC, useState, useEffect } from "react"
-import { ThemeSwitcher } from "../utility/theme-switcher"
-import { WorkspaceSelect } from "../workspaces/workspace-select"
 import {
   Collapsible,
   CollapsibleContent,
@@ -33,7 +12,26 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { SelectProject, SelectWorkspace } from "@/db/schema"
+import { cn } from "@/lib/utils"
+import { UserButton } from "@clerk/nextjs"
+import {
+  ChevronDown,
+  ChevronRight,
+  CircleDot,
+  Code,
+  Menu,
+  Pencil,
+  Settings,
+  StickyNote
+} from "lucide-react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { FC, useState } from "react"
 import { CreateProjectButton } from "../projects/create-project-button"
+import { ThemeSwitcher } from "../utility/theme-switcher"
+import { WorkspaceSelect } from "../workspaces/workspace-select"
 
 type IntegrationStatus = {
   isGitHubConnected: boolean
@@ -84,14 +82,11 @@ const PROJECT_LINKS = [
 
 export const Dashboard: FC<DashboardProps> = ({
   children,
-  IntegrationStatus,
   workspaces,
   workspaceId,
   projects
 }) => {
   const pathname = usePathname()
-  const router = useRouter()
-  const { isGitHubConnected } = IntegrationStatus
   const [openProjects, setOpenProjects] = useState<string[]>([])
 
   const toggleProject = (projectId: string) => {

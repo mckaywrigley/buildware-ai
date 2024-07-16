@@ -1,5 +1,6 @@
 "use server"
 
+import { getUserId } from "@/lib/actions/auth/auth"
 import { and, desc, eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { db } from "../db"
@@ -8,12 +9,12 @@ import {
   SelectWorkspace,
   workspacesTable
 } from "../schema/workspaces-schema"
-import { getUserId } from "@/lib/actions/auth/auth"
 
 export async function createWorkspace(
   data: Omit<InsertWorkspace, "userId">
 ): Promise<SelectWorkspace> {
   const userId = await getUserId()
+
   try {
     const [result] = await db
       .insert(workspacesTable)
@@ -40,8 +41,9 @@ export async function getWorkspaceById(
   }
 }
 
-export async function getAllWorkspaces(): Promise<SelectWorkspace[]> {
+export async function getWorkspacesByUserId(): Promise<SelectWorkspace[]> {
   const userId = await getUserId()
+
   try {
     return await db.query.workspaces.findMany({
       where: eq(workspacesTable.userId, userId),
