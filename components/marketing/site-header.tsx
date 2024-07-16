@@ -177,7 +177,7 @@ export function SiteHeader() {
               {process.env.NEXT_PUBLIC_APP_MODE === "basic" ? (
                 <>
                   <Link href="/onboarding">
-                    <Button>My Projects</Button>
+                    <Button>My Workspaces</Button>
                   </Link>
                 </>
               ) : (
