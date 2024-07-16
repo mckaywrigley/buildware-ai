@@ -25,10 +25,16 @@ export const CRUDForm: FC<CRUDFormProps> = ({
 }) => {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [title, setTitle] = useState(data?.title || "")
+  const [content, setContent] = useState(data?.content || "")
+
+  const isFormValid = title.trim() !== "" && content.trim() !== ""
 
   const handleSubmit = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    setIsSubmitting(true)
     event.preventDefault()
+    if (!isFormValid) return
+
+    setIsSubmitting(true)
     const form = event.currentTarget.closest("form")
     if (form) {
       const formData = new FormData(form)
@@ -45,7 +51,9 @@ export const CRUDForm: FC<CRUDFormProps> = ({
             className="border-none bg-transparent text-xl font-bold"
             name="title"
             placeholder={`${itemName} title`}
-            defaultValue={data?.title}
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            required
           />
 
           <ReactTextareaAutosize
@@ -54,7 +62,9 @@ export const CRUDForm: FC<CRUDFormProps> = ({
             rows={5}
             placeholder={`${itemName} content...`}
             minRows={5}
-            defaultValue={data?.content}
+            value={content}
+            onChange={e => setContent(e.target.value)}
+            required
           />
         </CardContent>
       </Card>
@@ -72,7 +82,7 @@ export const CRUDForm: FC<CRUDFormProps> = ({
 
           <Button
             variant="create"
-            disabled={isSubmitting}
+            disabled={isSubmitting || !isFormValid}
             onClick={handleSubmit}
           >
             {buttonText}
