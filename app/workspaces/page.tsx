@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button"
+import { createProject } from "@/db/queries/project-queries"
 import {
   createWorkspace,
   getWorkspacesByUserId
@@ -14,6 +15,10 @@ export default async function WorkspacesPage() {
   const handleCreateWorkspace = async () => {
     "use server"
     const workspace = await createWorkspace({ name: "My Workspace" })
+    await createProject({
+      name: "My Project",
+      workspaceId: workspace.id
+    })
     return redirect(`/${workspace.id}`)
   }
 
