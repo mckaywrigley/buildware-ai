@@ -115,7 +115,7 @@ export const IssueView: React.FC<IssueViewProps> = ({
     try {
       await deleteIssue(item.id)
       setIsDeleteOpen(false)
-      router.push(`/${item.projectId}/issues`)
+      router.push(`../issues`)
     } catch (error) {
       console.error("Failed to delete issue:", error)
     }

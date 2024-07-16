@@ -33,9 +33,7 @@ export default function EditTemplateForm({
         templateWithPrompts.projectId
       )
       router.refresh()
-      router.push(
-        `./${templateWithPrompts.projectId}/templates/${templateWithPrompts.id}`
-      )
+      router.push(`../${templateWithPrompts.id}`)
     } catch (error) {
       console.error("Failed to update prompt:", error)
     }
