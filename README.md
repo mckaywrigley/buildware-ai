@@ -110,14 +110,6 @@ Update (July 15th, 2024): Pro setup guide coming soon! Please check back in a fe
 
 We are working on a guide for contributing.
 
-## Contact
-
-Message Mckay on [Twitter/X](https://twitter.com/mckaywrigley) or email him at [mckay@takeoffai.org](mailto:mckay@takeoffai.org).
-
-## Creators
-
-Built by [Mckay Wrigley](https://twitter.com/mckaywrigley) and [Tyler Bruno](https://twitter.com/tylerbruno05).
-
 ## License
 
 Buildware is licensed under the MIT license.
