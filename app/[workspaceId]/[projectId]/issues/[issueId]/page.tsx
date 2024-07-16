@@ -30,6 +30,7 @@ export default async function IssuePage({
       item={issue}
       project={project}
       attachedPrompts={attachedPrompts}
+      workspaceId={project.workspaceId!}
     />
   )
 }

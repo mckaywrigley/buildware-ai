@@ -6,9 +6,9 @@ export const revalidate = 0
 export default async function ProjectPage({
   params
 }: {
-  params: { projectId: string }
+  params: { projectId: string; workspaceId: string }
 }) {
-  const { projectId } = params
+  const { projectId, workspaceId } = params
 
   const project = await getProjectById(projectId)
 
@@ -17,7 +17,7 @@ export default async function ProjectPage({
   }
 
   if (!project.hasSetup) {
-    return redirect(`/${projectId}/setup`)
+    return redirect(`/${workspaceId}/${projectId}/setup`)
   }
 
   return (

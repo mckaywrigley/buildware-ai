@@ -23,6 +23,6 @@ export default async function OnboardingPage() {
   }
 
   if (profile) {
-    return redirect("/projects")
+    return redirect("/workspaces")
   }
 }

@@ -1,14 +1,16 @@
 import { Dashboard } from "@/components/dashboard/dashboard"
 import { getProjectsByUserId } from "@/db/queries/project-queries"
+import { getAllWorkspaces } from "@/db/queries/workspace-queries"
 
 export default async function ProjectLayout({
   children,
   params
 }: {
   children: React.ReactNode
-  params: { projectId: string }
+  params: { projectId: string; workspaceId: string }
 }) {
   const projects = await getProjectsByUserId()
+  const workspaces = await getAllWorkspaces()
   const project = projects.find(p => p.id === params.projectId)
 
   if (!project) {
@@ -20,13 +22,5 @@ export default async function ProjectLayout({
     isLinearConnected: !!project?.linearAccessToken
   }
 
-  return (
-    <Dashboard
-      IntegrationStatus={IntegrationStatus}
-      projects={projects}
-      projectId={params.projectId}
-    >
-      {children}
-    </Dashboard>
-  )
+  return children
 }

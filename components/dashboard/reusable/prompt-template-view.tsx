@@ -42,7 +42,7 @@ export const PromptTemplateView: React.FC<PromptTemplateViewProps> = ({
     try {
       await onDelete(item.id)
       setIsDeleteOpen(false)
-      router.push(`/${item.projectId}/${type}s`)
+      router.push(`../${type}s`)
     } catch (error) {
       console.error(`Failed to delete ${type}:`, error)
     }
@@ -52,24 +52,22 @@ export const PromptTemplateView: React.FC<PromptTemplateViewProps> = ({
     <CRUDPage
       pageTitle={item.title}
       backText={`Back to ${type}s`}
-      backLink={`/${item.projectId}/${type}s`}
+      backLink={`../${type}s`}
     >
-      <div className="flex justify-start gap-2 mb-4">
+      <div className="mb-4 flex justify-start gap-2">
         <Button
           variant="outline"
           size="sm"
-          onClick={() =>
-            router.push(`/${item.projectId}/${type}s/${item.id}/edit`)
-          }
+          onClick={() => router.push(`./${item.id}/edit`)}
         >
-          <Pencil className="mr-2 h-4 w-4" />
+          <Pencil className="mr-2 size-4" />
           Edit
         </Button>
 
         <AlertDialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
           <AlertDialogTrigger asChild>
             <Button variant="destructive" size="sm">
-              <Trash2 className="mr-2 h-4 w-4" />
+              <Trash2 className="mr-2 size-4" />
               Delete
             </Button>
           </AlertDialogTrigger>
@@ -78,15 +76,15 @@ export const PromptTemplateView: React.FC<PromptTemplateViewProps> = ({
             <AlertDialogHeader>
               <AlertDialogTitle>Delete {type}</AlertDialogTitle>
               <AlertDialogDescription>
-                Are you sure you want to delete this {type}? This action
-                cannot be undone.
+                Are you sure you want to delete this {type}? This action cannot
+                be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction
                 onClick={handleDelete}
-                className="bg-red-600 hover:bg-red-700 text-white"
+                className="bg-red-600 text-white hover:bg-red-700"
               >
                 Delete
               </AlertDialogAction>
@@ -96,7 +94,7 @@ export const PromptTemplateView: React.FC<PromptTemplateViewProps> = ({
       </div>
 
       <Card>
-        <CardContent className="p-4 bg-secondary/50">
+        <CardContent className="bg-secondary/50 p-4">
           <MessageMarkdown content={item.content} />
         </CardContent>
       </Card>

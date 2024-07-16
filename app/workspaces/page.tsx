@@ -3,39 +3,43 @@ import {
   createProject,
   getProjectsByUserId
 } from "@/db/queries/project-queries"
+import {
+  getAllWorkspaces,
+  createWorkspace
+} from "@/db/queries/workspace-queries"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 
 export const revalidate = 0
 
-export default async function ProjectsPage() {
-  const projects = await getProjectsByUserId()
+export default async function WorkspacesPage() {
+  const workspaces = await getAllWorkspaces()
 
-  const handleCreateProject = async (formData: FormData) => {
+  const handleCreateWorkspace = async (formData: FormData) => {
     "use server"
-    const project = await createProject({ name: "New Project" })
-    return redirect(`/${project.id}`)
+    const workspace = await createWorkspace({ name: "New Workspace" })
+    return redirect(`/${workspace.id}`)
   }
 
   return (
     <div className="flex h-screen w-screen flex-col items-center justify-center">
-      {projects.length === 0 ? (
+      {workspaces.length === 0 ? (
         <div className="flex flex-col items-center justify-center gap-4">
-          <div>No projects</div>
-          <form action={handleCreateProject}>
-            <Button type="submit">Create a new project</Button>
+          <div>No workspaces</div>
+          <form action={handleCreateWorkspace}>
+            <Button type="submit">Create a new workspace</Button>
           </form>
         </div>
       ) : (
         <div className="flex w-full max-w-[300px] flex-col items-center justify-center gap-4">
-          <div className="text-2xl font-bold">Select a project.</div>
-          {projects.map(project => (
+          <div className="text-2xl font-bold">Select a workspace.</div>
+          {workspaces.map(workspace => (
             <Link
-              key={project.id}
-              href={`/${project.id}`}
+              key={workspace.id}
+              href={`/${workspace.id}`}
               className="bg-secondary border-primary/20 group relative flex w-full items-center gap-2 rounded border p-4 hover:opacity-80"
             >
-              <div>{project.name}</div>
+              <div>{workspace.name}</div>
             </Link>
           ))}
         </div>

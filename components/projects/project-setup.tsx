@@ -86,7 +86,7 @@ export const ProjectSetup: FC<ProjectSetupProps> = ({
         installationId: project.githubInstallationId
       })
 
-      router.push(`/${project.id}/issues`)
+      router.push(`/${project.workspaceId}/${project.id}/issues`)
     } catch (error) {
       console.error("Error during setup:", error)
     } finally {

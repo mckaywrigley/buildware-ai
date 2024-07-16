@@ -25,6 +25,7 @@ const dbSchema = {
   embeddedBranches: schema.embeddedBranchesTable,
   issuesToPrompts: schema.issuesToPromptsTable,
   issueMessages: schema.issueMessagesTable,
+  workspaces: schema.workspacesTable,
 
   // Relations
   projectsRelations: schema.projectsRelations,
@@ -35,7 +36,8 @@ const dbSchema = {
   embeddedFilesRelations: schema.embeddedFilesRelations,
   embeddedBranchesRelations: schema.embeddedBranchesRelations,
   issuesToPromptsRelations: schema.issueToPromptsRelations,
-  issueMessagesRelations: schema.issueMessagesRelations
+  issueMessagesRelations: schema.issueMessagesRelations,
+  workspacesRelations: schema.workspacesRelations
 }
 
 function initializeDb(url: string) {

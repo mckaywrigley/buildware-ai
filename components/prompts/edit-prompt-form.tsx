@@ -16,7 +16,7 @@ export default function EditPromptForm({ prompt }: { prompt: SelectPrompt }) {
       }
       await updatePrompt(prompt.id, updatedPrompt)
       router.refresh()
-      router.push(`/${prompt.projectId}/prompts/${prompt.id}`)
+      router.push(`../${prompt.id}`)
     } catch (error) {
       console.error("Failed to update prompt:", error)
     }

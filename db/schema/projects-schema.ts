@@ -9,10 +9,12 @@ import {
 } from "drizzle-orm/pg-core"
 import { promptsTable } from "./prompts-schema"
 import { templatesTable } from "./templates-schema"
+import { workspacesTable } from "./workspaces-schema"
 
 export const projectsTable = pgTable("projects", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: text("user_id").notNull(),
+  workspaceId: uuid("workspace_id").references(() => workspacesTable.id),
   name: text("name").notNull(),
   hasSetup: boolean("has_setup").default(false).notNull(),
   githubRepoFullName: text("github_repo_full_name"),
@@ -26,9 +28,10 @@ export const projectsTable = pgTable("projects", {
     .$onUpdate(() => new Date())
 })
 
-export const projectsRelations = relations(projectsTable, ({ many }) => ({
+export const projectsRelations = relations(projectsTable, ({ one, many }) => ({
   templates: many(templatesTable),
-  prompts: many(promptsTable)
+  prompts: many(promptsTable),
+  workspace: one(workspacesTable)
 }))
 
 export type InsertProject = typeof projectsTable.$inferInsert
