@@ -1,6 +1,6 @@
 "use server"
 
-import { auth } from "@clerk/nextjs/server"
+import { getUserId } from "@/lib/actions/auth/auth"
 import { and, desc, eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { db } from "../db"
@@ -13,8 +13,7 @@ import {
 export async function createProject(
   data: Omit<InsertProject, "userId">
 ): Promise<SelectProject> {
-  const { userId } = auth()
-  if (!userId) throw new Error("User not authenticated")
+  const userId = await getUserId()
 
   try {
     const [result] = await db
@@ -43,8 +42,7 @@ export async function getProjectById(
 }
 
 export async function getProjectsByUserId(): Promise<SelectProject[]> {
-  const { userId } = auth()
-  if (!userId) throw new Error("User not authenticated")
+  const userId = await getUserId()
 
   try {
     return db.query.projects.findMany({
@@ -62,6 +60,21 @@ export async function getProjectByLinearOrganizationId(
 ): Promise<SelectProject | undefined> {
   return db.query.projects.findFirst({
     where: eq(projectsTable.linearOrganizationId, linearOrganizationId)
+  })
+}
+
+export async function getProjectsByWorkspaceId(
+  workspaceId: string
+): Promise<SelectProject[]> {
+  return db.query.projects.findMany({
+    where: eq(projectsTable.workspaceId, workspaceId),
+    orderBy: desc(projectsTable.updatedAt)
+  })
+}
+
+export async function getAllProjects(): Promise<SelectProject[]> {
+  return db.query.projects.findMany({
+    orderBy: desc(projectsTable.updatedAt)
   })
 }
 

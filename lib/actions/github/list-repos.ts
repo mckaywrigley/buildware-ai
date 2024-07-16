@@ -1,31 +1,39 @@
 "use server"
 
 import { GitHubRepository } from "@/lib/types/github"
-import { createAppAuth } from "@octokit/auth-app"
-import { Octokit } from "@octokit/rest"
-
-const GITHUB_APP_ID = process.env.NEXT_PUBLIC_GITHUB_APP_ID!
-const GITHUB_CLIENT_ID = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID!
-const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET!
-const GITHUB_PRIVATE_KEY = process.env.GITHUB_PRIVATE_KEY!
+import { getAuthenticatedOctokit } from "./auth"
 
 export const listRepos = async (
-  installationId: number
+  installationId: number | null
 ): Promise<GitHubRepository[]> => {
   try {
-    const auth = createAppAuth({
-      appId: GITHUB_APP_ID,
-      privateKey: GITHUB_PRIVATE_KEY,
-      clientId: GITHUB_CLIENT_ID,
-      clientSecret: GITHUB_CLIENT_SECRET
-    })
+    const octokit = await getAuthenticatedOctokit(installationId)
+    let repositories: any[] = []
+    let page = 1
+    const per_page = 100 // Max allowed by GitHub API
 
-    const { token } = await auth({ type: "installation", installationId })
-    const octokit = new Octokit({ auth: token })
+    while (true) {
+      let response: any
 
-    const { data } = await octokit.apps.listReposAccessibleToInstallation()
+      if (installationId) {
+        response = await octokit.apps.listReposAccessibleToInstallation({
+          per_page,
+          page
+        })
+        repositories = repositories.concat(response.data.repositories)
+      } else {
+        response = await octokit.request("GET /user/repos", {
+          per_page,
+          page
+        })
+        repositories = repositories.concat(response.data)
+      }
 
-    return data.repositories
+      if (response.data.length < per_page) break
+      page++
+    }
+
+    return repositories
       .map(repo => ({
         description: repo.description,
         full_name: repo.full_name,

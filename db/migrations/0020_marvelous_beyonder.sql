@@ -1,1 +1,0 @@
-ALTER TABLE "embedded_files" ADD COLUMN "content" text;

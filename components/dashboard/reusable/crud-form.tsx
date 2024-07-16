@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { useRouter } from "next/navigation"
-import { FC } from "react"
+import { FC, useState } from "react"
 import ReactTextareaAutosize from "react-textarea-autosize"
 
 interface CRUDFormProps {
@@ -24,9 +24,21 @@ export const CRUDForm: FC<CRUDFormProps> = ({
   data
 }) => {
   const router = useRouter()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const handleSubmit = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    setIsSubmitting(true)
+    event.preventDefault()
+    const form = event.currentTarget.closest("form")
+    if (form) {
+      const formData = new FormData(form)
+      await onSubmit(formData)
+    }
+    setIsSubmitting(false)
+  }
 
   return (
-    <form className="flex flex-col gap-6" action={onSubmit}>
+    <form className="flex flex-col gap-6">
       <Card>
         <CardContent className="bg-secondary/50 p-2">
           <Input
@@ -58,7 +70,13 @@ export const CRUDForm: FC<CRUDFormProps> = ({
             Cancel
           </Button>
 
-          <Button variant="create">{buttonText}</Button>
+          <Button
+            variant="create"
+            disabled={isSubmitting}
+            onClick={handleSubmit}
+          >
+            {buttonText}
+          </Button>
         </div>
       </div>
     </form>

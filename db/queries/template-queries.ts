@@ -1,7 +1,7 @@
 "use server"
 
-import { auth } from "@clerk/nextjs/server"
-import { desc, eq } from "drizzle-orm"
+import { getUserId } from "@/lib/actions/auth/auth"
+import { eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { db } from "../db"
 import {
@@ -13,8 +13,7 @@ import {
 export async function createTemplateRecords(
   data: Omit<InsertTemplate, "userId">[]
 ): Promise<SelectTemplate[]> {
-  const { userId } = auth()
-  if (!userId) throw new Error("User not authenticated")
+  const userId = await getUserId()
 
   try {
     const result = await db
@@ -25,17 +24,6 @@ export async function createTemplateRecords(
     return result
   } catch (error) {
     console.error("Error creating template records:", error)
-    throw error
-  }
-}
-
-export async function getAllTemplates(): Promise<SelectTemplate[]> {
-  try {
-    return db.query.templates.findMany({
-      orderBy: desc(templatesTable.updatedAt)
-    })
-  } catch (error) {
-    console.error("Error getting all templates:", error)
     throw error
   }
 }
@@ -53,10 +41,7 @@ export async function getTemplateById(
   }
 }
 
-export async function getTemplatesWithPromptsByUserId(
-  userId: string,
-  projectId: string
-) {
+export async function getTemplatesWithPromptsByProjectId(projectId: string) {
   try {
     const results = await db.query.templates.findMany({
       with: {
@@ -66,8 +51,7 @@ export async function getTemplatesWithPromptsByUserId(
           }
         }
       },
-      where: (templates, { and, eq }) =>
-        and(eq(templates.userId, userId), eq(templates.projectId, projectId)),
+      where: (templates, { eq }) => eq(templates.projectId, projectId),
       orderBy: (templates, { desc }) => desc(templates.updatedAt)
     })
     return results
@@ -78,9 +62,6 @@ export async function getTemplatesWithPromptsByUserId(
 }
 
 export async function getTemplateWithPromptById(id: string) {
-  const { userId } = auth()
-  if (!userId) throw new Error("User not authenticated")
-
   try {
     return db.query.templates.findFirst({
       with: {

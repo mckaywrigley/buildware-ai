@@ -1,5 +1,4 @@
 import { AnimatedGridPattern } from "@/components/magicui/animated-grid-pattern"
-import { BentoSection } from "@/components/marketing/bento-section"
 import MainSection from "@/components/marketing/main-section"
 import { cn } from "@/lib/utils"
 
@@ -19,10 +18,6 @@ export default async function MarketingPage() {
 
       <div className="relative mx-auto mt-32 max-w-7xl px-6 text-center md:px-8">
         <MainSection />
-      </div>
-
-      <div className="relative mx-auto mt-32 max-w-7xl px-6 text-center md:px-8">
-        <BentoSection />
       </div>
     </>
   )

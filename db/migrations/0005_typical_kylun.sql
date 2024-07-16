@@ -1,1 +1,0 @@
-ALTER TABLE "prompts" DROP CONSTRAINT "prompts_user_id_unique";

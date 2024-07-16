@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm"
-import { pgTable, text, timestamp, uuid, integer } from "drizzle-orm/pg-core"
+import { integer, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core"
 import { issuesTable } from "./issues-schema"
 
 export const issueMessagesTable = pgTable("issue_messages", {
@@ -16,12 +16,15 @@ export const issueMessagesTable = pgTable("issue_messages", {
     .$onUpdate(() => new Date())
 })
 
-export const issueMessagesRelations = relations(issueMessagesTable, ({ one }) => ({
-  issue: one(issuesTable, {
-    fields: [issueMessagesTable.issueId],
-    references: [issuesTable.id]
+export const issueMessagesRelations = relations(
+  issueMessagesTable,
+  ({ one }) => ({
+    issue: one(issuesTable, {
+      fields: [issueMessagesTable.issueId],
+      references: [issuesTable.id]
+    })
   })
-}))
+)
 
 export type InsertIssueMessage = typeof issueMessagesTable.$inferInsert
 export type SelectIssueMessage = typeof issueMessagesTable.$inferSelect

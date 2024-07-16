@@ -1,7 +1,7 @@
 "use server"
 
-import { auth } from "@clerk/nextjs/server"
-import { and, desc, eq } from "drizzle-orm"
+import { getUserId } from "@/lib/actions/auth/auth"
+import { eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { db } from "../db"
 import {
@@ -13,8 +13,7 @@ import {
 export async function createPromptRecords(
   data: Omit<InsertPrompt, "userId">[]
 ): Promise<SelectPrompt[]> {
-  const { userId } = auth()
-  if (!userId) throw new Error("User not authenticated")
+  const userId = await getUserId()
 
   try {
     const result = await db
@@ -29,50 +28,16 @@ export async function createPromptRecords(
   }
 }
 
-export async function getAllPrompts(): Promise<SelectPrompt[]> {
-  try {
-    return db.query.prompts.findMany({
-      orderBy: desc(promptsTable.updatedAt)
-    })
-  } catch (error) {
-    console.error("Error getting all prompts:", error)
-    throw error
-  }
-}
-
 export async function getPromptById(
   id: string
 ): Promise<SelectPrompt | undefined> {
-  const { userId } = auth()
-  if (!userId) throw new Error("User not authenticated")
-
   try {
     const result = await db.query.prompts.findFirst({
-      where: and(eq(promptsTable.id, id), eq(promptsTable.userId, userId))
+      where: eq(promptsTable.id, id)
     })
     return result
   } catch (error) {
     console.error(`Error getting prompt by id ${id}:`, error)
-    throw error
-  }
-}
-
-export async function getPromptsByUserId(
-  projectId: string
-): Promise<SelectPrompt[]> {
-  const { userId } = auth()
-  if (!userId) throw new Error("User not authenticated")
-
-  try {
-    return db.query.prompts.findMany({
-      where: and(
-        eq(promptsTable.userId, userId),
-        eq(promptsTable.projectId, projectId)
-      ),
-      orderBy: desc(promptsTable.updatedAt)
-    })
-  } catch (error) {
-    console.error("Error getting prompts for user and project:", error)
     throw error
   }
 }

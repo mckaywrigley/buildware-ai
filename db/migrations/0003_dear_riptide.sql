@@ -1,0 +1,1 @@
+ALTER TABLE "workspaces" ADD COLUMN "user_id" text NOT NULL;
