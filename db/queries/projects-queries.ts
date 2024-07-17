@@ -4,12 +4,12 @@ import { getUserId } from "@/actions/auth/auth"
 import { and, desc, eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { db } from "../db"
+import { issuesTable } from "../schema"
 import {
   InsertProject,
   SelectProject,
   projectsTable
 } from "../schema/projects-schema"
-import { issuesTable } from "../schema"
 
 export async function createProject(
   data: Omit<InsertProject, "userId">
@@ -92,8 +92,7 @@ export async function getMostRecentIssueWithinProjects(
 ): Promise<{ projectId: string } | undefined> {
   const result = await db
     .select({
-      projectId: projectsTable.id,
-      updatedAt: issuesTable.updatedAt
+      projectId: projectsTable.id
     })
     .from(issuesTable)
     .innerJoin(projectsTable, eq(issuesTable.projectId, projectsTable.id))
