@@ -1,14 +1,14 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server"
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 
-const isBasicMode = process.env.NEXT_PUBLIC_APP_MODE === "basic"
+const isSimpleMode = process.env.NEXT_PUBLIC_APP_MODE === "simple"
 
 const isProtectedRoute = createRouteMatcher(["/onboarding(.*), /projects(.*)"])
 const uuidRegex =
   /^\/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}(\/.*)?$/
 
-export default async function middleware(request: NextRequest) {
-  if (isBasicMode) {
+export default async function middleware() {
+  if (isSimpleMode) {
     return NextResponse.next()
   }
 

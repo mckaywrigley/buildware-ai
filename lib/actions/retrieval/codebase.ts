@@ -1,5 +1,6 @@
 "use server"
 
+import { BUILDWARE_MAX_INPUT_TOKENS } from "@/buildware/buildware-config"
 import { db } from "@/db/db"
 import { getProjectById } from "@/db/queries/project-queries"
 import { embeddedBranchesTable } from "@/db/schema"
@@ -54,10 +55,7 @@ export const getMostSimilarEmbeddedFiles = async (
 
   const filteredFiles = mostSimilarEmbeddedFiles.reduce(
     (acc: { files: typeof mostSimilarEmbeddedFiles; tokens: number }, file) => {
-      if (
-        acc.tokens + file.tokenCount <=
-        parseInt(process.env.NEXT_PUBLIC_MAX_INPUT_TOKENS!)
-      ) {
+      if (acc.tokens + file.tokenCount <= BUILDWARE_MAX_INPUT_TOKENS) {
         acc.files.push(file)
         acc.tokens += file.tokenCount
       }

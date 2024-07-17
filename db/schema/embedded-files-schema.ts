@@ -1,3 +1,4 @@
+import { BUILDWARE_EMBEDDING_DIMENSIONS } from "@/buildware/buildware-config"
 import dotenv from "dotenv"
 import { relations } from "drizzle-orm"
 import {
@@ -13,10 +14,6 @@ import { embeddedBranchesTable } from "./embedded-branches-schema"
 import { projectsTable } from "./projects-schema"
 
 dotenv.config({ path: ".env.local" })
-
-const EMBEDDING_DIMENSIONS = parseInt(
-  process.env.NEXT_PUBLIC_EMBEDDING_DIMENSIONS!
-)
 
 export const embeddedFilesTable = pgTable(
   "embedded_files",
@@ -34,7 +31,7 @@ export const embeddedFilesTable = pgTable(
     content: text("content"),
     tokenCount: integer("token_count").notNull(),
     embedding: vector("embedding", {
-      dimensions: EMBEDDING_DIMENSIONS
+      dimensions: BUILDWARE_EMBEDDING_DIMENSIONS
     }),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")

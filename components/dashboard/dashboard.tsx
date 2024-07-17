@@ -149,12 +149,12 @@ export const Dashboard: FC<DashboardProps> = ({
           <div className="mt-auto border-t p-4">
             <div className="flex items-center justify-between truncate">
               <div className="flex items-center gap-2">
-                {process.env.NEXT_PUBLIC_APP_MODE === "basic" ? (
-                  <div className="truncate font-light">Basic Mode</div>
+                {process.env.NEXT_PUBLIC_APP_MODE === "simple" ? (
+                  <div className="truncate font-light">Simple Mode</div>
                 ) : (
                   <>
                     <UserButton />
-                    <div className="truncate font-light">Pro Mode</div>
+                    <div className="truncate font-light">Advanced Mode</div>
                   </>
                 )}
               </div>

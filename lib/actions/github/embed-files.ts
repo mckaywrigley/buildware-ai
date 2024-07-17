@@ -1,14 +1,13 @@
 "use server"
 
+import {
+  BUILDWARE_EMBEDDING_DIMENSIONS,
+  BUILDWARE_EMBEDDING_MODEL
+} from "@/buildware/buildware-config"
 import { InsertEmbeddedFile } from "@/db/schema"
 import { GitHubFileContent } from "@/lib/types/github"
 import { encode } from "gpt-tokenizer"
 import OpenAI from "openai"
-
-const EMBEDDING_MODEL = process.env.NEXT_PUBLIC_EMBEDDING_MODEL!
-const EMBEDDING_DIMENSIONS = parseInt(
-  process.env.NEXT_PUBLIC_EMBEDDING_DIMENSIONS!
-)
 
 const openai = new OpenAI()
 
@@ -17,8 +16,8 @@ export async function embedFiles(filesContent: GitHubFileContent[]) {
 
   try {
     const response = await openai.embeddings.create({
-      model: EMBEDDING_MODEL,
-      dimensions: EMBEDDING_DIMENSIONS,
+      model: BUILDWARE_EMBEDDING_MODEL,
+      dimensions: BUILDWARE_EMBEDDING_DIMENSIONS,
       // embed path + content
       input: filesContent.map(file => `${file.path}\n${file.content}`)
     })

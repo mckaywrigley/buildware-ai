@@ -6,7 +6,7 @@ import { Octokit } from "@octokit/rest"
 export async function getAuthenticatedOctokit(installationId: number | null) {
   let auth = ""
 
-  if (process.env.NEXT_PUBLIC_APP_MODE === "basic") {
+  if (process.env.NEXT_PUBLIC_APP_MODE === "simple") {
     auth = process.env.GITHUB_PAT!
   } else {
     const appAuth = createAppAuth({

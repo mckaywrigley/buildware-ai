@@ -2,15 +2,13 @@
 
 Buildware helps you ship code faster with AI.
 
+Build a code instruction system, feed it an issue, and get an AI-generated PR!
+
 Built by [Mckay Wrigley](https://twitter.com/mckaywrigley) and [Tyler Bruno](https://twitter.com/tylerbruno05) at Takeoff AI.
 
 ## Demo
 
 See the latest demo [here](https://twitter.com/mckaywrigley).
-
-## Learn
-
-For in-depth guides on Buildware, join the [Takeoff Beta](https://jointakeoff.com) today to come learn how to build with AI.
 
 ## Sponsor
 
@@ -18,16 +16,15 @@ If you find Buildware useful, please consider [sponsoring](https://github.com/sp
 
 ## Updates
 
-We'll keep you updated here.
-
 Coming soon:
 
-- Pro setup guide
+- Advanced version with Linear integration and more
 - Local codebase mode
+- Team support
 
-## Basic Setup
+## Simple Setup
 
-Follow these steps to get the basic version of Buildware running.
+Follow these steps to get the simple version of Buildware running.
 
 ### 1. Clone the Repo
 
@@ -77,18 +74,11 @@ Copy the `.env.example` file to `.env.local` and fill in the required variables.
 cp .env.example .env.local
 ```
 
-The following values are required for config for the basic version:
+The following values are required for config for the simple version:
 
 App Mode (keep default value):
 
-- NEXT_PUBLIC_APP_MODE=basic
-
-Codebase Retrieval (keep default values):
-
-- NEXT_PUBLIC_EMBEDDING_MODEL=text-embedding-3-large
-- NEXT_PUBLIC_EMBEDDING_DIMENSIONS=256
-- NEXT_PUBLIC_MAX_OUTPUT_TOKENS=4000
-- NEXT_PUBLIC_MAX_INPUT_TOKENS=195000
+- NEXT_PUBLIC_APP_MODE=simple
 
 LLMs:
 
@@ -109,10 +99,6 @@ GitHub:
 npm run dev
 ```
 
-## Pro Setup
+## Advanced Setup
 
-Update (July 15th, 2024): Pro setup guide coming soon! Please check back in a few days.
-
-## License
-
-Buildware is licensed under the MIT license.
+Update (July 17th, 2024): Advanced setup guide coming soon! Please check back in a few days.

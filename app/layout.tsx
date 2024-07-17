@@ -44,7 +44,7 @@ export default function RootLayout({
     </html>
   )
 
-  if (appMode === "basic") {
+  if (appMode === "simple") {
     return content
   }
 

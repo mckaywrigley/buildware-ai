@@ -56,7 +56,7 @@ export const ProjectSetup: FC<ProjectSetupProps> = ({
   }, [selectedRepo, project.githubInstallationId])
 
   const isSetupComplete =
-    (process.env.NEXT_PUBLIC_APP_MODE === "basic" ||
+    (process.env.NEXT_PUBLIC_APP_MODE === "simple" ||
       project.githubInstallationId) &&
     projectName &&
     selectedRepo &&
@@ -98,7 +98,7 @@ export const ProjectSetup: FC<ProjectSetupProps> = ({
     <div className={cn("bg-secondary/50 rounded border", props.className)}>
       <div className="flex h-full max-h-screen flex-col gap-2">
         <div className="w-full min-w-[400px] gap-6 space-y-6 p-12">
-          {process.env.NEXT_PUBLIC_APP_MODE !== "basic" &&
+          {process.env.NEXT_PUBLIC_APP_MODE !== "simple" &&
             [
               {
                 title: "Connect to GitHub",

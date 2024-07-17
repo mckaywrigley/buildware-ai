@@ -1,5 +1,6 @@
 "use server"
 
+import { BUILDWARE_MAX_INPUT_TOKENS } from "@/buildware/buildware-config"
 import { getProjectByLinearOrganizationId } from "@/db/queries/project-queries"
 import { Issue, LinearClient } from "@linear/sdk"
 import endent from "endent"
@@ -33,10 +34,7 @@ function limitTokens(
     const fileContent = `# File Path: ${file.path}\n${file.content}`
     const fileTokens = estimateClaudeSonnet3_5TokenCount(fileContent)
 
-    if (
-      totalTokens + fileTokens <=
-      parseInt(process.env.NEXT_PUBLIC_MAX_INPUT_TOKENS!)
-    ) {
+    if (totalTokens + fileTokens <= BUILDWARE_MAX_INPUT_TOKENS) {
       includedFiles.push(file)
       totalTokens += fileTokens
     } else {

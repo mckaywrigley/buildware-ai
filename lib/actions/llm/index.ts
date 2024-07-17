@@ -1,5 +1,6 @@
 "use server"
 
+import { BUILDWARE_MAX_OUTPUT_TOKENS } from "@/buildware/buildware-config"
 import { LLMCost } from "@/lib/utils/llm-cost"
 import Anthropic from "@anthropic-ai/sdk"
 
@@ -14,7 +15,7 @@ export const generateAIResponse = async (
       system:
         "You are a helpful assistant that can answer questions and help with tasks.",
       messages,
-      max_tokens: parseInt(process.env.NEXT_PUBLIC_MAX_OUTPUT_TOKENS!)
+      max_tokens: BUILDWARE_MAX_OUTPUT_TOKENS
     },
     {
       headers: {
@@ -22,12 +23,6 @@ export const generateAIResponse = async (
       }
     }
   )
-
-  // const { text, usage } = await generateText({
-  //   model: anthropic("claude-3-5-sonnet-20240620"),
-  //   messages,
-  //   maxTokens: parseInt(process.env.NEXT_PUBLIC_MAX_OUTPUT_TOKENS!)
-  // })
 
   console.warn("usage", message.usage)
   const cost = LLMCost({
