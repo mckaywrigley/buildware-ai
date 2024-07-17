@@ -1,5 +1,6 @@
 import { listRepos } from "@/actions/github/list-repos"
 import { ProjectSetup } from "@/components/projects/project-setup"
+import { DeleteProjectButton } from "@/components/projects/delete-project-button"
 import { getProjectById } from "@/db/queries/projects-queries"
 import { GitHubRepository } from "@/types/github"
 
@@ -8,7 +9,7 @@ export const revalidate = 0
 export default async function SettingsPage({
   params
 }: {
-  params: { projectId: string }
+  params: { projectId: string; workspaceId: string }
 }) {
   const project = await getProjectById(params.projectId)
 
@@ -22,6 +23,9 @@ export default async function SettingsPage({
   return (
     <div className="mx-auto flex h-screen flex-col items-center justify-center">
       <ProjectSetup className="mt-6" project={project} repos={repos} />
+      <div className="mt-8">
+        <DeleteProjectButton projectId={params.projectId} workspaceId={params.workspaceId} />
+      </div>
     </div>
   )
 }
