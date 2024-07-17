@@ -8,7 +8,7 @@ Built by [Mckay Wrigley](https://twitter.com/mckaywrigley) and [Tyler Bruno](htt
 
 ## Demo
 
-See the latest demo [here](https://twitter.com/mckaywrigley).
+See the latest demo [here](https://x.com/mckaywrigley/status/1813695460600844362).
 
 ## Sponsor
 
