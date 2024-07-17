@@ -1,27 +1,34 @@
-'use server'
+"use server"
 
-import { getPromptsForTemplate, removePromptFromTemplate, addPromptToTemplate } from "@/db/queries/templates-to-prompts-queries"
+import {
+  addInstructionToTemplate,
+  getInstructionsForTemplate,
+  removeInstructionFromTemplate
+} from "@/db/queries/templates-to-instruction-queries"
 
-export async function updateTemplatePrompts(templateId: string, selectedPrompts: string[]) {
+export async function updateTemplateInstructions(
+  templateId: string,
+  selectedInstructions: string[]
+) {
   try {
-    const currentPrompts = await getPromptsForTemplate(templateId)
-    const currentPromptIds = currentPrompts.map(p => p.promptId)
+    const currentInstructions = await getInstructionsForTemplate(templateId)
+    const currentInstructionIds = currentInstructions.map(p => p.instructionId)
 
-    for (const promptId of currentPromptIds) {
-      if (!selectedPrompts.includes(promptId)) {
-        await removePromptFromTemplate(templateId, promptId)
+    for (const instructionId of currentInstructionIds) {
+      if (!selectedInstructions.includes(instructionId)) {
+        await removeInstructionFromTemplate(templateId, instructionId)
       }
     }
 
-    for (const promptId of selectedPrompts) {
-      if (!currentPromptIds.includes(promptId)) {
-        await addPromptToTemplate(templateId, promptId)
+    for (const instructionId of selectedInstructions) {
+      if (!currentInstructionIds.includes(instructionId)) {
+        await addInstructionToTemplate(templateId, instructionId)
       }
     }
 
     return { success: true }
   } catch (error) {
-    console.error('Error saving prompts:', error)
-    return { success: false, error: 'Failed to update template prompts' }
+    console.error("Error saving instructions:", error)
+    return { success: false, error: "Failed to update template instructions" }
   }
 }

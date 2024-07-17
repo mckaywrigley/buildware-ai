@@ -1,6 +1,6 @@
 "use client"
 
-import { MessageMarkdown } from "@/components/prompts/message-markdown"
+import { MessageMarkdown } from "@/components/instructions/message-markdown"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -46,10 +46,10 @@ import { CRUDPage } from "../dashboard/reusable/crud-page"
 interface IssueViewProps {
   item: SelectIssue
   project: SelectProject
-  attachedPrompts: {
-    promptId: string
+  attachedInstructions: {
+    instructionId: string
     issueId: string
-    prompt: {
+    instruction: {
       id: string
       content: string
       title: string
@@ -63,13 +63,13 @@ let globalSequence = 1
 export const IssueView: React.FC<IssueViewProps> = ({
   item,
   project,
-  attachedPrompts,
+  attachedInstructions,
   workspaceId
 }) => {
   const router = useRouter()
 
   const [isDeleteOpen, setIsDeleteOpen] = React.useState(false)
-  const [selectedPrompt, setSelectedPrompt] = React.useState<{
+  const [selectedInstruction, setSelectedInstruction] = React.useState<{
     id: string
     content: string
     title: string
@@ -155,10 +155,10 @@ export const IssueView: React.FC<IssueViewProps> = ({
         project.id
       )
 
-      const instructionsContext = attachedPrompts
+      const instructionsContext = attachedInstructions
         .map(
-          ({ prompt }) =>
-            `<instruction name="${prompt.title}">\n${prompt.content}\n</instruction>`
+          ({ instruction }) =>
+            `<instruction name="${instruction.title}">\n${instruction.content}\n</instruction>`
         )
         .join("\n\n")
 
@@ -290,18 +290,18 @@ export const IssueView: React.FC<IssueViewProps> = ({
         </AlertDialog>
       </div>
 
-      {attachedPrompts.length > 0 && (
+      {attachedInstructions.length > 0 && (
         <div className="my-6">
-          <div className="mb-2 text-lg font-semibold">Attached Prompts</div>
+          <div className="mb-2 text-lg font-semibold">Attached instruction</div>
           <div className="flex flex-wrap gap-2">
-            {attachedPrompts.map(prompt => (
+            {attachedInstructions.map(instruction => (
               <Button
-                key={prompt.promptId}
+                key={instruction.instructionId}
                 variant="outline"
                 size="sm"
-                onClick={() => setSelectedPrompt(prompt.prompt)}
+                onClick={() => setSelectedInstruction(instruction.instruction)}
               >
-                {prompt.prompt.title}
+                {instruction.instruction.title}
               </Button>
             ))}
           </div>
@@ -330,17 +330,17 @@ export const IssueView: React.FC<IssueViewProps> = ({
       </div>
 
       <Dialog
-        open={!!selectedPrompt}
-        onOpenChange={() => setSelectedPrompt(null)}
+        open={!!selectedInstruction}
+        onOpenChange={() => setSelectedInstruction(null)}
       >
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>{selectedPrompt?.title}</DialogTitle>
+            <DialogTitle>{selectedInstruction?.title}</DialogTitle>
           </DialogHeader>
           <div className="mt-4">
             <Card>
               <CardContent className="bg-secondary/50 p-4">
-                <MessageMarkdown content={selectedPrompt?.content || ""} />
+                <MessageMarkdown content={selectedInstruction?.content || ""} />
               </CardContent>
             </Card>
           </div>

@@ -1,25 +1,25 @@
 "use client"
 
 import { deleteTemplate } from "@/db/queries/template-queries"
-import { SelectPrompt, SelectTemplate } from "@/db/schema"
+import { SelectInstruction, SelectTemplate } from "@/db/schema"
 import { FC } from "react"
 import { DataItem } from "../dashboard/reusable/data-item"
 import { DataList } from "../dashboard/reusable/data-list"
 
 interface TemplatesListProps {
-  templatesWithPrompts: (SelectTemplate & {
-    templatesToPrompts: {
+  templatesWithInstructions: (SelectTemplate & {
+    templatesToInstructions: {
       templateId: string
-      promptId: string
-      prompt: SelectPrompt
+      instructionId: string
+      instruction: SelectInstruction
     }[]
   })[]
-  prompts: SelectPrompt[]
+  instructions: SelectInstruction[]
   projectId: string
 }
 
 export const TemplatesList: FC<TemplatesListProps> = ({
-  templatesWithPrompts
+  templatesWithInstructions
 }) => {
   const handleDeleteTemplate = async (id: string) => {
     await deleteTemplate(id)
@@ -35,11 +35,11 @@ export const TemplatesList: FC<TemplatesListProps> = ({
       description="Template description here"
       dataListTitle="Templates"
     >
-      {templatesWithPrompts.length > 0 ? (
-        templatesWithPrompts.map(templateWithPrompt => (
+      {templatesWithInstructions.length > 0 ? (
+        templatesWithInstructions.map(templateWithInstruction => (
           <DataItem
-            key={templateWithPrompt.id}
-            data={templateWithPrompt}
+            key={templateWithInstruction.id}
+            data={templateWithInstruction}
             type="templates"
             onDelete={handleDeleteTemplate}
           />

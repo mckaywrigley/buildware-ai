@@ -1,7 +1,7 @@
 import { TemplatesList } from "@/components/templates/template-list"
-import { getPromptsByProjectId } from "@/db/queries/prompt-queries"
-import { getTemplatesWithPromptsByProjectId } from "@/db/queries/template-queries"
-import { SelectPrompt, SelectTemplate } from "@/db/schema"
+import { getInstructionsByProjectId } from "@/db/queries/instruction-queries"
+import { getTemplatesWithInstructionsByProjectId } from "@/db/queries/template-queries"
+import { SelectInstruction, SelectTemplate } from "@/db/schema"
 
 export const revalidate = 0
 
@@ -10,28 +10,29 @@ export default async function TemplatesPage({
 }: {
   params: { projectId: string }
 }) {
-  let templatesWithPrompts: (SelectTemplate & {
-    templatesToPrompts: {
+  let templatesWithInstructions: (SelectTemplate & {
+    templatesToInstructions: {
       templateId: string
-      promptId: string
-      prompt: SelectPrompt
+      instructionId: string
+      instruction: SelectInstruction
     }[]
   })[] = []
-  let prompts: SelectPrompt[] = []
+  let instructions: SelectInstruction[] = []
 
   const { projectId } = params
 
   try {
-    templatesWithPrompts = await getTemplatesWithPromptsByProjectId(projectId)
-    prompts = await getPromptsByProjectId(projectId)
+    templatesWithInstructions =
+      await getTemplatesWithInstructionsByProjectId(projectId)
+    instructions = await getInstructionsByProjectId(projectId)
   } catch (error) {
     console.error("Error fetching data:", error)
   }
 
   return (
     <TemplatesList
-      templatesWithPrompts={templatesWithPrompts}
-      prompts={prompts}
+      templatesWithInstructions={templatesWithInstructions}
+      instructions={instructions}
       projectId={projectId}
     />
   )

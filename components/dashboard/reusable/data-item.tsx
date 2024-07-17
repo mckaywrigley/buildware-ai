@@ -12,12 +12,11 @@ interface DataItemProps {
     id: string
     title: string
   }
-  type: "prompts" | "templates" | "issues"
+  type: "instructions" | "templates" | "issues"
   onDelete: (id: string) => Promise<void>
 }
 
 export const DataItem: FC<DataItemProps> = ({ data, type, onDelete }) => {
-
   return (
     <div className="bg-secondary border-primary/20 group relative rounded border p-4">
       <Link

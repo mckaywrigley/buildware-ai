@@ -7,21 +7,21 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
+import { getInstructionsByProjectId } from "@/db/queries/instruction-queries"
 import { createIssue } from "@/db/queries/issue-queries"
+import { addInstructionToIssue } from "@/db/queries/issues-to-instructions-queries"
+import { getInstructionsForTemplate } from "@/db/queries/templates-to-instruction-queries"
 import { SelectTemplate } from "@/db/schema/templates-schema"
 import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { CRUDForm } from "../dashboard/reusable/crud-form"
-import { getPromptsForTemplate } from "@/db/queries/templates-to-prompts-queries"
-import { getPromptsByProjectId } from "@/db/queries/prompt-queries";
-import { addPromptToIssue } from "@/db/queries/issues-to-prompts-queries"
 import { MultiSelect } from "../ui/multi-select"
 
 interface NewIssueFormProps {
   templates: SelectTemplate[]
 }
 
-interface Prompt {
+interface Instruction {
   id: string
   title: string
 }
@@ -35,8 +35,8 @@ export function NewIssueForm({ templates }: NewIssueFormProps) {
   )
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
-  const [selectedPrompts, setSelectedPrompts] = useState<string[]>([])
-  const [allPrompts, setAllPrompts] = useState<Prompt[]>([]);
+  const [selectedInstructions, setSelectedInstructions] = useState<string[]>([])
+  const [allInstructions, setAllInstructions] = useState<Instruction[]>([])
 
   const projectId = params.projectId as string
 
@@ -46,18 +46,18 @@ export function NewIssueForm({ templates }: NewIssueFormProps) {
       if (selectedTemplate) {
         setTitle(selectedTemplate.title)
         setContent(selectedTemplate.content)
-        handlePromptsForTemplate(selectedTemplateId)
+        handleInstructionsForTemplate(selectedTemplateId)
       }
     } else {
       setTitle("")
       setContent("")
-      setSelectedPrompts([]) 
+      setSelectedInstructions([])
     }
   }, [selectedTemplateId])
 
   useEffect(() => {
-    handleAllPromptsByProject(projectId);
-  }, []);
+    handleAllInstructionsByProject(projectId)
+  }, [])
 
   const handleCreateIssueAndRelation = async (formData: FormData) => {
     const newIssue = {
@@ -67,31 +67,35 @@ export function NewIssueForm({ templates }: NewIssueFormProps) {
       templateId: selectedTemplateId || undefined
     }
     const issue = await createIssue(newIssue)
-    
-    for (const promptId of selectedPrompts) {
-      await addPromptToIssue(issue.id, promptId)
+
+    for (const instructionId of selectedInstructions) {
+      await addInstructionToIssue(issue.id, instructionId)
     }
 
     router.refresh()
     router.push(`../issues/${issue.id}`)
   }
 
-  const handlePromptsForTemplate = async (templateId: string) => {
-    const promptsData = await getPromptsForTemplate(templateId)
-    const formattedPrompts: Prompt[] = promptsData.map(item => ({
-      id: item.prompt.id,
-      title: item.prompt.title
+  const handleInstructionsForTemplate = async (templateId: string) => {
+    const instructionsData = await getInstructionsForTemplate(templateId)
+    const formattedInstructions: Instruction[] = instructionsData.map(item => ({
+      id: item.instruction.id,
+      title: item.instruction.title
     }))
-    setSelectedPrompts(formattedPrompts.map(prompt => prompt.id))
+    setSelectedInstructions(
+      formattedInstructions.map(instruction => instruction.id)
+    )
   }
 
-  const handleAllPromptsByProject = async (projectId: string) => {
-    const allPromptsData = await getPromptsByProjectId(projectId);
-    const formattedPrompts: Prompt[] = allPromptsData.map(prompt => ({
-      id: prompt.id,
-      title: prompt.title
-    }));
-    setAllPrompts(formattedPrompts);
+  const handleAllInstructionsByProject = async (projectId: string) => {
+    const allInstructionsData = await getInstructionsByProjectId(projectId)
+    const formattedInstructions: Instruction[] = allInstructionsData.map(
+      instruction => ({
+        id: instruction.id,
+        title: instruction.title
+      })
+    )
+    setAllInstructions(formattedInstructions)
   }
 
   return (
@@ -115,13 +119,16 @@ export function NewIssueForm({ templates }: NewIssueFormProps) {
         </SelectContent>
       </Select>
 
-      {allPrompts.length > 0 && (
+      {allInstructions.length > 0 && (
         <div className="mt-4">
-          <MultiSelect 
-            label="Prompt"
-            data={allPrompts.map(prompt => ({ id: prompt.id, name: prompt.title }))}
-            selectedIds={selectedPrompts}
-            onToggleSelect={setSelectedPrompts}
+          <MultiSelect
+            label="Instruction"
+            data={allInstructions.map(instruction => ({
+              id: instruction.id,
+              name: instruction.title
+            }))}
+            selectedIds={selectedInstructions}
+            onToggleSelect={setSelectedInstructions}
           />
         </div>
       )}

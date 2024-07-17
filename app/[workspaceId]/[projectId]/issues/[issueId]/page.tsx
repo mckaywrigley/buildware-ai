@@ -1,7 +1,7 @@
 import { IssueView } from "@/components/issues/issue-view"
 import { NotFound } from "@/components/utility/not-found"
 import { getIssueById } from "@/db/queries/issue-queries"
-import { getPromptsForIssue } from "@/db/queries/issues-to-prompts-queries"
+import { getInstructionsForIssue } from "@/db/queries/issues-to-instructions-queries"
 import { getProjectById } from "@/db/queries/project-queries"
 
 export const revalidate = 0
@@ -23,13 +23,13 @@ export default async function IssuePage({
     return <NotFound message="Project not found" />
   }
 
-  const attachedPrompts = await getPromptsForIssue(issue.id)
+  const attachedInstructions = await getInstructionsForIssue(issue.id)
 
   return (
     <IssueView
       item={issue}
       project={project}
-      attachedPrompts={attachedPrompts}
+      attachedInstructions={attachedInstructions}
       workspaceId={params.workspaceId}
     />
   )

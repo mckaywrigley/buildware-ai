@@ -60,9 +60,9 @@ const PROJECT_LINKS = [
     icon: StickyNote
   },
   {
-    label: "Prompts",
+    label: "Instructions",
     href: (workspaceId: string, projectId: string) =>
-      `/${workspaceId}/${projectId}/prompts`,
+      `/${workspaceId}/${projectId}/instructions`,
     icon: Pencil
   },
   {

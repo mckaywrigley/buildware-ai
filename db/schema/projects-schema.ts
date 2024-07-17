@@ -7,7 +7,7 @@ import {
   timestamp,
   uuid
 } from "drizzle-orm/pg-core"
-import { promptsTable } from "./prompts-schema"
+import { instructionsTable } from "./instructions-schema"
 import { templatesTable } from "./templates-schema"
 import { workspacesTable } from "./workspaces-schema"
 
@@ -34,7 +34,7 @@ export const projectsTable = pgTable("projects", {
 
 export const projectsRelations = relations(projectsTable, ({ one, many }) => ({
   templates: many(templatesTable),
-  prompts: many(promptsTable),
+  instructions: many(instructionsTable),
   workspace: one(workspacesTable)
 }))
 

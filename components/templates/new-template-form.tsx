@@ -1,21 +1,23 @@
 "use client"
 
 import { createTemplateRecords } from "@/db/queries/template-queries"
+import { addInstructionToTemplate } from "@/db/queries/templates-to-instruction-queries"
+import { SelectInstruction } from "@/db/schema"
 import { useParams, useRouter } from "next/navigation"
+import { useState } from "react"
 import { CRUDForm } from "../dashboard/reusable/crud-form"
 import { MultiSelect } from "../ui/multi-select"
-import { SelectPrompt } from "@/db/schema"
-import { useState } from "react"
-import { addPromptToTemplate } from "@/db/queries/templates-to-prompts-queries"
 
 interface NewTemplateFormProps {
-  prompts: SelectPrompt[]
+  instructions: SelectInstruction[]
 }
 
-export default function NewTemplateForm({ prompts }: NewTemplateFormProps) {
+export default function NewTemplateForm({
+  instructions
+}: NewTemplateFormProps) {
   const params = useParams()
   const router = useRouter()
-  const [selectedPrompts, setSelectedPrompts] = useState<string[]>([])
+  const [selectedInstructions, setSelectedInstructions] = useState<string[]>([])
 
   const projectId = params.projectId as string
 
@@ -27,9 +29,9 @@ export default function NewTemplateForm({ prompts }: NewTemplateFormProps) {
     }
     const template = await createTemplateRecords([newTemplate])
 
-    // Add selected prompts to the template
-    for (const promptId of selectedPrompts) {
-      await addPromptToTemplate(template[0].id, promptId)
+    // Add selected instructions to the template
+    for (const instructionId of selectedInstructions) {
+      await addInstructionToTemplate(template[0].id, instructionId)
     }
 
     router.refresh()
@@ -40,10 +42,13 @@ export default function NewTemplateForm({ prompts }: NewTemplateFormProps) {
     <>
       <div className="mb-4">
         <MultiSelect
-          label="Prompt"
-          data={prompts.map(prompt => ({ id: prompt.id, name: prompt.title }))}
-          selectedIds={selectedPrompts}
-          onToggleSelect={setSelectedPrompts}
+          label="Instruction"
+          data={instructions.map(instruction => ({
+            id: instruction.id,
+            name: instruction.title
+          }))}
+          selectedIds={selectedInstructions}
+          onToggleSelect={setSelectedInstructions}
         />
       </div>
       <CRUDForm

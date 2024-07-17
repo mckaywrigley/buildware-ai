@@ -3,8 +3,11 @@ import { IssueCreation } from "@/components/issues/issue-creation"
 
 export const revalidate = 0
 
-export default async function CreatePromptPage({ params }: { params: { projectId: string } }) {
-
+export default async function CreateIssuePage({
+  params
+}: {
+  params: { projectId: string }
+}) {
   return (
     <CRUDPage
       pageTitle="New issue"

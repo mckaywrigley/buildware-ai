@@ -1,29 +1,31 @@
 "use client"
 
 import { deleteTemplate } from "@/db/queries/template-queries"
-import { SelectTemplate, SelectPrompt } from "@/db/schema"
+import { SelectInstruction, SelectTemplate } from "@/db/schema"
 import { FC } from "react"
-import { PromptTemplateView } from "../dashboard/reusable/prompt-template-view"
+import { InstructionTemplateView } from "../dashboard/reusable/instruction-template-view"
 
 interface TemplateProps {
   template: SelectTemplate & {
-    templatesToPrompts: {
+    templatesToInstructions: {
       templateId: string
-      promptId: string
-      prompt: SelectPrompt
+      instructionId: string
+      instruction: SelectInstruction
     }[]
   }
 }
 
 export const Template: FC<TemplateProps> = ({ template }) => {
-  const attachedPrompts = template.templatesToPrompts.map(tp => tp.prompt)
+  const attachedInstructions = template.templatesToInstructions.map(
+    ti => ti.instruction
+  )
 
   return (
-    <PromptTemplateView
+    <InstructionTemplateView
       item={template}
       type="template"
       onDelete={deleteTemplate}
-      attachedPrompts={attachedPrompts}
+      attachedInstructions={attachedInstructions}
     />
   )
 }

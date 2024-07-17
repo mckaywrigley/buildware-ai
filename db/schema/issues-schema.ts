@@ -1,8 +1,8 @@
 import { relations } from "drizzle-orm"
 import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core"
-import { projectsTable } from "./projects-schema"
-import { issuesToPromptsTable } from "./issues-to-prompts-schema"
 import { issueMessagesTable } from "./issue-messages-schema"
+import { issuesToInstructionsTable } from "./issues-to-instructions-schema"
+import { projectsTable } from "./projects-schema"
 
 export const issuesTable = pgTable("issues", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -26,7 +26,7 @@ export const issuesRelations = relations(issuesTable, ({ one, many }) => ({
     fields: [issuesTable.projectId],
     references: [projectsTable.id]
   }),
-  issueToPrompts: many(issuesToPromptsTable),
+  issueToInstructions: many(issuesToInstructionsTable),
   issueMessages: many(issueMessagesTable)
 }))
 

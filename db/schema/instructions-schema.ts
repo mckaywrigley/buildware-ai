@@ -1,10 +1,10 @@
 import { relations } from "drizzle-orm"
 import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core"
-import { issuesTable } from "./issues-schema"
+import { issuesToInstructionsTable } from "./issues-to-instructions-schema"
 import { projectsTable } from "./projects-schema"
 import { templatesToInstructionsTable } from "./templates-to-instructions-schema"
 
-export const templatesTable = pgTable("templates", {
+export const instructionsTable = pgTable("instructions", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: text("user_id").notNull(),
   projectId: uuid("project_id")
@@ -18,14 +18,17 @@ export const templatesTable = pgTable("templates", {
     .$onUpdate(() => new Date())
 })
 
-export const templateRelations = relations(templatesTable, ({ one, many }) => ({
-  templatesToInstructions: many(templatesToInstructionsTable),
-  issues: many(issuesTable),
-  project: one(projectsTable, {
-    fields: [templatesTable.projectId],
-    references: [projectsTable.id]
+export const instructionsRelations = relations(
+  instructionsTable,
+  ({ one, many }) => ({
+    templatesToInstructions: many(templatesToInstructionsTable),
+    issueToInstructions: many(issuesToInstructionsTable),
+    project: one(projectsTable, {
+      fields: [instructionsTable.projectId],
+      references: [projectsTable.id]
+    })
   })
-}))
+)
 
-export type InsertTemplate = typeof templatesTable.$inferInsert
-export type SelectTemplate = typeof templatesTable.$inferSelect
+export type InsertInstruction = typeof instructionsTable.$inferInsert
+export type SelectInstruction = typeof instructionsTable.$inferSelect

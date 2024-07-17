@@ -41,13 +41,15 @@ export async function getTemplateById(
   }
 }
 
-export async function getTemplatesWithPromptsByProjectId(projectId: string) {
+export async function getTemplatesWithInstructionsByProjectId(
+  projectId: string
+) {
   try {
     const results = await db.query.templates.findMany({
       with: {
-        templatesToPrompts: {
+        templatesToInstructions: {
           with: {
-            prompt: true
+            instruction: true
           }
         }
       },
@@ -61,13 +63,13 @@ export async function getTemplatesWithPromptsByProjectId(projectId: string) {
   }
 }
 
-export async function getTemplateWithPromptById(id: string) {
+export async function getTemplateWithInstructionById(id: string) {
   try {
     return db.query.templates.findFirst({
       with: {
-        templatesToPrompts: {
+        templatesToInstructions: {
           with: {
-            prompt: true
+            instruction: true
           }
         }
       },

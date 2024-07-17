@@ -1,6 +1,6 @@
 "use client"
 
-import { MessageMarkdown } from "@/components/prompts/message-markdown"
+import { MessageMarkdown } from "@/components/instructions/message-markdown"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,31 +25,28 @@ import { useRouter } from "next/navigation"
 import React, { useState } from "react"
 import { CRUDPage } from "./crud-page"
 
-interface PromptTemplateViewProps {
+interface InstructionTemplateViewProps {
   item: {
     id: string
     title: string
     content: string
     projectId: string
   }
-  type: "prompt" | "template"
+  type: "instruction" | "template"
   onDelete: (id: string) => Promise<void>
-  attachedPrompts?: {
+  attachedInstructions?: {
     id: string
     title: string
     content: string
   }[]
 }
 
-export const PromptTemplateView: React.FC<PromptTemplateViewProps> = ({
-  item,
-  type,
-  onDelete,
-  attachedPrompts = []
-}) => {
+export const InstructionTemplateView: React.FC<
+  InstructionTemplateViewProps
+> = ({ item, type, onDelete, attachedInstructions = [] }) => {
   const router = useRouter()
   const [isDeleteOpen, setIsDeleteOpen] = React.useState(false)
-  const [selectedPrompt, setSelectedPrompt] = useState<{
+  const [selectedInstruction, setSelectedInstruction] = useState<{
     id: string
     title: string
     content: string
@@ -110,18 +107,20 @@ export const PromptTemplateView: React.FC<PromptTemplateViewProps> = ({
         </AlertDialog>
       </div>
 
-      {attachedPrompts.length > 0 && (
+      {attachedInstructions.length > 0 && (
         <div className="my-6">
-          <div className="mb-2 text-lg font-semibold">Attached Prompts</div>
+          <div className="mb-2 text-lg font-semibold">
+            Attached Instructions
+          </div>
           <div className="flex flex-wrap gap-2">
-            {attachedPrompts.map(prompt => (
+            {attachedInstructions.map(instruction => (
               <Button
-                key={prompt.id}
+                key={instruction.id}
                 variant="outline"
                 size="sm"
-                onClick={() => setSelectedPrompt(prompt)}
+                onClick={() => setSelectedInstruction(instruction)}
               >
-                {prompt.title}
+                {instruction.title}
               </Button>
             ))}
           </div>
@@ -135,17 +134,17 @@ export const PromptTemplateView: React.FC<PromptTemplateViewProps> = ({
       </Card>
 
       <Dialog
-        open={!!selectedPrompt}
-        onOpenChange={() => setSelectedPrompt(null)}
+        open={!!selectedInstruction}
+        onOpenChange={() => setSelectedInstruction(null)}
       >
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>{selectedPrompt?.title}</DialogTitle>
+            <DialogTitle>{selectedInstruction?.title}</DialogTitle>
           </DialogHeader>
           <div className="mt-4">
             <Card>
               <CardContent className="bg-secondary/50 p-4">
-                <MessageMarkdown content={selectedPrompt?.content || ""} />
+                <MessageMarkdown content={selectedInstruction?.content || ""} />
               </CardContent>
             </Card>
           </div>

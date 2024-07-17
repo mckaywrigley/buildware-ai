@@ -23,7 +23,7 @@ export async function createEmbeddedBranch(
     revalidatePath("/")
     return result[0]
   } catch (error) {
-    console.error("Error creating prompt records:", error)
+    console.error("Error creating embedded branch records:", error)
     throw error
   }
 }

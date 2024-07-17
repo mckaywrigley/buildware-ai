@@ -1,36 +1,36 @@
 "use client"
 
+import { getInstructionsByProjectId } from "@/db/queries/instruction-queries"
 import { updateIssue } from "@/db/queries/issue-queries"
+import {
+  addInstructionToIssue,
+  getInstructionsForIssue,
+  removeInstructionFromIssue
+} from "@/db/queries/issues-to-instructions-queries"
 import { SelectIssue } from "@/db/schema"
 import { useParams, useRouter } from "next/navigation"
 import { FC, useEffect, useState } from "react"
 import { CRUDForm } from "../dashboard/reusable/crud-form"
 import { CRUDPage } from "../dashboard/reusable/crud-page"
-import { getPromptsByProjectId } from "@/db/queries/prompt-queries"
 import { MultiSelect } from "../ui/multi-select"
-import {
-  addPromptToIssue,
-  getPromptsForIssue,
-  removePromptFromIssue
-} from "@/db/queries/issues-to-prompts-queries"
 
 interface EditIssueFormProps {
   issue: SelectIssue
 }
 
-interface Prompt {
+interface Instruction {
   id: string
   title: string
 }
 
 export const EditIssueForm: FC<EditIssueFormProps> = ({ issue }) => {
-  const [selectedPrompts, setSelectedPrompts] = useState<string[]>([])
-  const [allPrompts, setAllPrompts] = useState<Prompt[]>([])
+  const [selectedInstructions, setSelectedInstructions] = useState<string[]>([])
+  const [allInstructions, setAllInstructions] = useState<Instruction[]>([])
   const router = useRouter()
   const params = useParams()
 
   useEffect(() => {
-    handleAllPromptsByProject(issue.projectId)
+    handleAllInstructionsByProject(issue.projectId)
   }, [issue.projectId])
 
   const handleUpdateIssue = async (formData: FormData) => {
@@ -40,21 +40,21 @@ export const EditIssueForm: FC<EditIssueFormProps> = ({ issue }) => {
         content: formData.get("content") as string
       })
 
-      const currentPrompts = await getPromptsForIssue(issue.id)
-      const currentPromptIds = new Set<string>(
-        currentPrompts.map(p => p.prompt.id)
+      const currentInstructions = await getInstructionsForIssue(issue.id)
+      const currentInstructionIds = new Set<string>(
+        currentInstructions.map(p => p.instruction.id)
       )
-      const selectedPromptIds = new Set<string>(selectedPrompts)
+      const selectedInstructionIds = new Set<string>(selectedInstructions)
 
-      for (const promptId of selectedPromptIds) {
-        if (!currentPromptIds.has(promptId)) {
-          await addPromptToIssue(issue.id, promptId)
+      for (const instructionId of selectedInstructionIds) {
+        if (!currentInstructionIds.has(instructionId)) {
+          await addInstructionToIssue(issue.id, instructionId)
         }
       }
 
-      for (const promptId of currentPromptIds) {
-        if (!selectedPromptIds.has(promptId)) {
-          await removePromptFromIssue(issue.id, promptId)
+      for (const instructionId of currentInstructionIds) {
+        if (!selectedInstructionIds.has(instructionId)) {
+          await removeInstructionFromIssue(issue.id, instructionId)
         }
       }
 
@@ -67,15 +67,17 @@ export const EditIssueForm: FC<EditIssueFormProps> = ({ issue }) => {
     }
   }
 
-  const handleAllPromptsByProject = async (projectId: string) => {
-    const allPromptsData = await getPromptsByProjectId(projectId)
-    const issuePrompts = await getPromptsForIssue(issue.id)
-    const formattedPrompts: Prompt[] = allPromptsData.map(prompt => ({
-      id: prompt.id,
-      title: prompt.title
-    }))
-    setAllPrompts(formattedPrompts)
-    setSelectedPrompts(issuePrompts.map(p => p.prompt.id))
+  const handleAllInstructionsByProject = async (projectId: string) => {
+    const allInstructionsData = await getInstructionsByProjectId(projectId)
+    const issueInstructions = await getInstructionsForIssue(issue.id)
+    const formattedInstructions: Instruction[] = allInstructionsData.map(
+      instruction => ({
+        id: instruction.id,
+        title: instruction.title
+      })
+    )
+    setAllInstructions(formattedInstructions)
+    setSelectedInstructions(issueInstructions.map(p => p.instruction.id))
   }
 
   return (
@@ -84,16 +86,16 @@ export const EditIssueForm: FC<EditIssueFormProps> = ({ issue }) => {
       backText="Back to issues"
       backLink={`/${params.workspaceId}/${params.projectId}/issues`}
     >
-      {allPrompts.length > 0 && (
+      {allInstructions.length > 0 && (
         <div className="mt-4">
           <MultiSelect
-            label="Prompt"
-            data={allPrompts.map(prompt => ({
-              id: prompt.id,
-              name: prompt.title
+            label="Instruction"
+            data={allInstructions.map(instruction => ({
+              id: instruction.id,
+              name: instruction.title
             }))}
-            selectedIds={selectedPrompts}
-            onToggleSelect={setSelectedPrompts}
+            selectedIds={selectedInstructions}
+            onToggleSelect={setSelectedInstructions}
           />
         </div>
       )}
