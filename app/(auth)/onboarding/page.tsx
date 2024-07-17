@@ -4,6 +4,8 @@ import { Loader2 } from "lucide-react"
 import { redirect } from "next/navigation"
 import { Suspense } from "react"
 
+export const revalidate = 0
+
 export default async function OnboardingPage() {
   const profile = await getProfileByUserId()
 

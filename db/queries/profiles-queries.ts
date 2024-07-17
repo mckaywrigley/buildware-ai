@@ -1,6 +1,7 @@
 "use server"
 
 import { getUserId } from "@/actions/auth/auth"
+import console from "console"
 import { eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { db } from "../db"
@@ -27,9 +28,14 @@ export async function createProfile(
 export async function getProfileByUserId(): Promise<SelectProfile | undefined> {
   const userId = await getUserId()
 
-  return db.query.profiles.findFirst({
-    where: eq(profilesTable.userId, userId)
-  })
+  try {
+    const profile = await db.query.profiles.findFirst({
+      where: eq(profilesTable.userId, userId)
+    })
+    return profile
+  } catch (error) {
+    console.error(error)
+  }
 }
 
 export async function updateProfile(

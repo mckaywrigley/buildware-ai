@@ -1,7 +1,7 @@
 import { pgTable, text, timestamp } from "drizzle-orm/pg-core"
 
 export const profilesTable = pgTable("profiles", {
-  userId: text("user_id").primaryKey().notNull(),
+  userId: text("user_id").primaryKey(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at")
     .notNull()
