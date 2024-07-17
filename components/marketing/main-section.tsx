@@ -14,11 +14,12 @@ export default function MainSection() {
       </h1>
 
       <p className="text-primary/80 mb-12 text-lg tracking-tight md:text-xl">
-        Automate your dev workflows by
-        <br className="hidden md:block" /> letting AI do the repetitive work.
+        Build a code instruction system, <br className="hidden md:block" />
+        give it an issue, <br className="hidden md:block" />
+        and get an AI-generated PR!
       </p>
 
-      <Link href="/workspaces">
+      <Link href="/onboarding">
         <Button>
           <span>Get started </span>
           <ArrowRightIcon className="ml-1 size-4" />

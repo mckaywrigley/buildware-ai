@@ -2,7 +2,7 @@
 
 Buildware helps you ship code faster with AI.
 
-Build a code instruction system, feed it an issue, and get an AI-generated PR!
+Build a code instruction system, give it an issue, and get an AI-generated PR!
 
 Built by [Mckay Wrigley](https://twitter.com/mckaywrigley) and [Tyler Bruno](https://twitter.com/tylerbruno05) at Takeoff AI.
 
