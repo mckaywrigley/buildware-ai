@@ -13,11 +13,11 @@ export const ProfileCreator = async () => {
       try {
         await createProfile({})
         const workspace = await createWorkspace({ name: "My Workspace" })
-        await createProject({
+        const project = await createProject({
           name: "My Project",
           workspaceId: workspace.id
         })
-        router.push(`/workspaces/${workspace.id}`)
+        router.push(`/${workspace.id}/${project.id}`)
       } catch (error) {
         console.error(error)
       }
