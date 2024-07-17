@@ -17,6 +17,7 @@ export const projectsTable = pgTable("projects", {
   githubRepoFullName: text("github_repo_full_name"),
   githubTargetBranch: text("github_target_branch"),
   githubInstallationId: integer("github_installation_id"),
+  localPath: text("local_path"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at")
     .notNull()

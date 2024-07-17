@@ -5,6 +5,7 @@ import { deleteGitHubPR } from "@/actions/github/delete-pr"
 import { embedTargetBranch } from "@/actions/github/embed-target-branch"
 import { generatePR } from "@/actions/github/generate-pr"
 import { getMostSimilarEmbeddedFiles } from "@/actions/retrieval/get-similar-files"
+import { runLocalIssue } from "@/actions/local/run-local-issue"
 import { MessageMarkdown } from "@/components/instructions/message-markdown"
 import {
   AlertDialog,
@@ -75,6 +76,7 @@ export const IssueView: React.FC<IssueViewProps> = ({
     name: string
   } | null>(null)
   const [isRunning, setIsRunning] = React.useState(false)
+  const [isLocalRun, setIsLocalRun] = React.useState(false)
   const [messages, setMessages] = useState<SelectIssueMessage[]>([])
 
   const sequenceRef = useRef(globalSequence)
@@ -121,38 +123,37 @@ export const IssueView: React.FC<IssueViewProps> = ({
     }
   }
 
-  const handleRun = async (issue: SelectIssue) => {
-    if (!project.githubRepoFullName || !project.githubTargetBranch) {
-      alert("Please connect your project to a GitHub repository first.")
-      return
-    }
-
+  const handleRun = async (issue: SelectIssue, isLocal: boolean) => {
     setIsRunning(true)
+    setIsLocalRun(isLocal)
     try {
       await deleteIssueMessagesByIssueId(issue.id)
       setMessages([])
       sequenceRef.current = 1
       globalSequence = 1
 
-      await addMessage("Embedding target branch...")
+      await addMessage(isLocal ? "Running locally..." : "Embedding target branch...")
 
-      // Embed the target branch to make sure embeddings are up to date
-      await embedTargetBranch({
-        projectId: project.id,
-        githubRepoFullName: project.githubRepoFullName,
-        branchName: project.githubTargetBranch,
-        installationId: project.githubInstallationId
-      })
+      if (!isLocal) {
+        if (!project.githubRepoFullName || !project.githubTargetBranch) {
+          throw new Error("GitHub repository information is missing")
+        }
+        await embedTargetBranch({
+          projectId: project.id,
+          githubRepoFullName: project.githubRepoFullName,
+          branchName: project.githubTargetBranch,
+          installationId: project.githubInstallationId
+        })
+      }
 
       await updateIssue(issue.id, { status: "in_progress" })
       const planMessage = await addMessage("Generating plan...")
 
       const embeddingsQueryText = `${issue.name} ${issue.content}`
 
-      const codebaseFiles = await getMostSimilarEmbeddedFiles(
-        embeddingsQueryText,
-        project.id
-      )
+      const codebaseFiles = isLocal
+        ? await runLocalIssue.getLocalFiles(project.localPath!)
+        : await getMostSimilarEmbeddedFiles(embeddingsQueryText, project.id)
 
       const instructionsContext = attachedInstructions
         .map(
@@ -178,7 +179,7 @@ export const IssueView: React.FC<IssueViewProps> = ({
       ])
 
       await updateMessage(planMessage.id, aiCodePlanResponse)
-      const prMessage = await addMessage("Generating PR...")
+      const prMessage = await addMessage(isLocal ? "Applying changes locally..." : "Generating PR...")
 
       const codegenPrompt = await buildCodeGenPrompt({
         issue: { title: issue.name, description: issue.content },
@@ -196,22 +197,28 @@ export const IssueView: React.FC<IssueViewProps> = ({
 
       const parsedAIResponse = parseAIResponse(aiCodeGenResponse)
 
-      const { prLink, branchName } = await generatePR(
-        issue.name.replace(/\s+/g, "-"),
-        project,
-        parsedAIResponse
-      )
-
-      await updateIssue(issue.id, {
-        status: "completed",
-        prLink: prLink || undefined,
-        prBranch: branchName
-      })
-
-      if (prLink) {
-        await updateMessage(prMessage.id, `GitHub PR: ${prLink}`)
+      if (isLocal) {
+        await runLocalIssue.applyLocalChanges(project.localPath!, parsedAIResponse)
+        await updateIssue(issue.id, { status: "completed" })
+        await updateMessage(prMessage.id, "Changes applied locally")
       } else {
-        await updateMessage(prMessage.id, "Failed to create PR")
+        const { prLink, branchName } = await generatePR(
+          issue.name.replace(/\s+/g, "-"),
+          project,
+          parsedAIResponse
+        )
+
+        await updateIssue(issue.id, {
+          status: "completed",
+          prLink: prLink || undefined,
+          prBranch: branchName
+        })
+
+        if (prLink) {
+          await updateMessage(prMessage.id, `GitHub PR: ${prLink}`)
+        } else {
+          await updateMessage(prMessage.id, "Failed to create PR")
+        }
       }
     } catch (error) {
       console.error("Failed to run issue:", error)
@@ -219,11 +226,12 @@ export const IssueView: React.FC<IssueViewProps> = ({
       await updateIssue(issue.id, { status: "failed" })
     } finally {
       setIsRunning(false)
+      setIsLocalRun(false)
     }
   }
 
-  const handleRerun = async (issue: SelectIssue) => {
-    if (issue.prLink && issue.prBranch) {
+  const handleRerun = async (issue: SelectIssue, isLocal: boolean) => {
+    if (!isLocal && issue.prLink && issue.prBranch) {
       await deleteGitHubPR(project, issue.prLink, issue.prBranch)
     }
     await updateIssue(issue.id, {
@@ -231,7 +239,7 @@ export const IssueView: React.FC<IssueViewProps> = ({
       prBranch: null,
       status: "ready"
     })
-    await handleRun(issue)
+    await handleRun(issue, isLocal)
   }
 
   return (
@@ -244,12 +252,10 @@ export const IssueView: React.FC<IssueViewProps> = ({
         <Button
           variant="create"
           size="sm"
-          onClick={() =>
-            item.status === "completed" ? handleRerun(item) : handleRun(item)
-          }
+          onClick={() => handleRun(item, false)}
           disabled={isRunning}
         >
-          {isRunning ? (
+          {isRunning && !isLocalRun ? (
             <>
               <Loader2 className="mr-2 size-4 animate-spin" />
               Running...
@@ -257,12 +263,36 @@ export const IssueView: React.FC<IssueViewProps> = ({
           ) : item.status === "completed" ? (
             <>
               <RefreshCw className="mr-2 size-4" />
-              Run Again
+              Run Again (GitHub)
             </>
           ) : (
             <>
               <Play className="mr-2 size-4" />
-              Run
+              Run (GitHub)
+            </>
+          )}
+        </Button>
+
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => handleRun(item, true)}
+          disabled={isRunning || !project.localPath}
+        >
+          {isRunning && isLocalRun ? (
+            <>
+              <Loader2 className="mr-2 size-4 animate-spin" />
+              Running Locally...
+            </>
+          ) : item.status === "completed" ? (
+            <>
+              <RefreshCw className="mr-2 size-4" />
+              Run Again (Local)
+            </>
+          ) : (
+            <>
+              <Play className="mr-2 size-4" />
+              Run (Local)
             </>
           )}
         </Button>
