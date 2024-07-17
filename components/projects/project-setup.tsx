@@ -1,6 +1,5 @@
 "use client"
 
-import { embedTargetBranch } from "@/actions/github/embed-target-branch"
 import { listBranches } from "@/actions/github/list-branches"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -36,7 +35,7 @@ export const ProjectSetup: FC<ProjectSetupProps> = ({
   const [selectedRepo, setSelectedRepo] = useState(project.githubRepoFullName)
   const [branches, setBranches] = useState<string[]>([])
   const [isBranchesLoading, setIsBranchesLoading] = useState(false)
-  const [isEmbedding, setIsEmbedding] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleRepoSelect = (fullRepoName: string) => {
     setSelectedRepo(fullRepoName)
@@ -64,11 +63,11 @@ export const ProjectSetup: FC<ProjectSetupProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    setIsSubmitting(true)
+
     if (!isSetupComplete) {
       return
     }
-
-    setIsEmbedding(true)
 
     try {
       await updateProject(project.id, {
@@ -77,18 +76,11 @@ export const ProjectSetup: FC<ProjectSetupProps> = ({
         githubTargetBranch: targetBranch
       })
 
-      await embedTargetBranch({
-        projectId: project.id,
-        githubRepoFullName: selectedRepo,
-        branchName: targetBranch,
-        installationId: project.githubInstallationId
-      })
-
       router.push(`/${project.workspaceId}/${project.id}/issues`)
     } catch (error) {
       console.error("Error during setup:", error)
     } finally {
-      setIsEmbedding(false)
+      setIsSubmitting(false)
     }
   }
 
@@ -182,14 +174,10 @@ export const ProjectSetup: FC<ProjectSetupProps> = ({
             className="w-full"
             variant={isSetupComplete ? "create" : "outline"}
             type="submit"
-            disabled={!isSetupComplete || isEmbedding}
+            disabled={!isSetupComplete || isSubmitting}
             onClick={handleSubmit}
           >
-            {isEmbedding
-              ? "Embedding..."
-              : !isSetupComplete
-                ? "Complete required setup"
-                : "Continue"}
+            {isSubmitting ? "Saving..." : "Continue"}
           </Button>
         </div>
       </div>
