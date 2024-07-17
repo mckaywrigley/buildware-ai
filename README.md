@@ -22,12 +22,6 @@ Coming soon:
 - Local codebase mode
 - Team support
 
-## Deploy
-
-Deploy to Vercel in 1 click:
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fmckaywrigley%2Fbuildware-ai&env=NEXT_PUBLIC_APP_MODE,ANTHROPIC_API_KEY,OPENAI_API_KEY,DATABASE_URL,GITHUB_PAT)
-
 ## Simple Setup
 
 Follow these steps to get the simple version of Buildware running.
@@ -56,20 +50,20 @@ The following values are required for config for the simple version:
 
 App Mode (keep default value):
 
-- NEXT_PUBLIC_APP_MODE=simple
+- `NEXT_PUBLIC_APP_MODE=simple`
 
 LLMs:
 
-- ANTHROPIC_API_KEY=
-- OPENAI_API_KEY=
+- `ANTHROPIC_API_KEY=`
+- `OPENAI_API_KEY=`
 
 Database:
 
-- DATABASE_URL=
+- `DATABASE_URL=`
 
 GitHub:
 
-- GITHUB_PAT=
+- `GITHUB_PAT=`
 
 ### 4. Setup Database
 
@@ -103,7 +97,7 @@ Follow these steps:
    - Pull Requests: Read and write
    - Metadata: Read-only (this is selected by default)
 7. Click "Generate token".
-8. Copy your new PAT and paste it into the `.env.local` file as `GITHUB_PAT`.
+8. Copy your new PAT.
 
 Once you have your PAT, update the `GITHUB_PAT` in the `.env.local` file.
 
@@ -112,6 +106,12 @@ Once you have your PAT, update the `GITHUB_PAT` in the `.env.local` file.
 ```bash
 npm run dev
 ```
+
+## Deploy Simple Version
+
+Deploy the simple version to Vercel in 1 click:
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fmckaywrigley%2Fbuildware-ai&env=NEXT_PUBLIC_APP_MODE,ANTHROPIC_API_KEY,OPENAI_API_KEY,DATABASE_URL,GITHUB_PAT)
 
 ## Advanced Setup
 
