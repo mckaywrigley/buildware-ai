@@ -20,11 +20,10 @@ export const InstructionsList: FC<InstructionsListProps> = ({
     <DataList
       title="Instructions"
       subtitle="Manage instructions"
-      readMoreLink="#"
+      readMoreLink="https://docs.buildware.ai/core-components/instructions"
       readMoreText="Read more"
       createLink={`./instructions/create`}
       createText="Create instruction"
-      description="Instruction description here"
       dataListTitle="Instructions"
     >
       {instructions.length > 0 ? (
