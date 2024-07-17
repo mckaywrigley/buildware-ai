@@ -89,10 +89,9 @@ export async function updateProject(
 
 export async function getMostRecentIssueWithinProjects(
   workspaceId: string
-): Promise<{ issueId: string; projectId: string } | undefined> {
+): Promise<{ projectId: string } | undefined> {
   const result = await db
     .select({
-      issueId: issuesTable.id,
       projectId: projectsTable.id,
       updatedAt: issuesTable.updatedAt
     })
@@ -102,9 +101,7 @@ export async function getMostRecentIssueWithinProjects(
     .orderBy(desc(issuesTable.updatedAt))
     .limit(1)
 
-  return result[0]
-    ? { issueId: result[0].issueId, projectId: result[0].projectId }
-    : undefined
+  return result[0] ? { projectId: result[0].projectId } : undefined
 }
 
 export async function deleteProject(id: string): Promise<void> {
