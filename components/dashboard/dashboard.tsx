@@ -20,7 +20,6 @@ import {
   ChevronDown,
   ChevronRight,
   CircleDot,
-  Code,
   Menu,
   Pencil,
   Settings,
@@ -65,12 +64,6 @@ const PROJECT_LINKS = [
     href: (workspaceId: string, projectId: string) =>
       `/${workspaceId}/${projectId}/prompts`,
     icon: Pencil
-  },
-  {
-    label: "Embeddings",
-    href: (workspaceId: string, projectId: string) =>
-      `/${workspaceId}/${projectId}/embeddings`,
-    icon: Code
   },
   {
     label: "Settings",

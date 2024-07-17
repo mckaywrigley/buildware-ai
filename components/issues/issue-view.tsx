@@ -29,6 +29,7 @@ import {
 } from "@/db/queries/issue-messages-queries"
 import { deleteIssue, updateIssue } from "@/db/queries/issue-queries"
 import { SelectIssue, SelectIssueMessage, SelectProject } from "@/db/schema"
+import { embedTargetBranch } from "@/lib/actions/github/embed-target-branch"
 import { generatePR } from "@/lib/actions/github/generate-pr"
 import { generateAIResponse } from "@/lib/actions/llm"
 import { getMostSimilarEmbeddedFiles } from "@/lib/actions/retrieval/codebase"
@@ -122,12 +123,27 @@ export const IssueView: React.FC<IssueViewProps> = ({
   }
 
   const handleRun = async (issue: SelectIssue) => {
+    if (!project.githubRepoFullName || !project.githubTargetBranch) {
+      alert("Please connect your project to a GitHub repository first.")
+      return
+    }
+
     setIsRunning(true)
     try {
       await deleteIssueMessagesByIssueId(issue.id)
       setMessages([])
       sequenceRef.current = 1
       globalSequence = 1
+
+      // Embed the target branch to make sure embeddings are up to date
+      await embedTargetBranch({
+        projectId: project.id,
+        githubRepoFullName: project.githubRepoFullName,
+        branchName: project.githubTargetBranch,
+        installationId: project.githubInstallationId
+      })
+
+      await addMessage("system", "Embedding target branch...")
 
       await updateIssue(item.id, { status: "in_progress" })
       const planMessage = await addMessage("system", "Generating plan...")
