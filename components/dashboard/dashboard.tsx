@@ -115,7 +115,7 @@ export const Dashboard: FC<DashboardProps> = ({
             </div>
 
             <div className="flex-1 overflow-auto">
-              <div className="grid items-start">
+              <div className="grid items-start gap-1">
                 {projects.map(project => (
                   <Collapsible
                     key={project.id}
