@@ -53,7 +53,7 @@ export default function EditTemplateForm({
         buttonText="Save"
         onSubmit={handleUpdateTemplate}
         data={{
-          title: templateWithInstructions.title,
+          name: templateWithInstructions.name,
           content: templateWithInstructions.content
         }}
       />

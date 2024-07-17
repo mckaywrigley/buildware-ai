@@ -7,11 +7,11 @@ export const issueMessagesTable = pgTable("issue_messages", {
   issueId: uuid("issue_id")
     .notNull()
     .references(() => issuesTable.id, { onDelete: "cascade" }),
-  role: text("role").notNull(),
   content: text("content").notNull(),
   sequence: integer("sequence").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at")
+    .notNull()
     .defaultNow()
     .$onUpdate(() => new Date())
 })

@@ -28,7 +28,7 @@ import { CRUDPage } from "./crud-page"
 interface InstructionTemplateViewProps {
   item: {
     id: string
-    title: string
+    name: string
     content: string
     projectId: string
   }
@@ -36,7 +36,7 @@ interface InstructionTemplateViewProps {
   onDelete: (id: string) => Promise<void>
   attachedInstructions?: {
     id: string
-    title: string
+    name: string
     content: string
   }[]
 }
@@ -48,7 +48,7 @@ export const InstructionTemplateView: React.FC<
   const [isDeleteOpen, setIsDeleteOpen] = React.useState(false)
   const [selectedInstruction, setSelectedInstruction] = useState<{
     id: string
-    title: string
+    name: string
     content: string
   } | null>(null)
 
@@ -64,7 +64,7 @@ export const InstructionTemplateView: React.FC<
 
   return (
     <CRUDPage
-      pageTitle={item.title}
+      pageTitle={item.name}
       backText={`Back to ${type}s`}
       backLink={`../${type}s`}
     >
@@ -120,7 +120,7 @@ export const InstructionTemplateView: React.FC<
                 size="sm"
                 onClick={() => setSelectedInstruction(instruction)}
               >
-                {instruction.title}
+                {instruction.name}
               </Button>
             ))}
           </div>
@@ -139,7 +139,7 @@ export const InstructionTemplateView: React.FC<
       >
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>{selectedInstruction?.title}</DialogTitle>
+            <DialogTitle>{selectedInstruction?.name}</DialogTitle>
           </DialogHeader>
           <div className="mt-4">
             <Card>

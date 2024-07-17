@@ -1,5 +1,9 @@
 "use client"
 
+import { generateAIResponse } from "@/actions/ai/generate-ai-response"
+import { embedTargetBranch } from "@/actions/github/embed-target-branch"
+import { generatePR } from "@/actions/github/generate-pr"
+import { getMostSimilarEmbeddedFiles } from "@/actions/retrieval/get-similar-files"
 import { MessageMarkdown } from "@/components/instructions/message-markdown"
 import {
   AlertDialog,
@@ -23,21 +27,16 @@ import {
 import { Separator } from "@/components/ui/separator"
 import {
   createIssueMessageRecord,
+  deleteIssue,
   deleteIssueMessagesByIssueId,
   getIssueMessagesByIssueId,
+  updateIssue,
   updateIssueMessage
-} from "@/db/queries/issue-messages-queries"
-import { deleteIssue, updateIssue } from "@/db/queries/issue-queries"
+} from "@/db/queries"
 import { SelectIssue, SelectIssueMessage, SelectProject } from "@/db/schema"
-import { embedTargetBranch } from "@/lib/actions/github/embed-target-branch"
-import { generatePR } from "@/lib/actions/github/generate-pr"
-import { generateAIResponse } from "@/lib/actions/llm"
-import { getMostSimilarEmbeddedFiles } from "@/lib/actions/retrieval/codebase"
-import {
-  buildLabelAssignmentCodeGenPrompt,
-  buildLabelAssignmentCodePlanPrompt
-} from "@/lib/linear-webhook/labels"
-import { parseAIResponse } from "@/lib/utils/parse-ai-response"
+import { buildCodeGenPrompt } from "@/lib/ai/build-codegen-prompt"
+import { buildCodePlanPrompt } from "@/lib/ai/build-plan-prompt"
+import { parseAIResponse } from "@/lib/ai/parse-ai-response"
 import { Loader2, Pencil, Play, RefreshCw, Trash2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import React, { useEffect, useRef, useState } from "react"
@@ -52,7 +51,7 @@ interface IssueViewProps {
     instruction: {
       id: string
       content: string
-      title: string
+      name: string
     }
   }[]
   workspaceId: string
@@ -72,7 +71,7 @@ export const IssueView: React.FC<IssueViewProps> = ({
   const [selectedInstruction, setSelectedInstruction] = React.useState<{
     id: string
     content: string
-    title: string
+    name: string
   } | null>(null)
   const [isRunning, setIsRunning] = React.useState(false)
   const [messages, setMessages] = useState<SelectIssueMessage[]>([])
@@ -86,7 +85,6 @@ export const IssueView: React.FC<IssueViewProps> = ({
   const addMessage = async (role: string, content: string) => {
     const newMessage = await createIssueMessageRecord({
       issueId: item.id,
-      role,
       content,
       sequence: sequenceRef.current++
     })
@@ -158,43 +156,41 @@ export const IssueView: React.FC<IssueViewProps> = ({
       const instructionsContext = attachedInstructions
         .map(
           ({ instruction }) =>
-            `<instruction name="${instruction.title}">\n${instruction.content}\n</instruction>`
+            `<instruction name="${instruction.name}">\n${instruction.content}\n</instruction>`
         )
         .join("\n\n")
 
-      const labelAssignmentCodePlanPrompt =
-        await buildLabelAssignmentCodePlanPrompt({
-          issue: {
-            title: issue.name,
-            description: issue.content
-          },
-          codebaseFiles: codebaseFiles.map(file => ({
-            path: file.path,
-            content: file.content ?? ""
-          })),
-          instructionsContext
-        })
+      const codeplanPrompt = await buildCodePlanPrompt({
+        issue: {
+          name: issue.name,
+          description: issue.content
+        },
+        codebaseFiles: codebaseFiles.map(file => ({
+          path: file.path,
+          content: file.content ?? ""
+        })),
+        instructionsContext
+      })
 
       const aiCodePlanResponse = await generateAIResponse([
-        { role: "user", content: labelAssignmentCodePlanPrompt }
+        { role: "user", content: codeplanPrompt }
       ])
 
       await updateMessage(planMessage.id, aiCodePlanResponse)
       const prMessage = await addMessage("system", "Generating PR...")
 
-      const labelAssignmenCodeGenPrompt =
-        await buildLabelAssignmentCodeGenPrompt({
-          issue: { title: issue.name, description: issue.content },
-          codebaseFiles: codebaseFiles.map(file => ({
-            path: file.path,
-            content: file.content ?? ""
-          })),
-          plan: aiCodePlanResponse,
-          instructionsContext
-        })
+      const codegenPrompt = await buildCodeGenPrompt({
+        issue: { title: issue.name, description: issue.content },
+        codebaseFiles: codebaseFiles.map(file => ({
+          path: file.path,
+          content: file.content ?? ""
+        })),
+        plan: aiCodePlanResponse,
+        instructionsContext
+      })
 
       const aiCodeGenResponse = await generateAIResponse([
-        { role: "user", content: labelAssignmenCodeGenPrompt }
+        { role: "user", content: codegenPrompt }
       ])
 
       const parsedAIResponse = parseAIResponse(aiCodeGenResponse)
@@ -301,7 +297,7 @@ export const IssueView: React.FC<IssueViewProps> = ({
                 size="sm"
                 onClick={() => setSelectedInstruction(instruction.instruction)}
               >
-                {instruction.instruction.title}
+                {instruction.instruction.name}
               </Button>
             ))}
           </div>
@@ -335,7 +331,7 @@ export const IssueView: React.FC<IssueViewProps> = ({
       >
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>{selectedInstruction?.title}</DialogTitle>
+            <DialogTitle>{selectedInstruction?.name}</DialogTitle>
           </DialogHeader>
           <div className="mt-4">
             <Card>

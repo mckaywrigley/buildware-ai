@@ -1,6 +1,6 @@
 "use server"
 
-import { getUserId } from "@/lib/actions/auth/auth"
+import { getUserId } from "@/actions/auth/auth"
 import { eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { db } from "../db"

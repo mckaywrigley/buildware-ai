@@ -1,6 +1,6 @@
 "use server"
 
-import { getUserId } from "@/lib/actions/auth/auth"
+import { getUserId } from "@/actions/auth/auth"
 import { and, desc, eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { db } from "../db"
@@ -53,14 +53,6 @@ export async function getProjectsByUserId(): Promise<SelectProject[]> {
     console.error("Error getting projects for user:", error)
     throw error
   }
-}
-
-export async function getProjectByLinearOrganizationId(
-  linearOrganizationId: string
-): Promise<SelectProject | undefined> {
-  return db.query.projects.findFirst({
-    where: eq(projectsTable.linearOrganizationId, linearOrganizationId)
-  })
 }
 
 export async function getProjectsByWorkspaceId(

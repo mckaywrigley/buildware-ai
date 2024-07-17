@@ -1,6 +1,6 @@
 "use server"
 
-import { getUserId } from "@/lib/actions/auth/auth"
+import { getUserId } from "@/actions/auth/auth"
 import { and, desc, eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { db } from "../db"
@@ -53,6 +53,14 @@ export async function getWorkspacesByUserId(): Promise<SelectWorkspace[]> {
     console.error("Error getting all workspaces:", error)
     throw error
   }
+}
+
+export async function getWorkspaceByLinearOrganizationId(
+  linearOrganizationId: string
+): Promise<SelectWorkspace | undefined> {
+  return db.query.workspaces.findFirst({
+    where: eq(workspacesTable.linearOrganizationId, linearOrganizationId)
+  })
 }
 
 export async function updateWorkspace(

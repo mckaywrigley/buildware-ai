@@ -23,7 +23,7 @@ export default function NewTemplateForm({
 
   const handleCreateTemplate = async (formData: FormData) => {
     const newTemplate = {
-      title: formData.get("title") as string,
+      name: formData.get("name") as string,
       content: formData.get("content") as string,
       projectId
     }
@@ -45,7 +45,7 @@ export default function NewTemplateForm({
           label="Instruction"
           data={instructions.map(instruction => ({
             id: instruction.id,
-            name: instruction.title
+            name: instruction.name
           }))}
           selectedIds={selectedInstructions}
           onToggleSelect={setSelectedInstructions}

@@ -1,6 +1,6 @@
-import { getProjectByLinearOrganizationId } from "@/db/queries/project-queries"
-import { handleWebhook } from "@/lib/linear-webhook/webhook"
-import { LinearWebhookBody } from "@/lib/types/linear/linear-webhook"
+import { handleWebhook } from "@/actions/linear/webhook"
+import { getWorkspaceByLinearOrganizationId } from "@/db/queries"
+import { LinearWebhookBody } from "@/types/linear/linear"
 import { LinearClient } from "@linear/sdk"
 import crypto from "crypto"
 
@@ -12,16 +12,16 @@ export async function POST(req: Request) {
   }
 
   const { actor, organizationId } = body as LinearWebhookBody
-  const project = await getProjectByLinearOrganizationId(organizationId)
+  const workspace = await getWorkspaceByLinearOrganizationId(organizationId)
 
-  if (!project?.linearAccessToken) {
+  if (!workspace?.linearAccessToken) {
     console.error("Profile or Linear access token not found", actor.id)
     return new Response("Profile or Linear access token not found", {
       status: 400
     })
   }
 
-  const linearClient = new LinearClient({ apiKey: project.linearAccessToken })
+  const linearClient = new LinearClient({ apiKey: workspace.linearAccessToken })
 
   try {
     await handleWebhook(linearClient, body)

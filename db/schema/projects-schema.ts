@@ -1,12 +1,5 @@
 import { relations } from "drizzle-orm"
-import {
-  boolean,
-  integer,
-  pgTable,
-  text,
-  timestamp,
-  uuid
-} from "drizzle-orm/pg-core"
+import { integer, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core"
 import { instructionsTable } from "./instructions-schema"
 import { templatesTable } from "./templates-schema"
 import { workspacesTable } from "./workspaces-schema"
@@ -20,14 +13,12 @@ export const projectsTable = pgTable("projects", {
       onDelete: "cascade"
     }),
   name: text("name").notNull(),
-  hasSetup: boolean("has_setup").default(false).notNull(),
   githubRepoFullName: text("github_repo_full_name"),
   githubTargetBranch: text("github_target_branch"),
   githubInstallationId: integer("github_installation_id"),
-  linearAccessToken: text("linear_access_token"),
-  linearOrganizationId: text("linear_organization_id"),
-  createdAt: timestamp("created_at").defaultNow(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at")
+    .notNull()
     .defaultNow()
     .$onUpdate(() => new Date())
 })

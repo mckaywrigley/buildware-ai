@@ -20,7 +20,7 @@ interface EditIssueFormProps {
 
 interface Instruction {
   id: string
-  title: string
+  name: string
 }
 
 export const EditIssueForm: FC<EditIssueFormProps> = ({ issue }) => {
@@ -36,7 +36,7 @@ export const EditIssueForm: FC<EditIssueFormProps> = ({ issue }) => {
   const handleUpdateIssue = async (formData: FormData) => {
     try {
       await updateIssue(issue.id, {
-        name: formData.get("title") as string,
+        name: formData.get("name") as string,
         content: formData.get("content") as string
       })
 
@@ -73,7 +73,7 @@ export const EditIssueForm: FC<EditIssueFormProps> = ({ issue }) => {
     const formattedInstructions: Instruction[] = allInstructionsData.map(
       instruction => ({
         id: instruction.id,
-        title: instruction.title
+        name: instruction.name
       })
     )
     setAllInstructions(formattedInstructions)
@@ -92,7 +92,7 @@ export const EditIssueForm: FC<EditIssueFormProps> = ({ issue }) => {
             label="Instruction"
             data={allInstructions.map(instruction => ({
               id: instruction.id,
-              name: instruction.title
+              name: instruction.name
             }))}
             selectedIds={selectedInstructions}
             onToggleSelect={setSelectedInstructions}
@@ -106,7 +106,7 @@ export const EditIssueForm: FC<EditIssueFormProps> = ({ issue }) => {
           buttonText="Save"
           onSubmit={handleUpdateIssue}
           data={{
-            title: issue.name,
+            name: issue.name,
             content: issue.content
           }}
         />

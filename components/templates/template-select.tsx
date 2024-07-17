@@ -36,7 +36,7 @@ export function TemplateSelect({
       label="instruction"
       data={instructions.map(instruction => ({
         id: instruction.id,
-        name: instruction.title
+        name: instruction.name
       }))}
       selectedIds={
         selectedIds ||

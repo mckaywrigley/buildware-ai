@@ -11,7 +11,6 @@ import { Button, buttonVariants } from "../ui/button"
 const menuItem: any = []
 
 const handleMenuItemClick = (href: string) => {
-  console.log(href)
   const element = document.querySelector(href)
   if (element) {
     element.scrollIntoView({ behavior: "smooth" })

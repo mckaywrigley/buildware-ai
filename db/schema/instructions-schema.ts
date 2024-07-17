@@ -10,10 +10,11 @@ export const instructionsTable = pgTable("instructions", {
   projectId: uuid("project_id")
     .notNull()
     .references(() => projectsTable.id, { onDelete: "cascade" }),
-  title: text("title").notNull(),
+  name: text("name").notNull(),
   content: text("content").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at")
+    .notNull()
     .defaultNow()
     .$onUpdate(() => new Date())
 })

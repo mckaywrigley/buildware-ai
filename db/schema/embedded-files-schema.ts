@@ -1,5 +1,4 @@
-import { BUILDWARE_EMBEDDING_DIMENSIONS } from "@/buildware/buildware-config"
-import dotenv from "dotenv"
+import { BUILDWARE_EMBEDDING_DIMENSIONS } from "@/lib/constants/buildware-config"
 import { relations } from "drizzle-orm"
 import {
   index,
@@ -12,8 +11,6 @@ import {
 } from "drizzle-orm/pg-core"
 import { embeddedBranchesTable } from "./embedded-branches-schema"
 import { projectsTable } from "./projects-schema"
-
-dotenv.config({ path: ".env.local" })
 
 export const embeddedFilesTable = pgTable(
   "embedded_files",
@@ -36,6 +33,7 @@ export const embeddedFilesTable = pgTable(
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
       .notNull()
+      .defaultNow()
       .$onUpdate(() => new Date())
   },
   table => ({

@@ -1,5 +1,4 @@
 import { getProjectById } from "@/db/queries/project-queries"
-import { redirect } from "next/navigation"
 
 export const revalidate = 0
 
@@ -8,16 +7,10 @@ export default async function ProjectPage({
 }: {
   params: { projectId: string; workspaceId: string }
 }) {
-  const { projectId, workspaceId } = params
-
-  const project = await getProjectById(projectId)
+  const project = await getProjectById(params.projectId)
 
   if (!project) {
     return <div>Project not found</div>
-  }
-
-  if (!project.hasSetup) {
-    return redirect(`/${workspaceId}/${projectId}/setup`)
   }
 
   return (

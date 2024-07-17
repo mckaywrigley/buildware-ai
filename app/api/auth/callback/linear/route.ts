@@ -1,4 +1,4 @@
-import { updateProject } from "@/db/queries/project-queries"
+import { updateWorkspace } from "@/db/queries"
 import { LinearClient } from "@linear/sdk"
 import { revalidatePath } from "next/cache"
 import { headers } from "next/headers"
@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
   const protocol = process.env.NODE_ENV === "development" ? "http" : "https"
   const origin = `${protocol}://${host}`
 
-  const { projectId } = JSON.parse(decodeURIComponent(state))
+  const { workspaceId } = JSON.parse(decodeURIComponent(state))
 
   try {
     const tokenResponse = await fetch("https://api.linear.app/oauth/token", {
@@ -53,7 +53,7 @@ export async function GET(req: NextRequest) {
 
     const organization = await linearClient.organization
 
-    await updateProject(projectId, {
+    await updateWorkspace(workspaceId, {
       linearOrganizationId: organization.id,
       linearAccessToken: access_token
     })
@@ -63,5 +63,5 @@ export async function GET(req: NextRequest) {
     console.error("Error during Linear OAuth:", error)
   }
 
-  return redirect(`/${projectId}/setup`)
+  return redirect(`/${workspaceId}/setup`)
 }

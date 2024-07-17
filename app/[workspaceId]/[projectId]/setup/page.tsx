@@ -1,7 +1,7 @@
+import { listRepos } from "@/actions/github/list-repos"
 import { ProjectSetup } from "@/components/projects/project-setup"
 import { getProjectById } from "@/db/queries/project-queries"
-import { listRepos } from "@/lib/actions/github/list-repos"
-import { GitHubRepository } from "@/lib/types/github"
+import { GitHubRepository } from "@/types/github"
 
 export const revalidate = 0
 

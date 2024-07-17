@@ -10,7 +10,7 @@ import { Separator } from "../../ui/separator"
 interface DataItemProps {
   data: {
     id: string
-    title: string
+    name: string
   }
   type: "instructions" | "templates" | "issues"
   onDelete: (id: string) => Promise<void>
@@ -23,7 +23,7 @@ export const DataItem: FC<DataItemProps> = ({ data, type, onDelete }) => {
         href={`./${type}/${data.id}`}
         className="text-primary block hover:text-gray-300"
       >
-        <div className="font-semibold">{data.title}</div>
+        <div className="font-semibold">{data.name}</div>
       </Link>
 
       <div className="absolute right-4 top-1/2 flex -translate-y-1/2 items-center space-x-2 opacity-0 transition-opacity group-hover:opacity-100">

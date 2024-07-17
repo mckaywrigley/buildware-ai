@@ -19,9 +19,10 @@ export async function GET(req: Request) {
 
   const { projectId } = JSON.parse(decodeURIComponent(state))
 
+  let project = null
   try {
     try {
-      const project = await getProjectById(projectId)
+      project = await getProjectById(projectId)
 
       if (!project) {
         throw new Error("Project not found")
@@ -39,5 +40,5 @@ export async function GET(req: Request) {
     console.error("Error in GitHub callback:", error)
   }
 
-  return redirect(`/${projectId}/setup`)
+  return redirect(`/${project?.workspaceId}/${project?.id}/setup`)
 }

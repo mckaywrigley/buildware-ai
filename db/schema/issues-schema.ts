@@ -13,10 +13,9 @@ export const issuesTable = pgTable("issues", {
   name: text("name").notNull(),
   content: text("content").notNull(),
   status: text("status").notNull().default("ready"),
-  startedAt: timestamp("started_at"),
-  completedAt: timestamp("completed_at"),
-  createdAt: timestamp("created_at").defaultNow(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at")
+    .notNull()
     .defaultNow()
     .$onUpdate(() => new Date())
 })

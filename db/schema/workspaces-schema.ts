@@ -6,8 +6,11 @@ export const workspacesTable = pgTable("workspaces", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: text("user_id").notNull(),
   name: text("name").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
+  linearAccessToken: text("linear_access_token"),
+  linearOrganizationId: text("linear_organization_id"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at")
+    .notNull()
     .defaultNow()
     .$onUpdate(() => new Date())
 })

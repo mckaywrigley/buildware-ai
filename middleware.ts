@@ -15,10 +15,8 @@ export default async function middleware() {
   return clerkMiddleware(async (auth, req) => {
     const { userId, redirectToSignIn } = auth()
     const path = req.nextUrl.pathname
-    console.log("Current route:", path)
 
     const isProtected = isProtectedRoute(req) || uuidRegex.test(path)
-    console.log("isProtected", isProtected)
 
     if (!userId && isProtected) {
       return redirectToSignIn({ returnBackUrl: "/login" })

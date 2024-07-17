@@ -1,5 +1,7 @@
 "use client"
 
+import { embedTargetBranch } from "@/actions/github/embed-target-branch"
+import { listBranches } from "@/actions/github/list-branches"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -11,14 +13,11 @@ import {
 } from "@/components/ui/select"
 import { updateProject } from "@/db/queries/project-queries"
 import { SelectProject } from "@/db/schema"
-import { embedTargetBranch } from "@/lib/actions/github/embed-target-branch"
-import { listBranches } from "@/lib/actions/github/list-branches"
-import { GitHubRepository } from "@/lib/types/github"
 import { cn } from "@/lib/utils"
+import { GitHubRepository } from "@/types/github"
 import { useRouter } from "next/navigation"
 import { FC, HTMLAttributes, useEffect, useState } from "react"
 import { ConnectGitHub } from "../integrations/connect-github"
-import { ConnectLinear } from "../integrations/connect-linear"
 
 interface ProjectSetupProps extends HTMLAttributes<HTMLDivElement> {
   project: SelectProject
@@ -75,8 +74,7 @@ export const ProjectSetup: FC<ProjectSetupProps> = ({
       await updateProject(project.id, {
         name: projectName,
         githubRepoFullName: selectedRepo,
-        githubTargetBranch: targetBranch,
-        hasSetup: true
+        githubTargetBranch: targetBranch
       })
 
       await embedTargetBranch({
@@ -105,14 +103,6 @@ export const ProjectSetup: FC<ProjectSetupProps> = ({
                 component: (
                   <ConnectGitHub
                     isGitHubConnected={!!project.githubInstallationId}
-                  />
-                )
-              },
-              {
-                title: "Connect to Linear (optional)",
-                component: (
-                  <ConnectLinear
-                    isLinearConnected={!!project.linearAccessToken}
                   />
                 )
               }

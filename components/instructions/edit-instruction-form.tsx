@@ -32,7 +32,7 @@ export default function EditInstructionForm({
       buttonText="Save"
       onSubmit={handleUpdateInstruction}
       data={{
-        title: instruction.title,
+        name: instruction.name,
         content: instruction.content
       }}
     />

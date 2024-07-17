@@ -12,7 +12,7 @@ interface CRUDFormProps {
   buttonText: string
   onSubmit: (formData: FormData) => Promise<void>
   data?: {
-    title: string
+    name: string
     content: string
   }
 }
@@ -25,10 +25,10 @@ export const CRUDForm: FC<CRUDFormProps> = ({
 }) => {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [title, setTitle] = useState(data?.title || "")
+  const [name, setName] = useState(data?.name || "")
   const [content, setContent] = useState(data?.content || "")
 
-  const isFormValid = title.trim() !== "" && content.trim() !== ""
+  const isFormValid = name.trim() !== "" && content.trim() !== ""
 
   const handleSubmit = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
@@ -49,10 +49,10 @@ export const CRUDForm: FC<CRUDFormProps> = ({
         <CardContent className="bg-secondary/50 p-2">
           <Input
             className="border-none bg-transparent text-xl font-bold"
-            name="title"
-            placeholder={`${itemName} title`}
-            value={title}
-            onChange={e => setTitle(e.target.value)}
+            name="name"
+            placeholder={`${itemName} name`}
+            value={name}
+            onChange={e => setName(e.target.value)}
             required
           />
 

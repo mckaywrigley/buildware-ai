@@ -12,7 +12,7 @@ export default function NewInstructionForm() {
 
   const handleCreateInstruction = async (formData: FormData) => {
     const newInstruction = {
-      title: formData.get("title") as string,
+      name: formData.get("name") as string,
       content: formData.get("content") as string,
       projectId
     }

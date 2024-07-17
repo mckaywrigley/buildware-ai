@@ -1,19 +1,25 @@
 import { Integrations } from "@/components/integrations/integrations"
-import { getProjectById } from "@/db/queries/project-queries"
+import { NotFound } from "@/components/utility/not-found"
+import { getProjectById, getWorkspaceById } from "@/db/queries"
 
 export default async function IntegrationsPage({
   params
 }: {
-  params: { projectId: string }
+  params: { projectId: string; workspaceId: string }
 }) {
+  const workspace = await getWorkspaceById(params.workspaceId)
   const project = await getProjectById(params.projectId)
 
+  if (!workspace) {
+    return <NotFound message="Workspace not found" />
+  }
+
   if (!project) {
-    return <div>Project not found</div>
+    return <NotFound message="Project not found" />
   }
 
   const isGitHubConnected = !!project.githubInstallationId
-  const isLinearConnected = !!project.linearAccessToken
+  const isLinearConnected = !!workspace.linearAccessToken
 
   return (
     <Integrations

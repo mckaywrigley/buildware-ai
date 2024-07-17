@@ -23,7 +23,7 @@ interface NewIssueFormProps {
 
 interface Instruction {
   id: string
-  title: string
+  name: string
 }
 
 export function NewIssueForm({ templates }: NewIssueFormProps) {
@@ -33,7 +33,7 @@ export function NewIssueForm({ templates }: NewIssueFormProps) {
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(
     null
   )
-  const [title, setTitle] = useState("")
+  const [name, setName] = useState("")
   const [content, setContent] = useState("")
   const [selectedInstructions, setSelectedInstructions] = useState<string[]>([])
   const [allInstructions, setAllInstructions] = useState<Instruction[]>([])
@@ -44,12 +44,12 @@ export function NewIssueForm({ templates }: NewIssueFormProps) {
     if (selectedTemplateId && selectedTemplateId !== "NULL") {
       const selectedTemplate = templates.find(t => t.id === selectedTemplateId)
       if (selectedTemplate) {
-        setTitle(selectedTemplate.title)
+        setName(selectedTemplate.name)
         setContent(selectedTemplate.content)
         handleInstructionsForTemplate(selectedTemplateId)
       }
     } else {
-      setTitle("")
+      setName("")
       setContent("")
       setSelectedInstructions([])
     }
@@ -61,7 +61,7 @@ export function NewIssueForm({ templates }: NewIssueFormProps) {
 
   const handleCreateIssueAndRelation = async (formData: FormData) => {
     const newIssue = {
-      name: formData.get("title") as string,
+      name: formData.get("name") as string,
       content: formData.get("content") as string,
       projectId,
       templateId: selectedTemplateId || undefined
@@ -80,7 +80,7 @@ export function NewIssueForm({ templates }: NewIssueFormProps) {
     const instructionsData = await getInstructionsForTemplate(templateId)
     const formattedInstructions: Instruction[] = instructionsData.map(item => ({
       id: item.instruction.id,
-      title: item.instruction.title
+      name: item.instruction.name
     }))
     setSelectedInstructions(
       formattedInstructions.map(instruction => instruction.id)
@@ -92,7 +92,7 @@ export function NewIssueForm({ templates }: NewIssueFormProps) {
     const formattedInstructions: Instruction[] = allInstructionsData.map(
       instruction => ({
         id: instruction.id,
-        title: instruction.title
+        name: instruction.name
       })
     )
     setAllInstructions(formattedInstructions)
@@ -113,7 +113,7 @@ export function NewIssueForm({ templates }: NewIssueFormProps) {
 
           {templates.map(template => (
             <SelectItem key={template.id} value={template.id}>
-              {template.title}
+              {template.name}
             </SelectItem>
           ))}
         </SelectContent>
@@ -125,7 +125,7 @@ export function NewIssueForm({ templates }: NewIssueFormProps) {
             label="Instruction"
             data={allInstructions.map(instruction => ({
               id: instruction.id,
-              name: instruction.title
+              name: instruction.name
             }))}
             selectedIds={selectedInstructions}
             onToggleSelect={setSelectedInstructions}
@@ -139,7 +139,7 @@ export function NewIssueForm({ templates }: NewIssueFormProps) {
           buttonText="Create"
           onSubmit={handleCreateIssueAndRelation}
           data={{
-            title,
+            name,
             content
           }}
         />

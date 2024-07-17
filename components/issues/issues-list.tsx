@@ -29,7 +29,7 @@ export function IssuesList({ issues }: IssuesListProps) {
         issues.map(issue => (
           <DataItem
             key={issue.id}
-            data={{ id: issue.id, title: issue.name }}
+            data={{ id: issue.id, name: issue.name }}
             type="issues"
             onDelete={handleIssueDelete}
           />

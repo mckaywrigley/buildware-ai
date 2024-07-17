@@ -48,7 +48,7 @@ export async function getInstructionsForTemplate(templateId: string) {
         instruction: {
           columns: {
             id: true,
-            title: true,
+            name: true,
             content: true
           }
         }
