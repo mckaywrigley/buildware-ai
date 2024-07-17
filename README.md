@@ -8,17 +8,22 @@ Built by [Mckay Wrigley](https://twitter.com/mckaywrigley) and [Tyler Bruno](htt
 
 See the latest demo [here](https://twitter.com/mckaywrigley).
 
+## Learn
+
+For in-depth guides on Buildware, join the [Takeoff Beta](https://jointakeoff.com) today to come learn how to build with AI.
+
+## Sponsor
+
+If you find Buildware useful, please consider [sponsoring](https://github.com/sponsors/mckaywrigley) us to support our open-source work :)
+
 ## Updates
 
 We'll keep you updated here.
 
-## Sponsor
+Coming soon:
 
-If you find Buildware useful, please consider [sponsoring](https://github.com/sponsors/mckaywrigley) to support our open-source work :)
-
-## Learn
-
-For in-depth guides on Buildware, please visit [our website](https://mckaywrigley.com).
+- Pro setup guide
+- Local codebase mode
 
 ## Basic Setup
 
@@ -107,10 +112,6 @@ npm run dev
 ## Pro Setup
 
 Update (July 15th, 2024): Pro setup guide coming soon! Please check back in a few days.
-
-## Contributing
-
-We are working on a guide for contributing.
 
 ## License
 
