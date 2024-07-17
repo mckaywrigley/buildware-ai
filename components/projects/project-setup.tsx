@@ -14,9 +14,10 @@ import { updateProject } from "@/db/queries/projects-queries"
 import { SelectProject } from "@/db/schema"
 import { cn } from "@/lib/utils"
 import { GitHubRepository } from "@/types/github"
-import { useRouter } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { FC, HTMLAttributes, useEffect, useState } from "react"
 import { ConnectGitHub } from "../integrations/connect-github"
+import { DeleteProjectButton } from "./delete-project-button"
 
 interface ProjectSetupProps extends HTMLAttributes<HTMLDivElement> {
   project: SelectProject
@@ -29,6 +30,7 @@ export const ProjectSetup: FC<ProjectSetupProps> = ({
   ...props
 }) => {
   const router = useRouter()
+  const params = useParams()
 
   const [projectName, setProjectName] = useState(project.name)
   const [targetBranch, setTargetBranch] = useState(project.githubTargetBranch)
@@ -179,6 +181,12 @@ export const ProjectSetup: FC<ProjectSetupProps> = ({
           >
             {isSubmitting ? "Saving..." : "Continue"}
           </Button>
+
+          <DeleteProjectButton
+            className="w-full"
+            projectId={params.projectId as string}
+            workspaceId={params.workspaceId as string}
+          />
         </div>
       </div>
     </div>

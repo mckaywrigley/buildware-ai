@@ -4,7 +4,6 @@ import { getUserId } from "@/actions/auth/auth"
 import { and, desc, eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { db } from "../db"
-import { issuesTable } from "../schema"
 import {
   InsertProject,
   SelectProject,

@@ -8,7 +8,7 @@ export const revalidate = 0
 export default async function SettingsPage({
   params
 }: {
-  params: { projectId: string }
+  params: { projectId: string; workspaceId: string }
 }) {
   const project = await getProjectById(params.projectId)
 

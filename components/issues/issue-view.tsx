@@ -134,6 +134,8 @@ export const IssueView: React.FC<IssueViewProps> = ({
       sequenceRef.current = 1
       globalSequence = 1
 
+      await addMessage("Embedding target branch...")
+
       // Embed the target branch to make sure embeddings are up to date
       await embedTargetBranch({
         projectId: project.id,
@@ -141,8 +143,6 @@ export const IssueView: React.FC<IssueViewProps> = ({
         branchName: project.githubTargetBranch,
         installationId: project.githubInstallationId
       })
-
-      await addMessage("Embedding target branch...")
 
       await updateIssue(issue.id, { status: "in_progress" })
       const planMessage = await addMessage("Generating plan...")
