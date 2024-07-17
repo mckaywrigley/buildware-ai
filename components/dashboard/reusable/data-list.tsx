@@ -11,7 +11,6 @@ interface DataListProps {
   readMoreText: string
   createLink: string
   createText: string
-  description: string
   dataListTitle: string
   children: ReactNode
 }
@@ -23,7 +22,6 @@ export const DataList: FC<DataListProps> = ({
   readMoreText,
   createLink,
   createText,
-  description,
   dataListTitle,
   children
 }) => {
@@ -31,14 +29,14 @@ export const DataList: FC<DataListProps> = ({
     <div className="text-primary mx-auto w-full max-w-[800px] p-6">
       <div className="mb-2 text-2xl font-bold">{title}</div>
 
-      <div className="text-muted-foreground text-sm">{subtitle}</div>
-
-      <div className="bg-primary/20 my-6 h-px" />
+      <div className="text-muted-foreground mb-4 text-sm">{subtitle}</div>
 
       <div className="flex flex-col gap-2">
-        <div className="text-muted-foreground text-sm">{description}</div>
-
-        <Link href={readMoreLink} className="text-sm text-blue-500">
+        <Link
+          href={readMoreLink}
+          target="_blank"
+          className="text-sm text-blue-500"
+        >
           {readMoreText} →
         </Link>
       </div>

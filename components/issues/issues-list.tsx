@@ -18,11 +18,10 @@ export function IssuesList({ issues }: IssuesListProps) {
     <DataList
       title="Issues"
       subtitle="Manage issues"
-      readMoreLink="#"
+      readMoreLink="https://docs.buildware.ai/core-components/issues"
       readMoreText="Read more"
       createLink={`./issues/create`}
       createText="Create issue"
-      description="Issue description here"
       dataListTitle="Issues"
     >
       {issues.length > 0 ? (

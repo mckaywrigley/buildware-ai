@@ -28,11 +28,10 @@ export const TemplatesList: FC<TemplatesListProps> = ({
     <DataList
       title="Templates"
       subtitle="Manage templates"
-      readMoreLink="#"
+      readMoreLink="https://docs.buildware.ai/core-components/templates"
       readMoreText="Read more"
       createLink={`./templates/create`}
       createText="Create template"
-      description="Template description here"
       dataListTitle="Templates"
     >
       {templatesWithInstructions.length > 0 ? (
