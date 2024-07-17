@@ -22,6 +22,12 @@ Coming soon:
 - Local codebase mode
 - Team support
 
+## Deploy
+
+Deploy to Vercel in 1 click:
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fmckaywrigley%2Fbuildware-ai&env=NEXT_PUBLIC_APP_MODE,ANTHROPIC_API_KEY,OPENAI_API_KEY,DATABASE_URL,GITHUB_PAT)
+
 ## Simple Setup
 
 Follow these steps to get the simple version of Buildware running.
