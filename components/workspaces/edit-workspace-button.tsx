@@ -1,6 +1,5 @@
-import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { Pencil } from "lucide-react"
+import { Settings } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { HTMLAttributes } from "react"
 
@@ -20,15 +19,13 @@ export function EditWorkspaceButton({
 
   return (
     <div className={cn("", props.className)}>
-      <Button
+      <div
         onClick={handleClick}
-        variant="outline"
-        size="sm"
-        className="w-full"
+        className="hover:bg-muted flex cursor-pointer items-center gap-2 rounded-md p-2 text-sm"
       >
-        <Pencil className="mr-2 size-4" />
-        Workspace Settings
-      </Button>
+        <Settings className="size-4" />
+        <div>Workspace Settings</div>
+      </div>
     </div>
   )
 }

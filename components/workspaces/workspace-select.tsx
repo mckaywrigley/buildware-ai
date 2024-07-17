@@ -1,5 +1,6 @@
 "use client"
 
+import { getMostRecentIssueWithinProjects } from "@/db/queries/projects-queries"
 import { SelectWorkspace } from "@/db/schema/workspaces-schema"
 import { cn } from "@/lib/utils"
 import { Check, ChevronDown } from "lucide-react"
@@ -17,7 +18,6 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 import { CreateWorkspaceButton } from "./create-workspace-button"
 import { EditWorkspaceButton } from "./edit-workspace-button"
-import { getMostRecentIssueWithinProjects } from "@/db/queries/projects-queries"
 
 interface WorkspaceSelectProps extends HTMLAttributes<HTMLDivElement> {
   workspaces: SelectWorkspace[]
@@ -75,8 +75,10 @@ export const WorkspaceSelect: FC<WorkspaceSelectProps> = ({ workspaces }) => {
       <PopoverContent className="w-[200px] p-0">
         <Command>
           <CommandInput placeholder="Search workspace..." />
-          <CommandList>
+
+          <CommandList className="mx-1 mt-1">
             <CommandEmpty>No workspaces found.</CommandEmpty>
+
             <CommandGroup>
               {workspaceValues.map(workspace => (
                 <CommandItem
@@ -96,11 +98,16 @@ export const WorkspaceSelect: FC<WorkspaceSelectProps> = ({ workspaces }) => {
             </CommandGroup>
           </CommandList>
 
-          <CreateWorkspaceButton className="w-full p-1" />
+          <hr className="my-1" />
+
           <EditWorkspaceButton
             workspaceId={workspaceId}
-            className="w-full p-1"
+            className="mx-2 my-1"
           />
+
+          <hr className="my-1" />
+
+          <CreateWorkspaceButton className="mx-2 mb-2 mt-1" />
         </Command>
       </PopoverContent>
     </Popover>

@@ -43,7 +43,7 @@ export const CreateWorkspaceButton: FC<CreateWorkspaceButtonProps> = ({
         <DialogTrigger asChild>
           <Button variant="outline" className="w-full">
             <PlusIcon className="mr-2 size-4" />
-            Create Workspace
+            Workspace
           </Button>
         </DialogTrigger>
         <DialogContent>
