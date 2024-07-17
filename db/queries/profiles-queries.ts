@@ -1,7 +1,6 @@
 "use server"
 
 import { getUserId } from "@/actions/auth/auth"
-import console from "console"
 import { eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { db } from "../db"
@@ -45,7 +44,7 @@ export async function updateProfile(
 
   const [updatedProfile] = await db
     .update(profilesTable)
-    .set(data)
+    .set({ ...data, updatedAt: new Date() })
     .where(eq(profilesTable.userId, userId))
     .returning()
   revalidatePath("/")
