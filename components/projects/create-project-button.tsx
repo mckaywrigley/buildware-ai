@@ -1,6 +1,5 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
 import { createProject } from "@/db/queries/projects-queries"
 import { cn } from "@/lib/utils"
 import { PlusIcon } from "lucide-react"
@@ -34,13 +33,12 @@ export const CreateProjectButton: FC<CreateProjectButtonProps> = ({
 
   return (
     <div className={cn("", props.className)}>
-      <Button
+      <div
+        className="hover:bg-accent hover:text-accent-foreground flex size-5 cursor-pointer items-center justify-center rounded-md bg-black text-white transition-colors"
         onClick={handleCreateProject}
-        size="icon"
-        className="hover:bg-accent hover:text-accent-foreground bg-black text-white transition-colors"
       >
         <PlusIcon className="size-4" />
-      </Button>
+      </div>
     </div>
   )
 }

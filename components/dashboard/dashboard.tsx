@@ -101,49 +101,59 @@ export const Dashboard: FC<DashboardProps> = ({
       {/* BEGIN DESKTOP  */}
       <div className="bg-background hidden border-r md:block">
         <div className="flex h-full max-h-screen flex-col gap-2">
-          <div className="flex h-14 items-center border-b px-2 lg:h-[60px] lg:px-4">
+          <div className="l flex h-14 items-center border-b px-2 lg:h-[60px]">
             <WorkspaceSelect workspaces={workspaces} />
           </div>
-          <div className="flex items-center justify-between px-4 py-2">
-            <h2 className="text-sm font-semibold">Your Projects</h2>
-            <CreateProjectButton params={{ workspaceId }} />
-          </div>
 
-          <div className="flex-1 overflow-auto">
-            <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
-              {projects.map(project => (
-                <Collapsible
-                  key={project.id}
-                  open={openProjects.includes(project.id)}
-                  onOpenChange={() => toggleProject(project.id)}
-                >
-                  <CollapsibleTrigger className="flex w-full items-center justify-between py-2">
-                    <span>{project.name}</span>
-                    {openProjects.includes(project.id) ? (
-                      <ChevronDown className="size-4" />
-                    ) : (
-                      <ChevronRight className="size-4" />
-                    )}
-                  </CollapsibleTrigger>
-                  <CollapsibleContent>
-                    {filteredProjectLinks.map(link => (
-                      <Link
-                        key={link.href(workspaceId, project.id)}
-                        className={cn(
-                          `flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:opacity-50`,
-                          pathname === link.href(workspaceId, project.id) &&
-                            "bg-secondary rounded"
-                        )}
-                        href={link.href(workspaceId, project.id)}
-                      >
-                        <link.icon className="size-4" />
-                        {link.label}
-                      </Link>
-                    ))}
-                  </CollapsibleContent>
-                </Collapsible>
-              ))}
-            </nav>
+          <div className="px-4">
+            <div className="flex items-center justify-between py-2">
+              <div className="text-muted-foreground text-xs font-semibold">
+                Your Projects
+              </div>
+
+              <CreateProjectButton params={{ workspaceId }} />
+            </div>
+
+            <div className="flex-1 overflow-auto">
+              <div className="grid items-start">
+                {projects.map(project => (
+                  <Collapsible
+                    key={project.id}
+                    open={openProjects.includes(project.id)}
+                    onOpenChange={() => toggleProject(project.id)}
+                  >
+                    <CollapsibleTrigger className="hover:bg-secondary/80 flex w-full items-center justify-between rounded px-2 py-1 text-sm font-bold">
+                      <span>{project.name}</span>
+
+                      {openProjects.includes(project.id) ? (
+                        <ChevronDown className="size-4" />
+                      ) : (
+                        <ChevronRight className="size-4" />
+                      )}
+                    </CollapsibleTrigger>
+
+                    <CollapsibleContent className="ml-2 mt-1 flex flex-col gap-1 font-semibold">
+                      {filteredProjectLinks.map(link => (
+                        <Link
+                          key={link.href(workspaceId, project.id)}
+                          className={cn(
+                            `hover:bg-secondary/80 flex items-center gap-2 rounded-lg px-2 py-1 text-sm transition-all`,
+                            pathname.includes(project.id) &&
+                              pathname.includes(link.label.toLowerCase())
+                              ? "bg-secondary/80 rounded"
+                              : ""
+                          )}
+                          href={link.href(workspaceId, project.id)}
+                        >
+                          <link.icon className="size-4" />
+                          {link.label}
+                        </Link>
+                      ))}
+                    </CollapsibleContent>
+                  </Collapsible>
+                ))}
+              </div>
+            </div>
           </div>
 
           <div className="mt-auto border-t p-4">
@@ -172,8 +182,9 @@ export const Dashboard: FC<DashboardProps> = ({
             <Menu className="size-5" />
           </Button>
         </SheetTrigger>
+
         <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-          <nav className="grid gap-4 py-4">
+          <div className="grid gap-4 py-4">
             {projects.map(project => (
               <Collapsible
                 key={project.id}
@@ -188,6 +199,7 @@ export const Dashboard: FC<DashboardProps> = ({
                     <ChevronRight className="size-4" />
                   )}
                 </CollapsibleTrigger>
+
                 <CollapsibleContent>
                   {filteredProjectLinks.map(link => (
                     <Link
@@ -201,7 +213,7 @@ export const Dashboard: FC<DashboardProps> = ({
                 </CollapsibleContent>
               </Collapsible>
             ))}
-          </nav>
+          </div>
         </SheetContent>
       </Sheet>
       {/* END MOBILE  */}
