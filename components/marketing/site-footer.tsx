@@ -3,7 +3,7 @@ import Link from "next/link"
 
 const footerSocials = [
   {
-    href: "https://twitter.com/codewandai",
+    href: "https://twitter.com/buildwareai",
     name: "Twitter",
     icon: <TwitterLogoIcon className="size-4" />
   }
