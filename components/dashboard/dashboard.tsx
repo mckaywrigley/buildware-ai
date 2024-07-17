@@ -68,7 +68,7 @@ const PROJECT_LINKS = [
   {
     label: "Settings",
     href: (workspaceId: string, projectId: string) =>
-      `/${workspaceId}/${projectId}/setup`,
+      `/${workspaceId}/${projectId}/settings`,
     icon: Settings
   }
 ]
@@ -122,7 +122,7 @@ export const Dashboard: FC<DashboardProps> = ({
                     open={openProjects.includes(project.id)}
                     onOpenChange={() => toggleProject(project.id)}
                   >
-                    <CollapsibleTrigger className="hover:bg-secondary/80 flex w-full items-center justify-between rounded px-2 py-1 text-sm font-bold">
+                    <CollapsibleTrigger className="hover:bg-secondary/80 flex w-full items-center justify-between rounded px-2 py-1 text-sm font-semibold">
                       <span>{project.name}</span>
 
                       {openProjects.includes(project.id) ? (
@@ -132,12 +132,12 @@ export const Dashboard: FC<DashboardProps> = ({
                       )}
                     </CollapsibleTrigger>
 
-                    <CollapsibleContent className="ml-2 mt-1 flex flex-col gap-1 font-semibold">
+                    <CollapsibleContent className="ml-2 mt-1 flex flex-col gap-1 font-medium">
                       {filteredProjectLinks.map(link => (
                         <Link
                           key={link.href(workspaceId, project.id)}
                           className={cn(
-                            `hover:bg-secondary/80 flex items-center gap-2 rounded-lg px-2 py-1 text-sm transition-all`,
+                            `hover:bg-secondary/80 flex items-center gap-2.5 rounded-lg px-2 py-1 text-sm transition-all`,
                             pathname.includes(project.id) &&
                               pathname.includes(link.label.toLowerCase())
                               ? "bg-secondary/80 rounded"
@@ -146,6 +146,7 @@ export const Dashboard: FC<DashboardProps> = ({
                           href={link.href(workspaceId, project.id)}
                         >
                           <link.icon className="size-4" />
+
                           {link.label}
                         </Link>
                       ))}
@@ -193,6 +194,7 @@ export const Dashboard: FC<DashboardProps> = ({
               >
                 <CollapsibleTrigger className="flex w-full items-center justify-between py-2">
                   <span>{project.name}</span>
+
                   {openProjects.includes(project.id) ? (
                     <ChevronDown className="size-4" />
                   ) : (

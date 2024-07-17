@@ -40,5 +40,5 @@ export async function GET(req: Request) {
     console.error("Error in GitHub callback:", error)
   }
 
-  return redirect(`/${project?.workspaceId}/${project?.id}/setup`)
+  return redirect(`/${project?.workspaceId}/${project?.id}/settings`)
 }

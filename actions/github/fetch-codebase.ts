@@ -1,7 +1,33 @@
 "use server"
 
 import { GitHubFile } from "@/types/github"
+import { Octokit } from "@octokit/rest"
 import { getAuthenticatedOctokit } from "./auth"
+
+const MAX_RETRIES = 5
+const INITIAL_DELAY = 1000 // 1 second
+
+export async function fetchWithRetry(
+  octokit: Octokit,
+  params: any,
+  retries = 0
+): Promise<any> {
+  try {
+    return await octokit.repos.getContent(params)
+  } catch (error: any) {
+    if (
+      error.status === 403 &&
+      error.message.includes("secondary rate limit") &&
+      retries < MAX_RETRIES
+    ) {
+      const delay = INITIAL_DELAY * Math.pow(2, retries)
+      console.warn(`Hit secondary rate limit. Retrying in ${delay}ms...`)
+      await new Promise(resolve => setTimeout(resolve, delay))
+      return fetchWithRetry(octokit, params, retries + 1)
+    }
+    throw error
+  }
+}
 
 export async function fetchCodebaseForBranch(data: {
   githubRepoFullName: string
@@ -55,7 +81,7 @@ async function fetchDirectoryContent(data: {
 
   try {
     const octokit = await getAuthenticatedOctokit(data.installationId)
-    const { data: content } = await octokit.repos.getContent({
+    const { data: content } = await fetchWithRetry(octokit, {
       owner: organization,
       repo,
       path: data.path,

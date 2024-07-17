@@ -5,7 +5,7 @@ import { GitHubRepository } from "@/types/github"
 
 export const revalidate = 0
 
-export default async function SetupPage({
+export default async function SettingsPage({
   params
 }: {
   params: { projectId: string }

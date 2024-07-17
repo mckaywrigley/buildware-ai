@@ -1,5 +1,5 @@
 {
-  "id": "ee7178b1-edb4-4e5b-9189-03d789f5acdb",
+  "id": "c4113e49-ec10-4b40-a821-312496457201",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -43,7 +43,7 @@
           "name": "last_embedded_commit_hash",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",

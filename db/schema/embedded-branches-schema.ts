@@ -10,7 +10,7 @@ export const embeddedBranchesTable = pgTable("embedded_branches", {
     .references(() => projectsTable.id, { onDelete: "cascade" }),
   githubRepoFullName: text("github_repo_full_name").notNull(),
   branchName: text("branch_name").notNull(),
-  lastEmbeddedCommitHash: text("last_embedded_commit_hash").notNull(),
+  lastEmbeddedCommitHash: text("last_embedded_commit_hash"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at")
     .notNull()

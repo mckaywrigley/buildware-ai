@@ -25,7 +25,7 @@ export const CreateProjectButton: FC<CreateProjectButtonProps> = ({
         workspaceId: params.workspaceId
       })
       router.refresh()
-      router.push(`/${params.workspaceId}/${project.id}/setup`)
+      router.push(`/${params.workspaceId}/${project.id}/settings`)
     } catch (error) {
       console.error(error)
     }

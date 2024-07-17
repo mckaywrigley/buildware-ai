@@ -44,7 +44,7 @@ export async function embedTargetBranch({
         projectId,
         githubRepoFullName,
         branchName,
-        lastEmbeddedCommitHash: latestCommitHash
+        lastEmbeddedCommitHash: null
       })
     }
 

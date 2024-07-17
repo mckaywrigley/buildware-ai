@@ -63,5 +63,5 @@ export async function GET(req: NextRequest) {
     console.error("Error during Linear OAuth:", error)
   }
 
-  return redirect(`/${workspaceId}/setup`)
+  return redirect(`/${workspaceId}/settings`)
 }

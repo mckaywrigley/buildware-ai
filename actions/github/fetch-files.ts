@@ -2,6 +2,7 @@
 
 import { GitHubFile, GitHubFileContent } from "@/types/github"
 import { getAuthenticatedOctokit } from "./auth"
+import { fetchWithRetry } from "./fetch-codebase"
 
 export async function fetchFiles(
   installationId: number | null,
@@ -38,18 +39,15 @@ export async function fetchFiles(
 
   const octokit = await getAuthenticatedOctokit(installationId)
 
-  // Fetch the content of each file using Octokit
+  // Fetch the content of each file using Octokit with retry logic
   const fetchPromises = filteredFiles.map(async (file: GitHubFile) => {
     try {
-      const { data } = await octokit.request(
-        "GET /repos/{owner}/{repo}/contents/{path}",
-        {
-          owner: file.owner,
-          repo: file.repo,
-          path: file.path,
-          ref: file.ref
-        }
-      )
+      const { data } = await fetchWithRetry(octokit, {
+        owner: file.owner,
+        repo: file.repo,
+        path: file.path,
+        ref: file.ref
+      })
 
       if (Array.isArray(data) || !("content" in data)) {
         throw new Error(`Unexpected response for ${file.path}`)
