@@ -4,6 +4,7 @@ import { getUserId } from "@/actions/auth/auth"
 import { and, desc, eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { db } from "../db"
+import { issuesTable } from "../schema"
 import {
   InsertProject,
   SelectProject,
@@ -84,6 +85,22 @@ export async function updateProject(
     console.error(`Error updating project ${id}:`, error)
     throw error
   }
+}
+
+export async function getMostRecentIssueWithinProjects(
+  workspaceId: string
+): Promise<{ projectId: string } | undefined> {
+  const result = await db
+    .select({
+      projectId: projectsTable.id
+    })
+    .from(issuesTable)
+    .innerJoin(projectsTable, eq(issuesTable.projectId, projectsTable.id))
+    .where(eq(projectsTable.workspaceId, workspaceId))
+    .orderBy(desc(issuesTable.updatedAt))
+    .limit(1)
+
+  return result[0] ? { projectId: result[0].projectId } : undefined
 }
 
 export async function deleteProject(id: string): Promise<void> {

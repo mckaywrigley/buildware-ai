@@ -2,10 +2,24 @@
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { updateWorkspace } from "@/db/queries/workspaces-queries"
+import {
+  deleteWorkspace,
+  updateWorkspace
+} from "@/db/queries/workspaces-queries"
 import { SelectWorkspace } from "@/db/schema"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from "@/components/ui/alert-dialog"
 
 interface EditWorkspaceClientProps {
   workspace: SelectWorkspace | null
@@ -17,6 +31,7 @@ export function EditWorkspaceClient({
   workspaceId
 }: EditWorkspaceClientProps) {
   const [name, setName] = useState(workspace?.name || "")
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -25,6 +40,16 @@ export function EditWorkspaceClient({
       await updateWorkspace(workspaceId, { name })
       router.refresh()
       router.push(`/${workspaceId}`)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const handleDelete = async () => {
+    try {
+      await deleteWorkspace(workspaceId)
+      router.refresh()
+      router.push("/workspaces")
     } catch (error) {
       console.error(error)
     }
@@ -49,6 +74,33 @@ export function EditWorkspaceClient({
             Save Changes
           </Button>
         </form>
+        <div className="mt-6">
+          <AlertDialog
+            open={isDeleteDialogOpen}
+            onOpenChange={setIsDeleteDialogOpen}
+          >
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" className="w-full">
+                Delete Workspace
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete
+                  your workspace and remove your data from our servers.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete}>
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
       </div>
     </div>
   )

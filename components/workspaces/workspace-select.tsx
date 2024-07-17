@@ -17,6 +17,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 import { CreateWorkspaceButton } from "./create-workspace-button"
 import { EditWorkspaceButton } from "./edit-workspace-button"
+import { getMostRecentIssueWithinProjects } from "@/db/queries/projects-queries"
 
 interface WorkspaceSelectProps extends HTMLAttributes<HTMLDivElement> {
   workspaces: SelectWorkspace[]
@@ -39,6 +40,18 @@ export const WorkspaceSelect: FC<WorkspaceSelectProps> = ({ workspaces }) => {
   useEffect(() => {
     setValue(workspaceId)
   }, [workspaceId])
+
+  const handleWorkspaceSelect = async (currentValue: string) => {
+    setValue(currentValue === value ? "" : currentValue)
+    setOpen(false)
+
+    const recentData = await getMostRecentIssueWithinProjects(currentValue)
+    if (recentData) {
+      router.push(`/${currentValue}/${recentData.projectId}/issues`)
+    } else {
+      router.push(`/${currentValue}`)
+    }
+  }
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -69,11 +82,7 @@ export const WorkspaceSelect: FC<WorkspaceSelectProps> = ({ workspaces }) => {
                 <CommandItem
                   key={workspace.value}
                   value={workspace.value}
-                  onSelect={currentValue => {
-                    setValue(currentValue === value ? "" : currentValue)
-                    setOpen(false)
-                    router.push(`/${currentValue}`)
-                  }}
+                  onSelect={handleWorkspaceSelect}
                 >
                   <Check
                     className={cn(
