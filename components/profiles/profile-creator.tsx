@@ -17,7 +17,7 @@ export const ProfileCreator = async () => {
           name: "My Project",
           workspaceId: workspace.id
         })
-        router.push(`/${workspace.id}/${project.id}`)
+        router.push(`/${workspace.id}/${project.id}/issues`)
       } catch (error) {
         console.error(error)
       }
