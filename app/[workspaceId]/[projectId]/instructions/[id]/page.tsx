@@ -1,6 +1,6 @@
 import { Instruction } from "@/components/instructions/instruction"
 import { NotFound } from "@/components/utility/not-found"
-import { getInstructionById } from "@/db/queries/instruction-queries"
+import { getInstructionById } from "@/db/queries/instructions-queries"
 
 export const revalidate = 0
 

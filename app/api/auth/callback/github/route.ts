@@ -1,4 +1,4 @@
-import { getProjectById, updateProject } from "@/db/queries/project-queries"
+import { getProjectById, updateProject } from "@/db/queries/projects-queries"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 

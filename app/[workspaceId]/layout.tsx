@@ -1,6 +1,6 @@
 import { Dashboard } from "@/components/dashboard/dashboard"
-import { getProjectsByWorkspaceId } from "@/db/queries/project-queries"
-import { getWorkspacesByUserId } from "@/db/queries/workspace-queries"
+import { getProjectsByWorkspaceId } from "@/db/queries/projects-queries"
+import { getWorkspacesByUserId } from "@/db/queries/workspaces-queries"
 
 export const revalidate = 0
 

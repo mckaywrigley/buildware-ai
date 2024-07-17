@@ -1,6 +1,6 @@
 import { CRUDPage } from "@/components/dashboard/reusable/crud-page"
 import NewTemplateForm from "@/components/templates/new-template-form"
-import { getInstructionsByProjectId } from "@/db/queries/instruction-queries"
+import { getInstructionsByProjectId } from "@/db/queries/instructions-queries"
 
 export const revalidate = 0
 

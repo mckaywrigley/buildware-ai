@@ -1,6 +1,6 @@
 import { listRepos } from "@/actions/github/list-repos"
 import { ProjectSetup } from "@/components/projects/project-setup"
-import { getProjectById } from "@/db/queries/project-queries"
+import { getProjectById } from "@/db/queries/projects-queries"
 import { GitHubRepository } from "@/types/github"
 
 export const revalidate = 0

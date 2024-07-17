@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm"
-import { boolean, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core"
+import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core"
 import { projectsTable } from "./projects-schema"
 
 export const embeddedBranchesTable = pgTable("embedded_branches", {
@@ -10,7 +10,7 @@ export const embeddedBranchesTable = pgTable("embedded_branches", {
     .references(() => projectsTable.id, { onDelete: "cascade" }),
   githubRepoFullName: text("github_repo_full_name").notNull(),
   branchName: text("branch_name").notNull(),
-  isUpdated: boolean("is_updated").notNull(),
+  lastEmbeddedCommitHash: text("last_embedded_commit_hash").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at")
     .notNull()

@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
-import { updateProject } from "@/db/queries/project-queries"
+import { updateProject } from "@/db/queries/projects-queries"
 import { SelectProject } from "@/db/schema"
 import { cn } from "@/lib/utils"
 import { GitHubRepository } from "@/types/github"

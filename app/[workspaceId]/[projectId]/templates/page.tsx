@@ -1,6 +1,6 @@
 import { TemplatesList } from "@/components/templates/template-list"
-import { getInstructionsByProjectId } from "@/db/queries/instruction-queries"
-import { getTemplatesWithInstructionsByProjectId } from "@/db/queries/template-queries"
+import { getInstructionsByProjectId } from "@/db/queries/instructions-queries"
+import { getTemplatesWithInstructionsByProjectId } from "@/db/queries/templates-queries"
 import { SelectInstruction, SelectTemplate } from "@/db/schema"
 
 export const revalidate = 0

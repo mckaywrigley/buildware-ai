@@ -1,6 +1,6 @@
 "use client"
 
-import { updateTemplate } from "@/db/queries/template-queries"
+import { updateTemplate } from "@/db/queries/templates-queries"
 import { SelectInstruction, SelectTemplate } from "@/db/schema"
 import { useRouter } from "next/navigation"
 import { CRUDForm } from "../dashboard/reusable/crud-form"

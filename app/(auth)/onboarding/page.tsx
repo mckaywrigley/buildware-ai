@@ -1,5 +1,5 @@
 import { ProfileCreator } from "@/components/profiles/profile-creator"
-import { getProfileByUserId } from "@/db/queries/profile-queries"
+import { getProfileByUserId } from "@/db/queries/profiles-queries"
 import { Loader2 } from "lucide-react"
 import { redirect } from "next/navigation"
 import { Suspense } from "react"

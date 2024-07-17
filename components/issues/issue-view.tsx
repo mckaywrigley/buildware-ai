@@ -1,6 +1,7 @@
 "use client"
 
 import { generateAIResponse } from "@/actions/ai/generate-ai-response"
+import { deleteGitHubPR } from "@/actions/github/delete-pr"
 import { embedTargetBranch } from "@/actions/github/embed-target-branch"
 import { generatePR } from "@/actions/github/generate-pr"
 import { getMostSimilarEmbeddedFiles } from "@/actions/retrieval/get-similar-files"
@@ -82,7 +83,7 @@ export const IssueView: React.FC<IssueViewProps> = ({
     fetchMessages()
   }, [item.id])
 
-  const addMessage = async (role: string, content: string) => {
+  const addMessage = async (content: string) => {
     const newMessage = await createIssueMessageRecord({
       issueId: item.id,
       content,
@@ -141,10 +142,10 @@ export const IssueView: React.FC<IssueViewProps> = ({
         installationId: project.githubInstallationId
       })
 
-      await addMessage("system", "Embedding target branch...")
+      await addMessage("Embedding target branch...")
 
-      await updateIssue(item.id, { status: "in_progress" })
-      const planMessage = await addMessage("system", "Generating plan...")
+      await updateIssue(issue.id, { status: "in_progress" })
+      const planMessage = await addMessage("Generating plan...")
 
       const embeddingsQueryText = `${issue.name} ${issue.content}`
 
@@ -177,7 +178,7 @@ export const IssueView: React.FC<IssueViewProps> = ({
       ])
 
       await updateMessage(planMessage.id, aiCodePlanResponse)
-      const prMessage = await addMessage("system", "Generating PR...")
+      const prMessage = await addMessage("Generating PR...")
 
       const codegenPrompt = await buildCodeGenPrompt({
         issue: { title: issue.name, description: issue.content },
@@ -195,22 +196,42 @@ export const IssueView: React.FC<IssueViewProps> = ({
 
       const parsedAIResponse = parseAIResponse(aiCodeGenResponse)
 
-      const prLink = await generatePR(
+      const { prLink, branchName } = await generatePR(
         issue.name.replace(/\s+/g, "-"),
         project,
         parsedAIResponse
       )
 
-      await updateMessage(prMessage.id, `GitHub PR: ${prLink}`)
+      await updateIssue(issue.id, {
+        status: "completed",
+        prLink: prLink || undefined,
+        prBranch: branchName
+      })
 
-      await updateIssue(item.id, { status: "completed" })
+      if (prLink) {
+        await updateMessage(prMessage.id, `GitHub PR: ${prLink}`)
+      } else {
+        await updateMessage(prMessage.id, "Failed to create PR")
+      }
     } catch (error) {
       console.error("Failed to run issue:", error)
-      await addMessage("system", `Error: Failed to run issue: ${error}`)
-      await updateIssue(item.id, { status: "failed" })
+      await addMessage(`Error: Failed to run issue: ${error}`)
+      await updateIssue(issue.id, { status: "failed" })
     } finally {
       setIsRunning(false)
     }
+  }
+
+  const handleRerun = async (issue: SelectIssue) => {
+    if (issue.prLink && issue.prBranch) {
+      await deleteGitHubPR(project, issue.prLink, issue.prBranch)
+    }
+    await updateIssue(issue.id, {
+      prLink: null,
+      prBranch: null,
+      status: "ready"
+    })
+    await handleRun(issue)
   }
 
   return (
@@ -223,7 +244,9 @@ export const IssueView: React.FC<IssueViewProps> = ({
         <Button
           variant="create"
           size="sm"
-          onClick={() => handleRun(item)}
+          onClick={() =>
+            item.status === "completed" ? handleRerun(item) : handleRun(item)
+          }
           disabled={isRunning}
         >
           {isRunning ? (

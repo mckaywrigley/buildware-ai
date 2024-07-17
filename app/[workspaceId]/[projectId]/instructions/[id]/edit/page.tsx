@@ -1,7 +1,7 @@
 import { CRUDPage } from "@/components/dashboard/reusable/crud-page"
 import EditInstructionForm from "@/components/instructions/edit-instruction-form"
 import { NotFound } from "@/components/utility/not-found"
-import { getInstructionById } from "@/db/queries/instruction-queries"
+import { getInstructionById } from "@/db/queries/instructions-queries"
 
 export const revalidate = 0
 

@@ -4,7 +4,7 @@ import {
   addInstructionToTemplate,
   getInstructionsForTemplate,
   removeInstructionFromTemplate
-} from "@/db/queries/templates-to-instruction-queries"
+} from "@/db/queries/templates-to-instructions-queries"
 
 export async function updateTemplateInstructions(
   templateId: string,

@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button"
-import { createProject } from "@/db/queries/project-queries"
+import { createProject } from "@/db/queries/projects-queries"
 import {
   createWorkspace,
   getWorkspacesByUserId
-} from "@/db/queries/workspace-queries"
+} from "@/db/queries/workspaces-queries"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 

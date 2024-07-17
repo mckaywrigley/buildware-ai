@@ -13,6 +13,8 @@ export const issuesTable = pgTable("issues", {
   name: text("name").notNull(),
   content: text("content").notNull(),
   status: text("status").notNull().default("ready"),
+  prLink: text("pr_link"),
+  prBranch: text("pr_branch"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at")
     .notNull()

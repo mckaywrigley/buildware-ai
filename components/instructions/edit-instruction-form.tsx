@@ -1,6 +1,6 @@
 "use client"
 
-import { updateInstruction } from "@/db/queries/instruction-queries"
+import { updateInstruction } from "@/db/queries/instructions-queries"
 import { SelectInstruction } from "@/db/schema"
 import { useRouter } from "next/navigation"
 import { CRUDForm } from "../dashboard/reusable/crud-form"

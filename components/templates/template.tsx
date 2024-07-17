@@ -1,6 +1,6 @@
 "use client"
 
-import { deleteTemplate } from "@/db/queries/template-queries"
+import { deleteTemplate } from "@/db/queries/templates-queries"
 import { SelectInstruction, SelectTemplate } from "@/db/schema"
 import { FC } from "react"
 import { InstructionTemplateView } from "../dashboard/reusable/instruction-template-view"

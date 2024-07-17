@@ -8,7 +8,7 @@ export async function generatePR(
   branchName: string,
   project: SelectProject,
   parsedResponse: AIParsedResponse
-) {
+): Promise<{ prLink: string | null; branchName: string }> {
   const octokit = await getAuthenticatedOctokit(project.githubInstallationId!)
   const [owner, repo] = project.githubRepoFullName!.split("/")
 
@@ -100,7 +100,7 @@ export async function generatePR(
   // Create a tree with all changes
   if (changes.length === 0) {
     console.warn("No changes to commit. Skipping PR creation.")
-    return null
+    return { prLink: null, branchName: newBranch }
   }
 
   const { data: tree } = await octokit.git.createTree({
@@ -131,7 +131,7 @@ export async function generatePR(
   try {
     if (!commit) {
       console.warn("No commit created. Skipping PR creation.")
-      return null
+      return { prLink: null, branchName: newBranch }
     }
 
     const pr = await octokit.pulls.create({
@@ -143,10 +143,9 @@ export async function generatePR(
       body: `AI: Update for ${branchName}`
     })
 
-    return pr.data.html_url
+    return { prLink: pr.data.html_url, branchName: newBranch }
   } catch (error: any) {
     console.error("Failed to create PR:", error)
-
-    throw error
+    return { prLink: null, branchName: newBranch }
   }
 }

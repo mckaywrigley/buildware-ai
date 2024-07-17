@@ -1,6 +1,6 @@
 "use client"
 
-import { deleteInstruction } from "@/db/queries/instruction-queries"
+import { deleteInstruction } from "@/db/queries/instructions-queries"
 import { SelectInstruction } from "@/db/schema"
 import { FC } from "react"
 import { DataItem } from "../dashboard/reusable/data-item"

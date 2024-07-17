@@ -1,7 +1,7 @@
 "use client"
 
-import { getInstructionsByProjectId } from "@/db/queries/instruction-queries"
-import { updateIssue } from "@/db/queries/issue-queries"
+import { getInstructionsByProjectId } from "@/db/queries/instructions-queries"
+import { updateIssue } from "@/db/queries/issues-queries"
 import {
   addInstructionToIssue,
   getInstructionsForIssue,

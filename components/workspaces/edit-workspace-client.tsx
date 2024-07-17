@@ -1,11 +1,11 @@
 "use client"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { updateWorkspace } from "@/db/queries/workspace-queries"
+import { updateWorkspace } from "@/db/queries/workspaces-queries"
 import { SelectWorkspace } from "@/db/schema"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
 
 interface EditWorkspaceClientProps {
   workspace: SelectWorkspace | null

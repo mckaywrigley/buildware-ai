@@ -1,11 +1,10 @@
 "use server"
 
 import { fetchFiles } from "@/actions/github/fetch-files"
-import { updateEmbeddedBranchById } from "@/db/queries/embedded-branch-queries"
 import {
   createEmbeddedFiles,
   deleteAllEmbeddedFilesByEmbeddedBranchId
-} from "@/db/queries/embedded-file-queries"
+} from "@/db/queries/embedded-files-queries"
 import { embedFiles } from "./embed-files"
 import { fetchCodebaseForBranch } from "./fetch-codebase"
 import { tokenizeFiles } from "./tokenize-files"
@@ -55,11 +54,6 @@ export async function embedBranch(data: {
         githubRepoFullName
       }))
     )
-
-    // update embedded branch with status
-    await updateEmbeddedBranchById(embeddedBranchId, {
-      isUpdated: true
-    })
   } catch (error) {
     console.error("Error in embedBranch:", error)
     throw error

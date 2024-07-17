@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { createProject } from "@/db/queries/project-queries"
+import { createProject } from "@/db/queries/projects-queries"
 import { cn } from "@/lib/utils"
 import { PlusIcon } from "lucide-react"
 import { useRouter } from "next/navigation"

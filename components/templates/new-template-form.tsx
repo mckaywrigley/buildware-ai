@@ -1,7 +1,7 @@
 "use client"
 
-import { createTemplateRecords } from "@/db/queries/template-queries"
-import { addInstructionToTemplate } from "@/db/queries/templates-to-instruction-queries"
+import { createTemplateRecords } from "@/db/queries/templates-queries"
+import { addInstructionToTemplate } from "@/db/queries/templates-to-instructions-queries"
 import { SelectInstruction } from "@/db/schema"
 import { useParams, useRouter } from "next/navigation"
 import { useState } from "react"

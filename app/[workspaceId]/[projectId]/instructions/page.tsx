@@ -1,5 +1,5 @@
 import { InstructionsList } from "@/components/instructions/instruction-list"
-import { getInstructionsByProjectId } from "@/db/queries/instruction-queries"
+import { getInstructionsByProjectId } from "@/db/queries/instructions-queries"
 
 export const revalidate = 0
 

@@ -1,8 +1,8 @@
 import { IssueView } from "@/components/issues/issue-view"
 import { NotFound } from "@/components/utility/not-found"
-import { getIssueById } from "@/db/queries/issue-queries"
+import { getIssueById } from "@/db/queries/issues-queries"
 import { getInstructionsForIssue } from "@/db/queries/issues-to-instructions-queries"
-import { getProjectById } from "@/db/queries/project-queries"
+import { getProjectById } from "@/db/queries/projects-queries"
 
 export const revalidate = 0
 

@@ -1,5 +1,5 @@
 import { IssuesList } from "@/components/issues/issues-list"
-import { getIssuesByProjectId } from "@/db/queries/issue-queries"
+import { getIssuesByProjectId } from "@/db/queries/issues-queries"
 
 export const revalidate = 0
 

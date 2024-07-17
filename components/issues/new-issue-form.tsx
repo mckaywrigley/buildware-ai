@@ -7,10 +7,10 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
-import { getInstructionsByProjectId } from "@/db/queries/instruction-queries"
-import { createIssue } from "@/db/queries/issue-queries"
+import { getInstructionsByProjectId } from "@/db/queries/instructions-queries"
+import { createIssue } from "@/db/queries/issues-queries"
 import { addInstructionToIssue } from "@/db/queries/issues-to-instructions-queries"
-import { getInstructionsForTemplate } from "@/db/queries/templates-to-instruction-queries"
+import { getInstructionsForTemplate } from "@/db/queries/templates-to-instructions-queries"
 import { SelectTemplate } from "@/db/schema/templates-schema"
 import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"

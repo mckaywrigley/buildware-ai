@@ -1,6 +1,6 @@
 import { NotFound } from "@/components/utility/not-found"
 import { EditWorkspaceClient } from "@/components/workspaces/edit-workspace-client"
-import { getWorkspaceById } from "@/db/queries/workspace-queries"
+import { getWorkspaceById } from "@/db/queries/workspaces-queries"
 
 export default async function EditWorkspace({
   params

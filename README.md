@@ -38,35 +38,7 @@ git clone https://github.com/mckaywrigley/buildware.git
 npm install
 ```
 
-### 3. Setup Database
-
-You will need a Postgres database to use Buildware.
-
-We recommend using Neon or Supabase.
-
-Once you have your connection string, you can continue to the next step.
-
-### 4. Setup GitHub PAT
-
-You will need a GitHub PAT (Personal Access Token) to use Buildware.
-
-Follow these steps:
-
-1. Go to [this link](https://github.com/settings/tokens?type=beta).
-2. Click "Generate new token".
-3. Give your token a name and set the expiration date.
-4. Select a "Resource owner".
-5. Select which repositories you want to access. You must select either "All repositories" or "Only select repositories".
-6. Select the 3 required repository permissions:
-   - Contents: Read and write
-   - Pull Requests: Read and write
-   - Metadata: Read-only (this is selected by default)
-7. Click "Generate token".
-8. Copy your new PAT and paste it into the `.env.local` file as `GITHUB_PAT`.
-
-Once you have your PAT, you can continue to the next step.
-
-### 5. Setup Environment Variables
+### 3. Setup Environment Variables
 
 Copy the `.env.example` file to `.env.local` and fill in the required variables.
 
@@ -92,6 +64,42 @@ Database:
 GitHub:
 
 - GITHUB_PAT=
+
+### 4. Setup Database
+
+You will need a Postgres database to use Buildware.
+
+We recommend using Neon or Supabase.
+
+Once you have your connection string, update the `DATABASE_URL` in the `.env.local` file.
+
+Next, run the database migrations:
+
+```bash
+npm run migrate
+```
+
+Now your database is ready to use.
+
+### 5. Setup GitHub PAT
+
+You will need a GitHub PAT (Personal Access Token) to use Buildware.
+
+Follow these steps:
+
+1. Go to [this link](https://github.com/settings/tokens?type=beta).
+2. Click "Generate new token".
+3. Give your token a name and set the expiration date.
+4. Select a "Resource owner".
+5. Select which repositories you want to access. You must select either "All repositories" or "Only select repositories".
+6. Select the 3 required repository permissions:
+   - Contents: Read and write
+   - Pull Requests: Read and write
+   - Metadata: Read-only (this is selected by default)
+7. Click "Generate token".
+8. Copy your new PAT and paste it into the `.env.local` file as `GITHUB_PAT`.
+
+Once you have your PAT, update the `GITHUB_PAT` in the `.env.local` file.
 
 ### 6. Run App
 

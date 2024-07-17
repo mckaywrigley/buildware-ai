@@ -1,5 +1,5 @@
 import { EditIssueForm } from "@/components/issues/edit-issue-form"
-import { getIssueById } from "@/db/queries/issue-queries"
+import { getIssueById } from "@/db/queries/issues-queries"
 
 export const revalidate = 0
 

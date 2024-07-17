@@ -1,6 +1,6 @@
 "use client"
 
-import { deleteIssue } from "@/db/queries/issue-queries"
+import { deleteIssue } from "@/db/queries/issues-queries"
 import { SelectIssue } from "@/db/schema/issues-schema"
 import { DataItem } from "../dashboard/reusable/data-item"
 import { DataList } from "../dashboard/reusable/data-list"

@@ -1,6 +1,6 @@
 "use client"
 
-import { createInstructionRecords } from "@/db/queries/instruction-queries"
+import { createInstructionRecords } from "@/db/queries/instructions-queries"
 import { useParams, useRouter } from "next/navigation"
 import { CRUDForm } from "../dashboard/reusable/crud-form"
 

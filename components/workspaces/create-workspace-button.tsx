@@ -10,7 +10,7 @@ import {
   DialogTrigger
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { createWorkspace } from "@/db/queries/workspace-queries"
+import { createWorkspace } from "@/db/queries/workspaces-queries"
 import { cn } from "@/lib/utils"
 import { PlusIcon } from "lucide-react"
 import { useRouter } from "next/navigation"

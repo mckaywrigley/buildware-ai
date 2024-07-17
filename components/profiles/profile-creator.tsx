@@ -1,6 +1,6 @@
 "use client"
 
-import { createProfile } from "@/db/queries/profile-queries"
+import { createProfile } from "@/db/queries/profiles-queries"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 

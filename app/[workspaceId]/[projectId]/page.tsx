@@ -1,4 +1,4 @@
-import { getProjectById } from "@/db/queries/project-queries"
+import { getProjectById } from "@/db/queries/projects-queries"
 
 export const revalidate = 0
 

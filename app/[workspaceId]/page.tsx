@@ -1,4 +1,4 @@
-import { getWorkspaceById } from "@/db/queries/workspace-queries"
+import { getWorkspaceById } from "@/db/queries/workspaces-queries"
 
 export const revalidate = 0
 
