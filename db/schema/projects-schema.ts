@@ -3,6 +3,7 @@ import { integer, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core"
 import { instructionsTable } from "./instructions-schema"
 import { templatesTable } from "./templates-schema"
 import { workspacesTable } from "./workspaces-schema"
+import { issuesTable } from "./issues-schema"
 
 export const projectsTable = pgTable("projects", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -26,7 +27,8 @@ export const projectsTable = pgTable("projects", {
 export const projectsRelations = relations(projectsTable, ({ one, many }) => ({
   templates: many(templatesTable),
   instructions: many(instructionsTable),
-  workspace: one(workspacesTable)
+  workspace: one(workspacesTable),
+  issues: many(issuesTable)
 }))
 
 export type InsertProject = typeof projectsTable.$inferInsert

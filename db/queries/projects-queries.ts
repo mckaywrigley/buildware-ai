@@ -9,6 +9,7 @@ import {
   SelectProject,
   projectsTable
 } from "../schema/projects-schema"
+import { issuesTable } from "../schema"
 
 export async function createProject(
   data: Omit<InsertProject, "userId">
@@ -84,6 +85,26 @@ export async function updateProject(
     console.error(`Error updating project ${id}:`, error)
     throw error
   }
+}
+
+export async function getMostRecentIssueWithinProjects(
+  workspaceId: string
+): Promise<{ issueId: string; projectId: string } | undefined> {
+  const result = await db
+    .select({
+      issueId: issuesTable.id,
+      projectId: projectsTable.id,
+      updatedAt: issuesTable.updatedAt
+    })
+    .from(issuesTable)
+    .innerJoin(projectsTable, eq(issuesTable.projectId, projectsTable.id))
+    .where(eq(projectsTable.workspaceId, workspaceId))
+    .orderBy(desc(issuesTable.updatedAt))
+    .limit(1)
+
+  return result[0]
+    ? { issueId: result[0].issueId, projectId: result[0].projectId }
+    : undefined
 }
 
 export async function deleteProject(id: string): Promise<void> {
