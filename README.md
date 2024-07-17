@@ -2,6 +2,8 @@
 
 Buildware helps you ship code faster with AI.
 
+Built by [Mckay Wrigley](https://twitter.com/mckaywrigley) and [Tyler Bruno](https://twitter.com/tylerbruno05) at Takeoff AI.
+
 ## Demo
 
 See the latest demo [here](https://twitter.com/mckaywrigley).
