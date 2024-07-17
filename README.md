@@ -69,7 +69,7 @@ GitHub:
 
 You will need a Postgres database to use Buildware.
 
-We recommend using Neon or Supabase.
+We recommend using [Supabase](https://supabase.com/) or [Neon](https://neon.tech/).
 
 Once you have your connection string, update the `DATABASE_URL` in the `.env.local` file.
 
