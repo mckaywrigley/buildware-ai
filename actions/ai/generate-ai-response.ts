@@ -3,11 +3,17 @@
 import { calculateLLMCost } from "@/lib/ai/calculate-llm-cost"
 import { BUILDWARE_MAX_OUTPUT_TOKENS } from "@/lib/constants/buildware-config"
 import Anthropic from "@anthropic-ai/sdk"
+import { mergePartialResults } from "@/lib/ai/merge-partial-results"
+import { parseAIResponse } from "@/lib/ai/parse-ai-response"
+import { trackGenerationProgress } from "@/lib/ai/track-generation-progress"
 
 const anthropic = new Anthropic()
 
+const MAX_ITERATIONS = 5
+
 export const generateAIResponse = async (
-  messages: Anthropic.Messages.MessageParam[]
+  messages: Anthropic.Messages.MessageParam[],
+  iteration: number = 0
 ) => {
   const message = await anthropic.messages.create(
     {
@@ -33,4 +39,34 @@ export const generateAIResponse = async (
   console.warn("cost", cost)
 
   return message.content[0].type === "text" ? message.content[0].text : ""
+}
+
+export const generateCompleteAIResponse = async (
+  initialMessages: Anthropic.Messages.MessageParam[]
+) => {
+  let accumulatedContent = ""
+  let iteration = 0
+  let isComplete = false
+
+  while (!isComplete && iteration < MAX_ITERATIONS) {
+    const response = await generateAIResponse(initialMessages, iteration)
+    const parsedResponse = parseAIResponse(response)
+    
+    accumulatedContent = mergePartialResults(accumulatedContent, parsedResponse)
+    isComplete = parsedResponse.isComplete
+
+    if (!isComplete) {
+      initialMessages.push({ role: "assistant", content: response })
+      initialMessages.push({ role: "user", content: "Please continue where you left off." })
+    }
+
+    trackGenerationProgress(iteration, isComplete)
+    iteration++
+  }
+
+  if (!isComplete) {
+    console.warn("Max iterations reached without completing the generation.")
+  }
+
+  return accumulatedContent
 }

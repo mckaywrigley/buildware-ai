@@ -1,6 +1,6 @@
 "use client"
 
-import { generateAIResponse } from "@/actions/ai/generate-ai-response"
+import { generateCompleteAIResponse } from "@/actions/ai/generate-ai-response"
 import { deleteGitHubPR } from "@/actions/github/delete-pr"
 import { embedTargetBranch } from "@/actions/github/embed-target-branch"
 import { generatePR } from "@/actions/github/generate-pr"
@@ -25,6 +25,7 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog"
+import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
 import {
   createIssueMessageRecord,
@@ -76,6 +77,7 @@ export const IssueView: React.FC<IssueViewProps> = ({
   } | null>(null)
   const [isRunning, setIsRunning] = React.useState(false)
   const [messages, setMessages] = useState<SelectIssueMessage[]>([])
+  const [progress, setProgress] = useState(0)
 
   const sequenceRef = useRef(globalSequence)
 
@@ -128,6 +130,7 @@ export const IssueView: React.FC<IssueViewProps> = ({
     }
 
     setIsRunning(true)
+    setProgress(0)
     try {
       await deleteIssueMessagesByIssueId(issue.id)
       setMessages([])
@@ -173,33 +176,49 @@ export const IssueView: React.FC<IssueViewProps> = ({
         instructionsContext
       })
 
-      const aiCodePlanResponse = await generateAIResponse([
+      const aiCodePlanResponse = await generateCompleteAIResponse([
         { role: "user", content: codeplanPrompt }
       ])
 
       await updateMessage(planMessage.id, aiCodePlanResponse)
       const prMessage = await addMessage("Generating PR...")
 
-      const codegenPrompt = await buildCodeGenPrompt({
-        issue: { title: issue.name, description: issue.content },
-        codebaseFiles: codebaseFiles.map(file => ({
-          path: file.path,
-          content: file.content ?? ""
-        })),
-        plan: aiCodePlanResponse,
-        instructionsContext
-      })
+      let partialResults = ""
+      let isComplete = false
+      let iteration = 0
 
-      const aiCodeGenResponse = await generateAIResponse([
-        { role: "user", content: codegenPrompt }
-      ])
+      while (!isComplete && iteration < 5) {
+        const codegenPrompt = await buildCodeGenPrompt({
+          issue: { title: issue.name, description: issue.content },
+          codebaseFiles: codebaseFiles.map(file => ({
+            path: file.path,
+            content: file.content ?? ""
+          })),
+          plan: aiCodePlanResponse,
+          instructionsContext,
+          partialResults: partialResults ? JSON.parse(partialResults) : undefined
+        })
 
-      const parsedAIResponse = parseAIResponse(aiCodeGenResponse)
+        const aiCodeGenResponse = await generateCompleteAIResponse([
+          { role: "user", content: codegenPrompt }
+        ])
+
+        const parsedAIResponse = parseAIResponse(aiCodeGenResponse)
+        partialResults = JSON.stringify(parsedAIResponse)
+        isComplete = parsedAIResponse.isComplete
+
+        setProgress((iteration + 1) * 20)
+        await updateMessage(prMessage.id, `Generating PR... ${(iteration + 1) * 20}% complete`)
+
+        iteration++
+      }
+
+      const finalParsedResponse = JSON.parse(partialResults)
 
       const { prLink, branchName } = await generatePR(
         issue.name.replace(/\s+/g, "-"),
         project,
-        parsedAIResponse
+        finalParsedResponse
       )
 
       await updateIssue(issue.id, {
@@ -219,6 +238,7 @@ export const IssueView: React.FC<IssueViewProps> = ({
       await updateIssue(issue.id, { status: "failed" })
     } finally {
       setIsRunning(false)
+      setProgress(100)
     }
   }
 
@@ -347,6 +367,12 @@ export const IssueView: React.FC<IssueViewProps> = ({
           </React.Fragment>
         ))}
       </div>
+
+      {isRunning && (
+        <div className="mt-4">
+          <Progress value={progress} className="w-full" />
+        </div>
+      )}
 
       <Dialog
         open={!!selectedInstruction}
