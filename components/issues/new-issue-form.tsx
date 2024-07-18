@@ -16,6 +16,18 @@ import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { CRUDForm } from "../dashboard/reusable/crud-form"
 import { MultiSelect } from "../ui/multi-select"
+import { Sparkles } from "lucide-react"
+import { Button } from "../ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter
+} from "@/components/ui/dialog"
+import { improveContent } from "@/lib/ai/improve-prompt"
+import ChatPromptImprover from "./chat-prompt-improver"
 
 interface NewIssueFormProps {
   templates: SelectTemplate[]
@@ -37,6 +49,9 @@ export function NewIssueForm({ templates }: NewIssueFormProps) {
   const [content, setContent] = useState("")
   const [selectedInstructions, setSelectedInstructions] = useState<string[]>([])
   const [allInstructions, setAllInstructions] = useState<Instruction[]>([])
+  const [isImproving, setIsImproving] = useState(false)
+  const [isAdvancedModalOpen, setIsAdvancedModalOpen] = useState(false)
+  const [chatMessages, setChatMessages] = useState<string[]>([])
 
   const projectId = params.projectId as string
 
@@ -98,6 +113,24 @@ export function NewIssueForm({ templates }: NewIssueFormProps) {
     setAllInstructions(formattedInstructions)
   }
 
+  const handleAIImproveOpenModal = async () => {
+    setIsAdvancedModalOpen(true)
+  }
+
+  const handleAdvancedImprovement = async () => {
+    setIsImproving(true)
+    try {
+      const chatHistory = chatMessages.map(msg => msg)
+      const improvedContent = await improveContent(name, content, chatHistory)
+      setContent(improvedContent)
+    } catch (error) {
+      console.error("Error improving content:", error)
+    } finally {
+      setIsImproving(false)
+      setIsAdvancedModalOpen(false)
+    }
+  }
+
   return (
     <>
       <Select
@@ -133,7 +166,39 @@ export function NewIssueForm({ templates }: NewIssueFormProps) {
         </div>
       )}
 
-      <div className="mt-6">
+      <Dialog open={isAdvancedModalOpen} onOpenChange={setIsAdvancedModalOpen}>
+        <DialogContent className="max-h-[80vh] max-w-3xl overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Advanced AI Improvement</DialogTitle>
+            <DialogDescription>
+              Chat with AI to improve your issue description
+            </DialogDescription>
+          </DialogHeader>
+          <ChatPromptImprover onMessagesUpdate={setChatMessages} />
+          <DialogFooter>
+            <Button
+              onClick={handleAdvancedImprovement}
+              className="w-full max-w-[200px]"
+              disabled={isImproving}
+            >
+              {isImproving ? "Improving..." : "Done"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <div className="mb-4 mt-6">
+        <Button
+          variant="outline"
+          disabled={isImproving}
+          onClick={handleAIImproveOpenModal}
+        >
+          <Sparkles className="mr-2 size-4" />
+          {isImproving ? "Improving..." : "AI Improve"}
+        </Button>
+      </div>
+
+      <div>
         <CRUDForm
           itemName="Issue"
           buttonText="Create"
@@ -142,6 +207,8 @@ export function NewIssueForm({ templates }: NewIssueFormProps) {
             name,
             content
           }}
+          onContentChange={setContent}
+          onNameChange={setName}
         />
       </div>
     </>

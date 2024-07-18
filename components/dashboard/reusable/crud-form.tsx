@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { useRouter } from "next/navigation"
-import { FC, useState } from "react"
+import { useEffect, useState } from "react"
 import ReactTextareaAutosize from "react-textarea-autosize"
 
 interface CRUDFormProps {
@@ -15,14 +15,18 @@ interface CRUDFormProps {
     name: string
     content: string
   }
+  onContentChange?: (content: string) => void
+  onNameChange?: (name: string) => void
 }
 
-export const CRUDForm: FC<CRUDFormProps> = ({
+export const CRUDForm = ({
   itemName,
   buttonText,
   onSubmit,
-  data
-}) => {
+  data,
+  onContentChange,
+  onNameChange
+}: CRUDFormProps) => {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [name, setName] = useState(data?.name || "")
@@ -30,21 +34,22 @@ export const CRUDForm: FC<CRUDFormProps> = ({
 
   const isFormValid = name.trim() !== "" && content.trim() !== ""
 
-  const handleSubmit = async (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (!isFormValid) return
 
     setIsSubmitting(true)
-    const form = event.currentTarget.closest("form")
-    if (form) {
-      const formData = new FormData(form)
-      await onSubmit(formData)
-    }
+    const formData = new FormData(event.currentTarget)
+    await onSubmit(formData)
     setIsSubmitting(false)
   }
 
+  useEffect(() => {
+    setContent(data?.content || "")
+  }, [data?.content])
+
   return (
-    <form className="flex flex-col gap-6">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
       <Card>
         <CardContent className="bg-secondary/50 p-2">
           <Input
@@ -52,7 +57,10 @@ export const CRUDForm: FC<CRUDFormProps> = ({
             name="name"
             placeholder={`${itemName} name`}
             value={name}
-            onChange={e => setName(e.target.value)}
+            onChange={e => {
+              setName(e.target.value)
+              onNameChange?.(e.target.value)
+            }}
             required
           />
 
@@ -63,7 +71,10 @@ export const CRUDForm: FC<CRUDFormProps> = ({
             placeholder={`${itemName} content...`}
             minRows={5}
             value={content}
-            onChange={e => setContent(e.target.value)}
+            onChange={e => {
+              setContent(e.target.value)
+              onContentChange?.(e.target.value)
+            }}
             required
           />
         </CardContent>
@@ -81,9 +92,9 @@ export const CRUDForm: FC<CRUDFormProps> = ({
           </Button>
 
           <Button
+            type="submit"
             variant="create"
             disabled={isSubmitting || !isFormValid}
-            onClick={handleSubmit}
           >
             {buttonText}
           </Button>
