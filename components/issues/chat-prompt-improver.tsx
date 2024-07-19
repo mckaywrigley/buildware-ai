@@ -82,8 +82,6 @@ export const ChatPromptImprover: FC<ChatPromptImproverProps> = ({
     setIsGenerating(false)
   }
 
-  console.log("improvedIssue", improvedIssue)
-
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger>

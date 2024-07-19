@@ -14,8 +14,6 @@ export async function improveIssuePrompt(
   },
   messages: Anthropic.Messages.MessageParam[]
 ): Promise<ParsedImproveIssueResponse> {
-  console.log("messages", messages)
-
   const improvementModel = "claude-3-5-sonnet-20240620"
 
   const systemPrompt = endent`
