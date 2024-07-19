@@ -19,8 +19,6 @@ export const buildCodeGenPrompt = async ({
   instructionsContext: string
 }): Promise<string> => {
   const basePrompt = endent`
-    # AI Expert Developer
-  
     You are an expert developer who is tasked with implementing a given task.
   
     You will be given a task, a codebase, instructions, and an implementation plan.
@@ -52,17 +50,7 @@ export const buildCodeGenPrompt = async ({
     ${issue.description ?? "No description."}
   
     </task>
-  
-    ---
-  
-    # Codebase
-  
-    <codebase>
-    `
 
-  const formatInstructions = `
-    </codebase>
-  
     ---
   
     # Instructions
@@ -84,6 +72,16 @@ export const buildCodeGenPrompt = async ({
     ${plan}
   
     </implementation_plan>
+  
+    ---
+  
+    # Codebase
+  
+    <codebase>
+    `
+
+  const formatInstructions = `
+    </codebase>
   
     ---
   
