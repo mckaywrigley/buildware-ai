@@ -134,11 +134,13 @@ export function NewIssueForm({ templates }: NewIssueFormProps) {
         </div>
       )}
 
-      {name && content && (
-        <div className="mt-4">
-          <ChatPromptImprover startingIssue={{ name, content }} />
-        </div>
-      )}
+      <ChatPromptImprover
+        startingIssue={{ name, content }}
+        onCreateIssue={({ name, content }) => {
+          setName(name)
+          setContent(content)
+        }}
+      />
 
       <div className="mt-4">
         <CRUDForm

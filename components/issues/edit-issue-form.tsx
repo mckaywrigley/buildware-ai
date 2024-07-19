@@ -11,6 +11,7 @@ import { SelectIssue } from "@/db/schema"
 import { useParams, useRouter } from "next/navigation"
 import { FC, useEffect, useState } from "react"
 import { CRUDForm } from "../dashboard/reusable/crud-form"
+import { ChatPromptImprover } from "./chat-prompt-improver"
 import { CRUDPage } from "../dashboard/reusable/crud-page"
 import { MultiSelect } from "../ui/multi-select"
 
@@ -26,6 +27,8 @@ interface Instruction {
 export const EditIssueForm: FC<EditIssueFormProps> = ({ issue }) => {
   const [selectedInstructions, setSelectedInstructions] = useState<string[]>([])
   const [allInstructions, setAllInstructions] = useState<Instruction[]>([])
+  const [name, setName] = useState(issue.name)
+  const [content, setContent] = useState(issue.content)
   const router = useRouter()
   const params = useParams()
 
@@ -100,15 +103,25 @@ export const EditIssueForm: FC<EditIssueFormProps> = ({ issue }) => {
         </div>
       )}
 
+      <ChatPromptImprover
+        startingIssue={{ name, content }}
+        onCreateIssue={({ name: newName, content: newContent }) => {
+          setName(newName)
+          setContent(newContent)
+        }}
+      />
+
       <div className="mt-4">
         <CRUDForm
           itemName="Issue"
           buttonText="Save"
           onSubmit={handleUpdateIssue}
           data={{
-            name: issue.name,
-            content: issue.content
+            name,
+            content
           }}
+          onContentChange={setContent}
+          onNameChange={setName}
         />
       </div>
     </CRUDPage>

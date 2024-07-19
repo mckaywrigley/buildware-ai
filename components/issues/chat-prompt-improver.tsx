@@ -23,10 +23,12 @@ interface ChatPromptImproverProps {
     name: string
     content: string
   }
+  onCreateIssue: (issue: { name: string; content: string }) => void
 }
 
 export const ChatPromptImprover: FC<ChatPromptImproverProps> = ({
-  startingIssue
+  startingIssue,
+  onCreateIssue
 }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
@@ -65,7 +67,10 @@ export const ChatPromptImprover: FC<ChatPromptImproverProps> = ({
       updatedMessages
     )
     console.log("messageResponse", messageResponse)
-    setImprovedIssue(messageResponse.improvedIssue)
+    setImprovedIssue({
+      name: messageResponse.improvedIssue.name,
+      content: messageResponse.improvedIssue.content
+    })
 
     const formattedResponse = messageResponse.isDone
       ? "Completed!"
@@ -89,6 +94,7 @@ export const ChatPromptImprover: FC<ChatPromptImproverProps> = ({
           variant="outline"
           disabled={isDialogOpen}
           onClick={() => setIsDialogOpen(true)}
+          className="mt-4"
         >
           <Sparkles className="mr-2 size-4" />
           AI Improve
@@ -167,7 +173,7 @@ export const ChatPromptImprover: FC<ChatPromptImproverProps> = ({
           />
 
           <Button
-            className="rounded bg-blue-500 px-4 py-2 text-white"
+            className="h-auto rounded bg-blue-500 px-4 text-white"
             onClick={() => handleSubmit(userInput)}
             disabled={isGenerating}
           >
@@ -177,7 +183,10 @@ export const ChatPromptImprover: FC<ChatPromptImproverProps> = ({
 
         <DialogFooter>
           <Button
-            onClick={() => setIsGenerating(true)}
+            onClick={() => {
+              onCreateIssue(improvedIssue)
+              setIsDialogOpen(false)
+            }}
             className="w-full max-w-[200px]"
             disabled={isGenerating}
           >

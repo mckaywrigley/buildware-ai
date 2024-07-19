@@ -45,8 +45,9 @@ export const CRUDForm = ({
   }
 
   useEffect(() => {
+    setName(data?.name || "")
     setContent(data?.content || "")
-  }, [data?.content])
+  }, [data?.name, data?.content])
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
