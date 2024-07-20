@@ -9,4 +9,5 @@ export interface AIParsedResponse {
   fileList: string[]
   files: AIFileInfo[]
   prTitle: string
+  prDescription: string
 }

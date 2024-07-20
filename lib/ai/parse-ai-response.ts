@@ -16,10 +16,16 @@ export function parseAIResponse(response: string): AIParsedResponse {
 
   for (const match of fileMatches) {
     const [_, path, language, content, status] = match
+    let trimmedContent = content.trim()
+
+    if (!trimmedContent.endsWith("\n")) {
+      trimmedContent += "\n"
+    }
+
     files.push({
       path: path.trim(),
       language: language.trim(),
-      content: content.trim(),
+      content: trimmedContent,
       status: status.trim() as "new" | "modified" | "deleted"
     })
   }
@@ -41,6 +47,8 @@ export function parseAIResponse(response: string): AIParsedResponse {
 
   const prTitleMatch = response.match(/<pr_title>([\s\S]*?)<\/pr_title>/)
   const prTitle = prTitleMatch ? prTitleMatch[1].trim() : ""
+  const prDescriptionMatch = response.match(/<pr_description>([\s\S]*?)<\/pr_description>/)
+  const prDescription = prDescriptionMatch ? prDescriptionMatch[1].trim() : ""
 
-  return { fileList, files, prTitle }
+  return { fileList, files, prTitle, prDescription }
 }
