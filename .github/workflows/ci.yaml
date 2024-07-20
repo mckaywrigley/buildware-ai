@@ -35,3 +35,65 @@ jobs:
 
       - name: Run lint
         run: npm run lint
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Use Node.js cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          until pg_isready -h localhost -p 5432; do
+            echo "Waiting for PostgreSQL to be ready..."
+            sleep 1
+          done
+
+      - name: Check PostgreSQL version
+        run: |
+          psql -h localhost -U postgres -c "SELECT version();"
+
+      - name: Set PostgreSQL password environment variable
+        run: echo "PGPASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> $GITHUB_ENV
+
+      - name: Set up environment variables
+        run: echo "DATABASE_URL=postgres://postgres@localhost:5432/postgres" >> $GITHUB_ENV
+
+      - name: Run database migrations
+        run: npm run migrate
+
+      - name: Run type check
+        run: npm run type-check
+
+      - name: Run build
+        run: npm run build
