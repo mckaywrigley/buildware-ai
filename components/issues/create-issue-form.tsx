@@ -7,26 +7,23 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
-import { getInstructionsByProjectId } from "@/db/queries/instructions-queries"
-import { createIssue } from "@/db/queries/issues-queries"
+import { createIssue, getInstructionsByProjectId } from "@/db/queries"
 import { addInstructionToIssue } from "@/db/queries/issues-to-instructions-queries"
 import { getInstructionsForTemplate } from "@/db/queries/templates-to-instructions-queries"
+import { SelectInstruction } from "@/db/schema"
 import { SelectTemplate } from "@/db/schema/templates-schema"
 import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { CRUDForm } from "../dashboard/reusable/crud-form"
 import { MultiSelect } from "../ui/multi-select"
+import { IssueContext } from "./issue-context"
+import { IssueImprover } from "./issue-improver"
 
-interface NewIssueFormProps {
+interface CreateIssueFormProps {
   templates: SelectTemplate[]
 }
 
-interface Instruction {
-  id: string
-  name: string
-}
-
-export function NewIssueForm({ templates }: NewIssueFormProps) {
+export function CreateIssueForm({ templates }: CreateIssueFormProps) {
   const params = useParams()
   const router = useRouter()
 
@@ -36,7 +33,9 @@ export function NewIssueForm({ templates }: NewIssueFormProps) {
   const [name, setName] = useState("")
   const [content, setContent] = useState("")
   const [selectedInstructions, setSelectedInstructions] = useState<string[]>([])
-  const [allInstructions, setAllInstructions] = useState<Instruction[]>([])
+  const [allInstructions, setAllInstructions] = useState<SelectInstruction[]>(
+    []
+  )
 
   const projectId = params.projectId as string
 
@@ -56,13 +55,18 @@ export function NewIssueForm({ templates }: NewIssueFormProps) {
   }, [selectedTemplateId])
 
   useEffect(() => {
-    handleAllInstructionsByProject(projectId)
+    fetchAllInstructions()
   }, [])
 
-  const handleCreateIssueAndRelation = async (formData: FormData) => {
+  const fetchAllInstructions = async () => {
+    const allInstructionsData = await getInstructionsByProjectId(projectId)
+    setAllInstructions(allInstructionsData)
+  }
+
+  const handleCreateIssueAndRelation = async () => {
     const newIssue = {
-      name: formData.get("name") as string,
-      content: formData.get("content") as string,
+      name,
+      content,
       projectId,
       templateId: selectedTemplateId || undefined
     }
@@ -78,24 +82,13 @@ export function NewIssueForm({ templates }: NewIssueFormProps) {
 
   const handleInstructionsForTemplate = async (templateId: string) => {
     const instructionsData = await getInstructionsForTemplate(templateId)
-    const formattedInstructions: Instruction[] = instructionsData.map(item => ({
+    const formattedInstructions = instructionsData.map(item => ({
       id: item.instruction.id,
       name: item.instruction.name
     }))
     setSelectedInstructions(
       formattedInstructions.map(instruction => instruction.id)
     )
-  }
-
-  const handleAllInstructionsByProject = async (projectId: string) => {
-    const allInstructionsData = await getInstructionsByProjectId(projectId)
-    const formattedInstructions: Instruction[] = allInstructionsData.map(
-      instruction => ({
-        id: instruction.id,
-        name: instruction.name
-      })
-    )
-    setAllInstructions(formattedInstructions)
   }
 
   return (
@@ -133,7 +126,25 @@ export function NewIssueForm({ templates }: NewIssueFormProps) {
         </div>
       )}
 
-      <div className="mt-6">
+      <div className="mt-4 flex w-full justify-end gap-2">
+        <IssueContext
+          name={name}
+          content={content}
+          selectedInstructions={allInstructions.filter(instruction =>
+            selectedInstructions.includes(instruction.id)
+          )}
+        />
+
+        <IssueImprover
+          startingIssue={{ name, content }}
+          onUpdateIssue={({ name, content }) => {
+            setName(name)
+            setContent(content)
+          }}
+        />
+      </div>
+
+      <div className="mt-4">
         <CRUDForm
           itemName="Issue"
           buttonText="Create"
@@ -142,6 +153,8 @@ export function NewIssueForm({ templates }: NewIssueFormProps) {
             name,
             content
           }}
+          onContentChange={setContent}
+          onNameChange={setName}
         />
       </div>
     </>
