@@ -7,7 +7,7 @@ import endent from "endent"
 
 const anthropic = new Anthropic()
 
-export async function improveIssuePrompt(
+export async function generateImprovedIssue(
   startingIssue: {
     name: string
     content: string
@@ -87,6 +87,15 @@ export async function improveIssuePrompt(
 
       <is_done>__IS_DONE__</is_done>
     </response>
+
+    ## Response Example
+
+    <response>
+      <improved_issue>
+        <improved_issue_name>__IMPROVED_ISSUE_NAME__</improved_issue_name>
+        <improved_issue_content>__IMPROVED_ISSUE_CONTENT__</improved_issue_content>
+      </improved_issue>
+    </response>
     `
 
   try {
@@ -112,7 +121,7 @@ export async function improveIssuePrompt(
     })
     console.warn("improvement cost", cost)
 
-    const parsedResponse = parseImproveIssuePrompt(
+    const parsedResponse = parseImprovedIssue(
       message.content[0].type === "text" ? message.content[0].text : ""
     )
 
@@ -135,9 +144,7 @@ interface ParsedImproveIssueResponse {
   isDone: boolean
 }
 
-const parseImproveIssuePrompt = (
-  response: string
-): ParsedImproveIssueResponse => {
+const parseImprovedIssue = (response: string): ParsedImproveIssueResponse => {
   const improvedIssueMatch = response.match(
     /<improved_issue>([\s\S]*?)<\/improved_issue>/
   )

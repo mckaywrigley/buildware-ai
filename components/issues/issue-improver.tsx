@@ -1,6 +1,6 @@
 "use client"
 
-import { improveIssuePrompt } from "@/actions/ai/improve-issue-prompt"
+import { generateImprovedIssue } from "@/actions/ai/generate-improved-issue"
 import { cn } from "@/lib/utils"
 import Anthropic from "@anthropic-ai/sdk"
 import endent from "endent"
@@ -53,6 +53,15 @@ export const IssueImprover: FC<IssueImproverProps> = ({
     setUserInput(e.target.value)
   }
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault()
+      if (userInput.trim() !== "") {
+        handleSubmit(userInput)
+      }
+    }
+  }
+
   const handleSubmit = async (message: string) => {
     setUserInput("")
     setIsGenerating(true)
@@ -64,7 +73,7 @@ export const IssueImprover: FC<IssueImproverProps> = ({
     setMessages(updatedMessages)
 
     try {
-      const messageResponse = await improveIssuePrompt(
+      const messageResponse = await generateImprovedIssue(
         startingIssue,
         updatedMessages
       )
@@ -73,8 +82,10 @@ export const IssueImprover: FC<IssueImproverProps> = ({
       const formattedResponse = messageResponse.isDone
         ? "Completed!"
         : endent`
+        ### Improvements
     ${messageResponse.message.explanation}
 
+    ### Follow Up
     ${messageResponse.message.nextQuestion}
     `
       setMessages(prevMessages => [
@@ -155,8 +166,10 @@ export const IssueImprover: FC<IssueImproverProps> = ({
                 Improving issue...
               </div>
             ) : (
-              <div className="flex h-full flex-col gap-2 overflow-y-auto">
-                <div className="text-lg font-bold">{improvedIssue.name}</div>
+              <div className="flex h-full flex-col gap-6 overflow-y-auto">
+                <div className="text-3xl font-extrabold">
+                  {improvedIssue.name}
+                </div>
                 <MessageMarkdown className="" content={improvedIssue.content} />
               </div>
             )}
@@ -173,13 +186,13 @@ export const IssueImprover: FC<IssueImproverProps> = ({
                     <div
                       className={`max-w-[80%] ${
                         message.role === "user"
-                          ? "bg-primary text-secondary rounded-lg p-2 text-right"
-                          : "bg-muted rounded-lg p-2 text-left"
+                          ? "bg-primary text-secondary rounded-lg text-right"
+                          : "bg-muted rounded-lg text-left"
                       }`}
                     >
                       {message.role === "assistant" ? (
                         <MessageMarkdown
-                          className="bg-background rounded-xl p-2"
+                          className="bg-background rounded-xl p-4"
                           content={
                             typeof message.content === "string"
                               ? message.content
@@ -187,7 +200,7 @@ export const IssueImprover: FC<IssueImproverProps> = ({
                           }
                         />
                       ) : (
-                        <div>
+                        <div className="p-2">
                           {typeof message.content === "string"
                             ? message.content
                             : JSON.stringify(message.content)}
@@ -196,6 +209,16 @@ export const IssueImprover: FC<IssueImproverProps> = ({
                     </div>
                   </div>
                 ))}
+
+                {isGenerating && (
+                  <div className="flex justify-start">
+                    <div className="bg-muted max-w-[80%] rounded-lg text-left">
+                      <div className="bg-background animate-pulse rounded-xl p-3">
+                        Improving your issue...
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -207,12 +230,13 @@ export const IssueImprover: FC<IssueImproverProps> = ({
                 maxRows={8}
                 value={userInput}
                 onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
               />
 
               <Button
                 className="h-auto w-[50px] rounded"
                 onClick={() => handleSubmit(userInput)}
-                disabled={isGenerating || !userInput}
+                disabled={isGenerating || !userInput.trim()}
               >
                 <Send className="size-4" />
               </Button>
