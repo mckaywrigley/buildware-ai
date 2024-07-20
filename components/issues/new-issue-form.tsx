@@ -134,13 +134,15 @@ export function NewIssueForm({ templates }: NewIssueFormProps) {
         </div>
       )}
 
-      <ChatPromptImprover
-        startingIssue={{ name, content }}
-        onCreateIssue={({ name, content }) => {
-          setName(name)
-          setContent(content)
-        }}
-      />
+      <div className="flex w-full justify-end">
+        <ChatPromptImprover
+          startingIssue={{ name, content }}
+          onUpdateIssue={({ name, content }) => {
+            setName(name)
+            setContent(content)
+          }}
+        />
+      </div>
 
       <div className="mt-4">
         <CRUDForm

@@ -11,9 +11,9 @@ import { SelectIssue } from "@/db/schema"
 import { useParams, useRouter } from "next/navigation"
 import { FC, useEffect, useState } from "react"
 import { CRUDForm } from "../dashboard/reusable/crud-form"
-import { ChatPromptImprover } from "./chat-prompt-improver"
 import { CRUDPage } from "../dashboard/reusable/crud-page"
 import { MultiSelect } from "../ui/multi-select"
+import { ChatPromptImprover } from "./chat-prompt-improver"
 
 interface EditIssueFormProps {
   issue: SelectIssue
@@ -103,13 +103,15 @@ export const EditIssueForm: FC<EditIssueFormProps> = ({ issue }) => {
         </div>
       )}
 
-      <ChatPromptImprover
-        startingIssue={{ name, content }}
-        onCreateIssue={({ name: newName, content: newContent }) => {
-          setName(newName)
-          setContent(newContent)
-        }}
-      />
+      <div className="flex w-full justify-end">
+        <ChatPromptImprover
+          startingIssue={{ name, content }}
+          onUpdateIssue={({ name: newName, content: newContent }) => {
+            setName(newName)
+            setContent(newContent)
+          }}
+        />
+      </div>
 
       <div className="mt-4">
         <CRUDForm
