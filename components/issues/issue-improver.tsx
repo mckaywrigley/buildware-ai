@@ -18,7 +18,7 @@ import {
   DialogTrigger
 } from "../ui/dialog"
 
-interface ChatPromptImproverProps extends HTMLAttributes<HTMLDivElement> {
+interface IssueImproverProps extends HTMLAttributes<HTMLDivElement> {
   startingIssue: {
     name: string
     content: string
@@ -26,7 +26,7 @@ interface ChatPromptImproverProps extends HTMLAttributes<HTMLDivElement> {
   onUpdateIssue: (issue: { name: string; content: string }) => void
 }
 
-export const ChatPromptImprover: FC<ChatPromptImproverProps> = ({
+export const IssueImprover: FC<IssueImproverProps> = ({
   startingIssue,
   onUpdateIssue,
   ...props
@@ -106,7 +106,6 @@ export const ChatPromptImprover: FC<ChatPromptImproverProps> = ({
           variant="outline"
           disabled={isDialogOpen}
           onClick={() => setIsDialogOpen(true)}
-          className="mt-4"
         >
           <Sparkles className="mr-2 size-4" />
           Improve Issue

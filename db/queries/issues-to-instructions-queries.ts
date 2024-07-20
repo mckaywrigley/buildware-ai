@@ -40,18 +40,12 @@ export async function removeInstructionFromIssue(
   }
 }
 
-export async function getInstructionsForIssue(issueId: string) {
+export async function getInstructionsByIssueId(issueId: string) {
   try {
     return db.query.issuesToInstructions.findMany({
       where: eq(issuesToInstructionsTable.issueId, issueId),
       with: {
-        instruction: {
-          columns: {
-            id: true,
-            name: true,
-            content: true
-          }
-        }
+        instruction: true
       }
     })
   } catch (error) {
