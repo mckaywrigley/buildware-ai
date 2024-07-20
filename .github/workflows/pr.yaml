@@ -1,9 +1,11 @@
-name: CI
+name: PR
 
 on:
-  push:
-    branches:
-      - main
+  pull_request:
+
+permissions:
+  pull-requests: write
+  contents: write
 
 jobs:
   lint:
@@ -34,7 +36,7 @@ jobs:
         run: npm run lint
 
   build:
-    name: Build
+    name: 'Build 📦'
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -94,3 +96,20 @@ jobs:
 
       - name: Run build
         run: npm run build
+
+  dependabot:
+    name: 'Dependabot'
+    needs: [build, lint]
+    runs-on: ubuntu-latest
+    if: ${{ github.actor == 'dependabot[bot]' && github.event_name == 'pull_request'}}
+    steps:
+      - name: Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v2.2.0
+        with:
+          github-token: '${{ secrets.GITHUB_TOKEN }}'
+      - name: Enable auto-merge for Dependabot PRs
+        run: gh pr merge --auto --merge "$PR_URL"
+        env:
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
