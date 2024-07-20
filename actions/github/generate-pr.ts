@@ -140,7 +140,7 @@ export async function generatePR(
       title: parsedResponse.prTitle || `AI: Update for ${branchName}`,
       head: newBranch,
       base: baseBranch,
-      body: `AI: Update for ${branchName}`
+      body: parsedResponse.prDescription || `AI: Update for ${branchName}`
     })
 
     return { prLink: pr.data.html_url, branchName: newBranch }
