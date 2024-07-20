@@ -22,7 +22,7 @@ export const MessageMarkdown: FC<MessageMarkdownProps> = ({
       remarkPlugins={[remarkGfm, remarkMath]}
       components={{
         p({ children }) {
-          return <p className="mb-2last:mb-0">{children}</p>
+          return <p className="mb-2 last:mb-0">{children}</p>
         },
         img({ ...props }) {
           return <img className="max-w-[67%]" {...props} />
