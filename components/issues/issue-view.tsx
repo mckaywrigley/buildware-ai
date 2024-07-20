@@ -34,7 +34,12 @@ import {
   updateIssue,
   updateIssueMessage
 } from "@/db/queries"
-import { SelectIssue, SelectIssueMessage, SelectProject } from "@/db/schema"
+import {
+  SelectInstruction,
+  SelectIssue,
+  SelectIssueMessage,
+  SelectProject
+} from "@/db/schema"
 import { buildCodeGenPrompt } from "@/lib/ai/build-codegen-prompt"
 import { buildCodePlanPrompt } from "@/lib/ai/build-plan-prompt"
 import { parseAIResponse } from "@/lib/ai/parse-ai-response"
@@ -42,6 +47,7 @@ import { Loader2, Pencil, Play, RefreshCw, Trash2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import React, { useEffect, useRef, useState } from "react"
 import { CRUDPage } from "../dashboard/reusable/crud-page"
+import { IssueContext } from "./issue-context"
 
 interface IssueViewProps {
   item: SelectIssue
@@ -49,11 +55,7 @@ interface IssueViewProps {
   attachedInstructions: {
     instructionId: string
     issueId: string
-    instruction: {
-      id: string
-      content: string
-      name: string
-    }
+    instruction: SelectInstruction
   }[]
   workspaceId: string
 }
@@ -307,11 +309,19 @@ export const IssueView: React.FC<IssueViewProps> = ({
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        <IssueContext
+          name={item.name}
+          content={item.content}
+          selectedInstructions={attachedInstructions.map(ai => ai.instruction)}
+        />
       </div>
 
       {attachedInstructions.length > 0 && (
         <div className="my-6">
-          <div className="mb-2 text-lg font-semibold">Attached instruction</div>
+          <div className="mb-2 text-lg font-semibold">
+            Attached instructions
+          </div>
           <div className="flex flex-wrap gap-2">
             {attachedInstructions.map(instruction => (
               <Button
@@ -327,7 +337,7 @@ export const IssueView: React.FC<IssueViewProps> = ({
         </div>
       )}
 
-      <Card>
+      <Card className="mt-6">
         <CardContent className="bg-secondary/50 p-4">
           <MessageMarkdown content={item.content} />
         </CardContent>

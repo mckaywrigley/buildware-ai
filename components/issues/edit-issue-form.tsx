@@ -4,34 +4,45 @@ import { getInstructionsByProjectId } from "@/db/queries/instructions-queries"
 import { updateIssue } from "@/db/queries/issues-queries"
 import {
   addInstructionToIssue,
-  getInstructionsForIssue,
+  getInstructionsByIssueId,
   removeInstructionFromIssue
 } from "@/db/queries/issues-to-instructions-queries"
-import { SelectIssue } from "@/db/schema"
+import { SelectInstruction, SelectIssue } from "@/db/schema"
 import { useParams, useRouter } from "next/navigation"
 import { FC, useEffect, useState } from "react"
 import { CRUDForm } from "../dashboard/reusable/crud-form"
 import { CRUDPage } from "../dashboard/reusable/crud-page"
 import { MultiSelect } from "../ui/multi-select"
+import { IssueContext } from "./issue-context"
+import { IssueImprover } from "./issue-improver"
 
 interface EditIssueFormProps {
   issue: SelectIssue
 }
 
-interface Instruction {
-  id: string
-  name: string
-}
-
 export const EditIssueForm: FC<EditIssueFormProps> = ({ issue }) => {
-  const [selectedInstructions, setSelectedInstructions] = useState<string[]>([])
-  const [allInstructions, setAllInstructions] = useState<Instruction[]>([])
   const router = useRouter()
   const params = useParams()
 
+  const [selectedInstructions, setSelectedInstructions] = useState<string[]>([])
+  const [allInstructions, setAllInstructions] = useState<SelectInstruction[]>(
+    []
+  )
+  const [name, setName] = useState(issue.name)
+  const [content, setContent] = useState(issue.content)
+
   useEffect(() => {
-    handleAllInstructionsByProject(issue.projectId)
-  }, [issue.projectId])
+    fetchInstructions()
+  }, [])
+
+  const fetchInstructions = async () => {
+    const allInstructionsData = await getInstructionsByProjectId(
+      issue.projectId
+    )
+    const issueInstructions = await getInstructionsByIssueId(issue.id)
+    setAllInstructions(allInstructionsData)
+    setSelectedInstructions(issueInstructions.map(p => p.instruction.id))
+  }
 
   const handleUpdateIssue = async (formData: FormData) => {
     try {
@@ -40,7 +51,7 @@ export const EditIssueForm: FC<EditIssueFormProps> = ({ issue }) => {
         content: formData.get("content") as string
       })
 
-      const currentInstructions = await getInstructionsForIssue(issue.id)
+      const currentInstructions = await getInstructionsByIssueId(issue.id)
       const currentInstructionIds = new Set<string>(
         currentInstructions.map(p => p.instruction.id)
       )
@@ -67,19 +78,6 @@ export const EditIssueForm: FC<EditIssueFormProps> = ({ issue }) => {
     }
   }
 
-  const handleAllInstructionsByProject = async (projectId: string) => {
-    const allInstructionsData = await getInstructionsByProjectId(projectId)
-    const issueInstructions = await getInstructionsForIssue(issue.id)
-    const formattedInstructions: Instruction[] = allInstructionsData.map(
-      instruction => ({
-        id: instruction.id,
-        name: instruction.name
-      })
-    )
-    setAllInstructions(formattedInstructions)
-    setSelectedInstructions(issueInstructions.map(p => p.instruction.id))
-  }
-
   return (
     <CRUDPage
       pageTitle="Edit Issue"
@@ -100,15 +98,35 @@ export const EditIssueForm: FC<EditIssueFormProps> = ({ issue }) => {
         </div>
       )}
 
+      <div className="mt-4 flex w-full justify-end gap-2">
+        <IssueContext
+          name={name}
+          content={content}
+          selectedInstructions={allInstructions.filter(instruction =>
+            selectedInstructions.includes(instruction.id)
+          )}
+        />
+
+        <IssueImprover
+          startingIssue={{ name, content }}
+          onUpdateIssue={({ name: newName, content: newContent }) => {
+            setName(newName)
+            setContent(newContent)
+          }}
+        />
+      </div>
+
       <div className="mt-4">
         <CRUDForm
           itemName="Issue"
           buttonText="Save"
           onSubmit={handleUpdateIssue}
           data={{
-            name: issue.name,
-            content: issue.content
+            name,
+            content
           }}
+          onContentChange={setContent}
+          onNameChange={setName}
         />
       </div>
     </CRUDPage>

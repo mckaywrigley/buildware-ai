@@ -1,7 +1,7 @@
 import { IssueView } from "@/components/issues/issue-view"
 import { NotFound } from "@/components/utility/not-found"
 import { getIssueById } from "@/db/queries/issues-queries"
-import { getInstructionsForIssue } from "@/db/queries/issues-to-instructions-queries"
+import { getInstructionsByIssueId } from "@/db/queries/issues-to-instructions-queries"
 import { getProjectById } from "@/db/queries/projects-queries"
 
 export const revalidate = 0
@@ -23,7 +23,7 @@ export default async function IssuePage({
     return <NotFound message="Project not found" />
   }
 
-  const attachedInstructions = await getInstructionsForIssue(issue.id)
+  const attachedInstructions = await getInstructionsByIssueId(issue.id)
 
   return (
     <IssueView
