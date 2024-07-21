@@ -5,16 +5,16 @@ import { auth } from "@clerk/nextjs/server"
 const IS_SIMPLE_MODE = process.env.NEXT_PUBLIC_APP_MODE === "simple"
 const SIMPLE_USER_ID = "simple_user_1"
 
-export async function getUserId() {
+export async function getUserId(): Promise<string> {
   if (IS_SIMPLE_MODE) {
-    return SIMPLE_USER_ID
+    return SIMPLE_USER_ID;
   }
 
-  const { userId } = auth()
+  const { userId } = auth();
 
   if (!userId) {
-    throw new Error("User not authenticated")
+    throw new Error("User not authenticated");
   }
 
-  return userId
+  return userId;
 }

@@ -1,7 +1,7 @@
 "use server"
 
 import { getUserId } from "@/actions/auth/auth"
-import console from "console"
+import { logError } from "@/lib/utils"
 import { eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { db } from "../db"
@@ -11,43 +11,102 @@ import {
   profilesTable
 } from "../schema/profiles-schema"
 
-export async function createProfile(
-  data: Partial<InsertProfile>
-): Promise<SelectProfile> {
-  const userId = await getUserId()
-
-  const [profile] = await db
-    .insert(profilesTable)
-    .values({ ...data, userId })
-    .returning()
-
-  revalidatePath("/")
-  return profile
+class DatabaseError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'DatabaseError';
+  }
 }
 
-export async function getProfileByUserId(): Promise<SelectProfile | undefined> {
-  const userId = await getUserId()
+class ValidationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ValidationError';
+  }
+}
 
+class NotFoundError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'NotFoundError';
+  }
+}
+
+export async function createProfile(
+  data: Partial<InsertProfile>
+): Promise<SelectProfile | { error: string }> {
   try {
+    if (!data.userId) {
+      throw new ValidationError('User ID is required');
+    }
+
+    const userId = await getUserId();
+
+    const [profile] = await db
+      .insert(profilesTable)
+      .values({ ...data, userId })
+      .returning();
+
+    revalidatePath("/");
+    return profile;
+  } catch (error) {
+    logError('createProfile', error);
+    if (error instanceof ValidationError) {
+      return { error: error.message };
+    }
+    return { error: 'An error occurred while creating the profile' };
+  }
+}
+
+export async function getProfileByUserId(): Promise<SelectProfile | { error: string }> {
+  try {
+    const userId = await getUserId();
+
     const profile = await db.query.profiles.findFirst({
       where: eq(profilesTable.userId, userId)
-    })
-    return profile
+    });
+
+    if (!profile) {
+      throw new NotFoundError('Profile not found');
+    }
+
+    return profile;
   } catch (error) {
-    console.error(error)
+    logError('getProfileByUserId', error);
+    if (error instanceof NotFoundError) {
+      return { error: error.message };
+    }
+    return { error: 'An error occurred while fetching the profile' };
   }
 }
 
 export async function updateProfile(
   data: Partial<InsertProfile>
-): Promise<SelectProfile> {
-  const userId = await getUserId()
+): Promise<SelectProfile | { error: string }> {
+  try {
+    const userId = await getUserId();
 
-  const [updatedProfile] = await db
-    .update(profilesTable)
-    .set(data)
-    .where(eq(profilesTable.userId, userId))
-    .returning()
-  revalidatePath("/")
-  return updatedProfile
+    if (Object.keys(data).length === 0) {
+      throw new ValidationError('No update data provided');
+    }
+
+    const [updatedProfile] = await db
+      .update(profilesTable)
+      .set(data)
+      .where(eq(profilesTable.userId, userId))
+      .returning();
+
+    if (!updatedProfile) {
+      throw new NotFoundError('Profile not found');
+    }
+
+    revalidatePath("/");
+    return updatedProfile;
+  } catch (error) {
+    logError('updateProfile', error);
+    if (error instanceof ValidationError || error instanceof NotFoundError) {
+      return { error: error.message };
+    }
+    return { error: 'An error occurred while updating the profile' };
+  }
 }
