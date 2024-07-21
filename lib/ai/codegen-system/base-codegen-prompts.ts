@@ -45,12 +45,12 @@ export const buildBasePrompt = async ({
   const thirdPromptSection = endent`
       ${additionalInstructions}
 
-      ${instructionsContext}
+      ${instructionsContext || "No additional instructions provided."}
     </instructions>
-
     ${
       extraSections
         ? endent`
+
     ---
 
     ${extraSections}`
@@ -66,7 +66,6 @@ export const buildBasePrompt = async ({
 
   const finalPrompt = endent`
     ${firstPromptSection}
-
       ${codebaseFilesAsText}
 
     ${secondPromptSection}

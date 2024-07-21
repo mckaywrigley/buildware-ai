@@ -1,6 +1,7 @@
 "use client"
 
 import { generateAIResponse } from "@/actions/ai/generate-ai-response"
+import { savePrompt } from "@/actions/evals/save-codegen-prompt"
 import { deleteGitHubPR } from "@/actions/github/delete-pr"
 import { embedTargetBranch } from "@/actions/github/embed-target-branch"
 import { generatePR } from "@/actions/github/generate-pr"
@@ -184,7 +185,11 @@ export const IssueView: React.FC<IssueViewProps> = ({
         { role: "user", content: thinkPrompt }
       ])
 
+      await savePrompt(thinkPrompt, issue.name)
+
       await updateMessage(thinkMessage.id, thinkResponse)
+
+      return
 
       const planMessage = await addMessage("Generating plan...")
 
