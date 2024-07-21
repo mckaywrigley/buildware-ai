@@ -1,3 +1,5 @@
+"use client"
+
 import { AIThought } from "@/types/ai"
 import { FC, useState } from "react"
 import ReactTextareaAutosize from "react-textarea-autosize"

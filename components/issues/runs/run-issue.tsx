@@ -1,3 +1,5 @@
+"use client"
+
 import { CRUDPage } from "@/components/dashboard/reusable/crud-page"
 import {
   SelectInstruction,
