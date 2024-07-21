@@ -94,12 +94,15 @@ export async function handleAtAIComment(
       : []
   )
 
-  const aiResponse = await generateCodegenAIMessage([
-    {
-      role: "user",
-      content: commentPrompt + strippedBody
-    }
-  ])
+  const aiResponse = await generateCodegenAIMessage(
+    [
+      {
+        role: "user",
+        content: commentPrompt + strippedBody
+      }
+    ],
+    ""
+  )
 
   await createComment(
     linearClient,

@@ -190,8 +190,6 @@ export const IssueView: React.FC<IssueViewProps> = ({
       await updateMessage(thinkMessage.id, thinkResponse)
       await savePrompt(thinkResponse, issue.name, "think", "response")
 
-      return
-
       const planMessage = await addMessage("Generating plan...")
 
       const { systemPrompt: planSystemPrompt, userMessage: planUserMessage } =
