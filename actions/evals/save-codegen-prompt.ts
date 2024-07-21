@@ -6,7 +6,7 @@ import path from "path"
 export async function savePrompt(
   prompt: string,
   issueName: string,
-  step: "think" | "plan" | "code",
+  step: "think" | "plan" | "act",
   type: "prompt" | "response"
 ) {
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-")

@@ -212,6 +212,7 @@ export const IssueView: React.FC<IssueViewProps> = ({
       )
 
       await updateMessage(planMessage.id, planResponse)
+      await savePrompt(planResponse, issue.name, "plan", "response")
 
       const codeMessage = await addMessage("Generating PR...")
 
@@ -250,6 +251,7 @@ export const IssueView: React.FC<IssueViewProps> = ({
       } else {
         await updateMessage(codeMessage.id, "Failed to create PR")
       }
+      await savePrompt(actResponse, issue.name, "act", "response")
 
       await addMessage("Done!")
     } catch (error) {

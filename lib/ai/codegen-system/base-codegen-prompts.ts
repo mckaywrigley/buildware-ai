@@ -11,7 +11,7 @@ export const buildBasePrompt = async ({
   extraSections,
   responseInstructions
 }: {
-  step: "think" | "plan" | "code"
+  step: "think" | "plan" | "act"
   issue: {
     name: string
     description: string
