@@ -41,7 +41,7 @@ export const InstructionAndTemplateView: FC<
 
   return (
     <CRUDPage
-      pageTitle={`Viewing ${type}`}
+      pageTitle={`View ${type}`}
       backText={`Back to ${type}s`}
       backLink={`../${type}s`}
     >

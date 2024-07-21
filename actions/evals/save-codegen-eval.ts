@@ -3,10 +3,10 @@
 import { promises as fs } from "fs"
 import path from "path"
 
-export async function savePrompt(
+export async function saveCodegenEval(
   prompt: string,
   issueName: string,
-  step: "think" | "plan" | "act",
+  step: "clarify" | "think" | "plan" | "act" | "verify",
   type: "prompt" | "response"
 ) {
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-")

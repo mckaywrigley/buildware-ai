@@ -1,0 +1,1 @@
+ALTER TABLE "issue_messages" DROP COLUMN IF EXISTS "sequence";

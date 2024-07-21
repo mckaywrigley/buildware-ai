@@ -1,4 +1,3 @@
-import { savePrompt } from "@/actions/evals/save-codegen-prompt"
 import endent from "endent"
 import { limitCodebaseTokens } from "../limit-codebase-tokens"
 
@@ -11,7 +10,7 @@ export const buildBasePrompt = async ({
   extraSections,
   responseInstructions
 }: {
-  step: "think" | "plan" | "act"
+  step: "clarify" | "think" | "plan" | "act" | "verify"
   issue: {
     name: string
     description: string
@@ -82,9 +81,6 @@ export const buildBasePrompt = async ({
 
     ${responseSection}
   `
-
-  // Save the final prompt
-  await savePrompt(userMessage, issue.name, step, "prompt")
 
   return { systemPrompt: "", userMessage }
 }

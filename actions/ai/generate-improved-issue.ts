@@ -18,7 +18,7 @@ export async function generateImprovedIssue(
   messages: Anthropic.Messages.MessageParam[]
 ): Promise<ParsedImproveIssueResponse> {
   const systemPrompt = endent`
-    You are a world-class project manager.
+  You are a world-class project manager and software engineer.
 
     You will be given an issue, improvement instructions, and response instructions.
     

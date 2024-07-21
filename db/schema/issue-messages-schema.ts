@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm"
-import { integer, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core"
+import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core"
 import { issuesTable } from "./issues-schema"
 
 export const issueMessagesTable = pgTable("issue_messages", {
@@ -8,7 +8,6 @@ export const issueMessagesTable = pgTable("issue_messages", {
     .notNull()
     .references(() => issuesTable.id, { onDelete: "cascade" }),
   content: text("content").notNull(),
-  sequence: integer("sequence").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at")
     .notNull()

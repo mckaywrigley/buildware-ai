@@ -7,12 +7,12 @@ import Anthropic from "@anthropic-ai/sdk"
 const anthropic = new Anthropic()
 
 export const generateCodegenAIMessage = async ({
-  messages,
   system,
+  messages,
   model
 }: {
-  messages: Anthropic.Messages.MessageParam[]
   system: string
+  messages: Anthropic.Messages.MessageParam[]
   model: "claude-3-5-sonnet-20240620" | "claude-3-haiku-20240307"
 }) => {
   const message = await anthropic.messages.create(

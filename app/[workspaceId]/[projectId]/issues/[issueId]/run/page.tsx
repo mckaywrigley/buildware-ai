@@ -1,9 +1,14 @@
 import { RunIssue } from "@/components/issues/run-issue"
 import { NotFound } from "@/components/utility/not-found"
-import { getIssueById, getIssueMessagesByIssueId } from "@/db/queries"
+import {
+  getInstructionsByIssueId,
+  getIssueById,
+  getIssueMessagesByIssueId,
+  getProjectById
+} from "@/db/queries"
 
 export default async function RunIssuePage({
-  params: { issueId }
+  params: { issueId, projectId }
 }: {
   params: {
     workspaceId: string
@@ -13,10 +18,23 @@ export default async function RunIssuePage({
 }) {
   const issue = await getIssueById(issueId)
   const issueMessages = await getIssueMessagesByIssueId(issueId)
+  const project = await getProjectById(projectId)
+  const attachedInstructions = await getInstructionsByIssueId(issueId)
 
   if (!issue) {
     return <NotFound message="Issue not found" />
   }
 
-  return <RunIssue issue={issue} initialIssueMessages={issueMessages} />
+  if (!project) {
+    return <NotFound message="Project not found" />
+  }
+
+  return (
+    <RunIssue
+      issue={issue}
+      initialIssueMessages={issueMessages}
+      project={project}
+      attachedInstructions={attachedInstructions}
+    />
+  )
 }

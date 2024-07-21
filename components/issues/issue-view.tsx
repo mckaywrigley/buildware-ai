@@ -36,7 +36,7 @@ export const IssueView: React.FC<IssueViewProps> = ({
 
   return (
     <CRUDPage
-      pageTitle={`Viewing issue`}
+      pageTitle={`View issue`}
       backText="Back to Issues"
       backLink={`../issues`}
     >

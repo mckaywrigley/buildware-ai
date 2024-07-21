@@ -1,9 +1,9 @@
-import { AIParsedPlanResponse, AIStep } from "@/types/ai"
+import { AIParsedPlanResponse, AIPlanStep } from "@/types/ai"
 
 export function parseCodegenPlanResponse(
   response: string
 ): AIParsedPlanResponse {
-  const steps: AIStep[] = []
+  const steps: AIPlanStep[] = []
   const stepsMatch = response.match(/<steps>([\s\S]*?)<\/steps>/)
 
   if (stepsMatch) {

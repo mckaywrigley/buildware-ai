@@ -15,7 +15,7 @@ export async function generatePR(
   // Create a new branch
   const baseBranch = project.githubTargetBranch || "main"
   const timestamp = Date.now()
-  let newBranch = `buildware-ai/${branchName}/${timestamp}`
+  let newBranch = `buildware-ai/${branchName.replace(/\s+/g, "-")}/${timestamp}`
   let baseRef: any
 
   try {
