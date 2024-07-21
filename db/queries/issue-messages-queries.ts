@@ -9,7 +9,7 @@ import {
   issueMessagesTable
 } from "../schema/issue-messages-schema"
 
-export async function createIssueMessageRecord(
+export async function createIssueMessage(
   data: InsertIssueMessage
 ): Promise<SelectIssueMessage> {
   try {

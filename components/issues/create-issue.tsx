@@ -16,8 +16,8 @@ import { useParams, useRouter } from "next/navigation"
 import { FC, useEffect, useState } from "react"
 import { CRUDForm } from "../dashboard/reusable/crud-form"
 import { MultiSelect } from "../ui/multi-select"
-import { IssueContext } from "./issue-context"
-import { IssueImprover } from "./issue-improver"
+import { IssueImprover } from "./improve-issue"
+import { IssueContext } from "./view-issue-context"
 
 interface CreateIssueProps {
   templates: SelectTemplate[]

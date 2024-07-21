@@ -12,8 +12,8 @@ import { FC, useState } from "react"
 import { CRUDForm } from "../dashboard/reusable/crud-form"
 import { CRUDPage } from "../dashboard/reusable/crud-page"
 import { MultiSelect } from "../ui/multi-select"
-import { IssueContext } from "./issue-context"
-import { IssueImprover } from "./issue-improver"
+import { ImproveIssue } from "./improve-issue"
+import { ViewIssueContext } from "./view-issue-context"
 
 interface EditIssueProps {
   issue: SelectIssue
@@ -96,7 +96,7 @@ export const EditIssue: FC<EditIssueProps> = ({
       )}
 
       <div className="mt-4 flex w-full justify-end gap-2">
-        <IssueContext
+        <ViewIssueContext
           name={name}
           content={content}
           selectedInstructions={allInstructions.filter(instruction =>
@@ -104,7 +104,7 @@ export const EditIssue: FC<EditIssueProps> = ({
           )}
         />
 
-        <IssueImprover
+        <ImproveIssue
           startingIssue={{ name, content }}
           onUpdateIssue={({ name: newName, content: newContent }) => {
             setName(newName)

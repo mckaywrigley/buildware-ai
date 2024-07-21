@@ -18,7 +18,7 @@ import {
   DialogTrigger
 } from "../ui/dialog"
 
-interface IssueImproverProps extends HTMLAttributes<HTMLDivElement> {
+interface ImproveIssueProps extends HTMLAttributes<HTMLDivElement> {
   startingIssue: {
     name: string
     content: string
@@ -26,7 +26,7 @@ interface IssueImproverProps extends HTMLAttributes<HTMLDivElement> {
   onUpdateIssue: (issue: { name: string; content: string }) => void
 }
 
-export const IssueImprover: FC<IssueImproverProps> = ({
+export const ImproveIssue: FC<ImproveIssueProps> = ({
   startingIssue,
   onUpdateIssue,
   ...props

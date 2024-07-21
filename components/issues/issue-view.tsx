@@ -2,14 +2,14 @@
 
 import { MessageMarkdown } from "@/components/instructions/message-markdown"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardTitle } from "@/components/ui/card"
 import { SelectInstruction, SelectIssue, SelectProject } from "@/db/schema"
 import { Pencil, Play } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import React, { useState } from "react"
 import { CRUDPage } from "../dashboard/reusable/crud-page"
-import { IssueContext } from "./issue-context"
+import { ViewIssueContext } from "./view-issue-context"
 import { ViewIssueInstruction } from "./view-issue-instruction"
 
 interface IssueViewProps {
@@ -36,7 +36,7 @@ export const IssueView: React.FC<IssueViewProps> = ({
 
   return (
     <CRUDPage
-      pageTitle={item.name}
+      pageTitle={`Viewing issue`}
       backText="Back to Issues"
       backLink={`../issues`}
     >
@@ -48,13 +48,13 @@ export const IssueView: React.FC<IssueViewProps> = ({
                 href={`/${workspaceId}/${project.id}/issues/${item.id}/run`}
                 passHref
               >
-                <Button variant="create" size="sm">
+                <Button variant="create">
                   <Play className="mr-2 size-4" />
                   Run
                 </Button>
               </Link>
 
-              <IssueContext
+              <ViewIssueContext
                 name={item.name}
                 content={item.content}
                 selectedInstructions={attachedInstructions.map(
@@ -99,8 +99,10 @@ export const IssueView: React.FC<IssueViewProps> = ({
             </div>
           )}
 
-          <Card className="mt-6">
-            <CardContent className="bg-secondary/50 p-4">
+          <Card className="bg-secondary/50 flex flex-col gap-2 p-4">
+            <CardTitle>{item.name}</CardTitle>
+
+            <CardContent className="p-0">
               <MessageMarkdown content={item.content} />
             </CardContent>
           </Card>
