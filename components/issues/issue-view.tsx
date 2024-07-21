@@ -45,9 +45,15 @@ import { buildCodegenActPrompt } from "@/lib/ai/codegen-system/act/build-codegen
 import { parseCodegenActResponse } from "@/lib/ai/codegen-system/act/parse-codegen-act-response"
 import { buildCodegenPlanPrompt } from "@/lib/ai/codegen-system/plan/build-codegen-plan-prompt"
 import { buildCodegenThinkPrompt } from "@/lib/ai/codegen-system/think/build-codegen-think-prompt"
+import {
+  BUILDWARE_ACT_LLM,
+  BUILDWARE_PLAN_LLM,
+  BUILDWARE_THINK_LLM
+} from "@/lib/constants/buildware-config"
 import { Loader2, Pencil, Play, RefreshCw, Trash2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import React, { useEffect, useRef, useState } from "react"
+import { CodegenThoughts } from "../codegen/think/codegen-thoughts"
 import { CRUDPage } from "../dashboard/reusable/crud-page"
 import { IssueContext } from "./issue-context"
 
@@ -80,6 +86,9 @@ export const IssueView: React.FC<IssueViewProps> = ({
   } | null>(null)
   const [isRunning, setIsRunning] = React.useState(false)
   const [messages, setMessages] = useState<SelectIssueMessage[]>([])
+  const [currentStep, setCurrentStep] = useState<
+    "clarify" | "think" | "plan" | "act" | "verify" | null
+  >(null)
 
   const sequenceRef = useRef(globalSequence)
 
@@ -132,6 +141,7 @@ export const IssueView: React.FC<IssueViewProps> = ({
     }
 
     setIsRunning(true)
+    setCurrentStep("clarify")
     try {
       await deleteIssueMessagesByIssueId(issue.id)
       setMessages([])
@@ -167,6 +177,7 @@ export const IssueView: React.FC<IssueViewProps> = ({
         )
         .join("\n\n")
 
+      setCurrentStep("think")
       const thinkMessage = await addMessage("Thinking...")
 
       const { systemPrompt: thinkSystemPrompt, userMessage: thinkUserMessage } =
@@ -182,14 +193,16 @@ export const IssueView: React.FC<IssueViewProps> = ({
           instructionsContext
         })
 
-      const thinkResponse = await generateCodegenAIMessage(
-        [{ role: "user", content: thinkUserMessage }],
-        thinkSystemPrompt
-      )
+      const thinkResponse = await generateCodegenAIMessage({
+        messages: [{ role: "user", content: thinkUserMessage }],
+        system: thinkSystemPrompt,
+        model: BUILDWARE_THINK_LLM
+      })
 
       await updateMessage(thinkMessage.id, thinkResponse)
       await savePrompt(thinkResponse, issue.name, "think", "response")
 
+      setCurrentStep("plan")
       const planMessage = await addMessage("Generating plan...")
 
       const { systemPrompt: planSystemPrompt, userMessage: planUserMessage } =
@@ -206,14 +219,16 @@ export const IssueView: React.FC<IssueViewProps> = ({
           thinkPrompt: thinkResponse
         })
 
-      const planResponse = await generateCodegenAIMessage(
-        [{ role: "user", content: planUserMessage }],
-        planSystemPrompt
-      )
+      const planResponse = await generateCodegenAIMessage({
+        messages: [{ role: "user", content: planUserMessage }],
+        system: planSystemPrompt,
+        model: BUILDWARE_PLAN_LLM
+      })
 
       await updateMessage(planMessage.id, planResponse)
       await savePrompt(planResponse, issue.name, "plan", "response")
 
+      setCurrentStep("act")
       const codeMessage = await addMessage("Generating PR...")
 
       const { systemPrompt: actSystemPrompt, userMessage: actUserMessage } =
@@ -227,10 +242,11 @@ export const IssueView: React.FC<IssueViewProps> = ({
           planPrompt: planResponse
         })
 
-      const actResponse = await generateCodegenAIMessage(
-        [{ role: "user", content: actUserMessage }],
-        actSystemPrompt
-      )
+      const actResponse = await generateCodegenAIMessage({
+        messages: [{ role: "user", content: actUserMessage }],
+        system: actSystemPrompt,
+        model: BUILDWARE_ACT_LLM
+      })
 
       const parsedActResponse = parseCodegenActResponse(actResponse)
 
@@ -253,6 +269,9 @@ export const IssueView: React.FC<IssueViewProps> = ({
       }
       await savePrompt(actResponse, issue.name, "act", "response")
 
+      setCurrentStep("verify")
+      // Add verification step here if needed
+
       await addMessage("Done!")
     } catch (error) {
       console.error("Failed to run issue:", error)
@@ -260,6 +279,7 @@ export const IssueView: React.FC<IssueViewProps> = ({
       await updateIssue(issue.id, { status: "failed" })
     } finally {
       setIsRunning(false)
+      setCurrentStep(null)
     }
   }
 
@@ -273,6 +293,30 @@ export const IssueView: React.FC<IssueViewProps> = ({
       status: "ready"
     })
     await handleRun(issue)
+  }
+
+  const renderStepContent = () => {
+    const lastMessage = messages[messages.length - 1]?.content || ""
+
+    switch (currentStep) {
+      case "think":
+        return (
+          <CodegenThoughts
+            response={lastMessage}
+            onUpdate={updatedThoughts => {
+              console.log("Updated thoughts:", updatedThoughts)
+            }}
+          />
+        )
+      // case "plan":
+      //   return <CodegenPlan response={lastMessage} />
+      // case "act":
+      //   return <CodegenAct response={lastMessage} />
+      // case "verify":
+      //   return <CodegenVerify response={lastMessage} />
+      default:
+        return null
+    }
   }
 
   return (
@@ -384,8 +428,22 @@ export const IssueView: React.FC<IssueViewProps> = ({
 
       <Separator className="my-6" />
 
+      {currentStep && (
+        <div className="mb-6">
+          <h3 className="mb-2 text-lg font-semibold">
+            {currentStep.charAt(0).toUpperCase() + currentStep.slice(1)}
+          </h3>
+          {renderStepContent()}
+        </div>
+      )}
+
       <div className="space-y-8">
-        <div className="text-lg font-semibold">Messages</div>
+        <div className="mb-4">
+          <div className="text-sm font-medium">
+            Current Step: {currentStep || "Not running"}
+          </div>
+        </div>
+
         {messages.map(message => (
           <React.Fragment key={message.id}>
             <Card>

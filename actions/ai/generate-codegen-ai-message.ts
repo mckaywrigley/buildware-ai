@@ -6,13 +6,18 @@ import Anthropic from "@anthropic-ai/sdk"
 
 const anthropic = new Anthropic()
 
-export const generateCodegenAIMessage = async (
-  messages: Anthropic.Messages.MessageParam[],
+export const generateCodegenAIMessage = async ({
+  messages,
+  system,
+  model
+}: {
+  messages: Anthropic.Messages.MessageParam[]
   system: string
-) => {
+  model: "claude-3-5-sonnet-20240620" | "claude-3-haiku-20240307"
+}) => {
   const message = await anthropic.messages.create(
     {
-      model: "claude-3-5-sonnet-20240620",
+      model,
       system,
       messages,
       max_tokens: BUILDWARE_MAX_OUTPUT_TOKENS
@@ -25,7 +30,7 @@ export const generateCodegenAIMessage = async (
   )
 
   const cost = calculateLLMCost({
-    llmId: "claude-3-5-sonnet-20240620",
+    llmId: model,
     inputTokens: message.usage.input_tokens,
     outputTokens: message.usage.output_tokens
   })

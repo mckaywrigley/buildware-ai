@@ -1,7 +1,10 @@
 "use server"
 
 import { calculateLLMCost } from "@/lib/ai/calculate-llm-cost"
-import { BUILDWARE_MAX_OUTPUT_TOKENS } from "@/lib/constants/buildware-config"
+import {
+  BUILDWARE_CLARIFY_LLM,
+  BUILDWARE_MAX_OUTPUT_TOKENS
+} from "@/lib/constants/buildware-config"
 import Anthropic from "@anthropic-ai/sdk"
 import endent from "endent"
 
@@ -14,8 +17,6 @@ export async function generateImprovedIssue(
   },
   messages: Anthropic.Messages.MessageParam[]
 ): Promise<ParsedImproveIssueResponse> {
-  const improvementModel = "claude-3-5-sonnet-20240620"
-
   const systemPrompt = endent`
     You are a world-class project manager.
 
@@ -110,7 +111,7 @@ export async function generateImprovedIssue(
   try {
     const message = await anthropic.messages.create(
       {
-        model: improvementModel,
+        model: BUILDWARE_CLARIFY_LLM,
         system: systemPrompt,
         messages,
         max_tokens: BUILDWARE_MAX_OUTPUT_TOKENS
@@ -122,12 +123,12 @@ export async function generateImprovedIssue(
       }
     )
 
-    console.warn("improvement usage", message.usage)
     const cost = calculateLLMCost({
-      llmId: improvementModel,
+      llmId: BUILDWARE_CLARIFY_LLM,
       inputTokens: message.usage.input_tokens,
       outputTokens: message.usage.output_tokens
     })
+    console.warn("improvement usage", message.usage)
     console.warn("improvement cost", cost)
 
     const parsedResponse = parseImprovedIssue(
