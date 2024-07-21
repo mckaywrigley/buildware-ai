@@ -1,23 +1,17 @@
-import { parseCodegenThinkResponse } from "@/lib/ai/codegen-system/think/parse-codegen-think-response"
 import { AIThought } from "@/types/ai"
-import { FC, useEffect, useState } from "react"
+import { FC, useState } from "react"
 import ReactTextareaAutosize from "react-textarea-autosize"
 
 interface CodegenThoughtsProps {
-  response: string
+  initialThoughts: AIThought[]
   onUpdate: (updatedThoughts: AIThought[]) => void
 }
 
 export const CodegenThoughts: FC<CodegenThoughtsProps> = ({
-  response,
+  initialThoughts,
   onUpdate
 }) => {
-  const [thoughts, setThoughts] = useState<AIThought[]>([])
-
-  useEffect(() => {
-    const parsedResponse = parseCodegenThinkResponse(response)
-    setThoughts(parsedResponse.thoughts)
-  }, [response])
+  const [thoughts, setThoughts] = useState<AIThought[]>(initialThoughts)
 
   const handleThoughtChange = (index: number, newText: string) => {
     const updatedThoughts = thoughts.map((thought, i) =>

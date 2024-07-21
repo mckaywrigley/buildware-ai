@@ -1,4 +1,4 @@
-import { RunIssue } from "@/components/issues/run-issue"
+import { RunIssue } from "@/components/issues/runs/run-issue"
 import { NotFound } from "@/components/utility/not-found"
 import {
   getInstructionsByIssueId,

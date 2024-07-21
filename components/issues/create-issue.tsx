@@ -16,8 +16,8 @@ import { useParams, useRouter } from "next/navigation"
 import { FC, useEffect, useState } from "react"
 import { CRUDForm } from "../dashboard/reusable/crud-form"
 import { MultiSelect } from "../ui/multi-select"
-import { IssueImprover } from "./improve-issue"
-import { IssueContext } from "./view-issue-context"
+import { ImproveIssue } from "./improve-issue"
+import { ViewIssueContext } from "./view-issue-context"
 
 interface CreateIssueProps {
   templates: SelectTemplate[]
@@ -127,7 +127,7 @@ export const CreateIssue: FC<CreateIssueProps> = ({ templates }) => {
       )}
 
       <div className="mt-4 flex w-full justify-end gap-2">
-        <IssueContext
+        <ViewIssueContext
           name={name}
           content={content}
           selectedInstructions={allInstructions.filter(instruction =>
@@ -135,7 +135,7 @@ export const CreateIssue: FC<CreateIssueProps> = ({ templates }) => {
           )}
         />
 
-        <IssueImprover
+        <ImproveIssue
           startingIssue={{ name, content }}
           onUpdateIssue={({ name, content }) => {
             setName(name)
