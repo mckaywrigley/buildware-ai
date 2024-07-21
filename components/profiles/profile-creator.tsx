@@ -4,8 +4,10 @@ import { createProject, createWorkspace } from "@/db/queries"
 import { createProfile } from "@/db/queries/profiles-queries"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
+import { toast } from "sonner"
+import { ProfileCreationError } from "@/errors/profile-errors"
 
-export const ProfileCreator = async () => {
+export const ProfileCreator = () => {
   const router = useRouter()
 
   useEffect(() => {
@@ -20,6 +22,12 @@ export const ProfileCreator = async () => {
         router.push(`/${workspace.id}/${project.id}/issues`)
       } catch (error) {
         console.error(error)
+        if (error instanceof ProfileCreationError) {
+          toast.error(error.message)
+        } else {
+          toast.error("An unexpected error occurred while creating your profile.")
+        }
+        // Optionally, redirect to an error page or stay on the current page
       }
     }
 
