@@ -1,15 +1,18 @@
 "use client"
 
-import { updateInstruction } from "@/db/queries/instructions-queries"
+import {
+  deleteInstruction,
+  updateInstruction
+} from "@/db/queries/instructions-queries"
 import { SelectInstruction } from "@/db/schema"
 import { useRouter } from "next/navigation"
 import { CRUDForm } from "../dashboard/reusable/crud-form"
 
-export default function EditInstructionForm({
+export const EditInstruction = ({
   instruction
 }: {
   instruction: SelectInstruction
-}) {
+}) => {
   const router = useRouter()
 
   const handleUpdateInstruction = async (formData: FormData) => {
@@ -26,6 +29,12 @@ export default function EditInstructionForm({
     }
   }
 
+  const handleDeleteInstruction = async () => {
+    await deleteInstruction(instruction.id)
+    router.refresh()
+    router.push(`../${instruction.id}`)
+  }
+
   return (
     <CRUDForm
       itemName="Instruction"
@@ -35,6 +44,7 @@ export default function EditInstructionForm({
         name: instruction.name,
         content: instruction.content
       }}
+      onDelete={handleDeleteInstruction}
     />
   )
 }

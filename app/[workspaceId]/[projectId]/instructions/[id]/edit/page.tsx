@@ -1,5 +1,5 @@
 import { CRUDPage } from "@/components/dashboard/reusable/crud-page"
-import EditInstructionForm from "@/components/instructions/edit-instruction-form"
+import { EditInstruction } from "@/components/instructions/edit-instruction"
 import { NotFound } from "@/components/utility/not-found"
 import { getInstructionById } from "@/db/queries/instructions-queries"
 
@@ -22,7 +22,7 @@ export default async function EditInstructionPage({
       backText="Back to instructions"
       backLink=".."
     >
-      <EditInstructionForm instruction={instruction} />
+      <EditInstruction instruction={instruction} />
     </CRUDPage>
   )
 }

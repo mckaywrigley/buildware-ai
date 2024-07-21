@@ -1,7 +1,6 @@
 "use client"
 
-import { getInstructionsByProjectId } from "@/db/queries/instructions-queries"
-import { updateIssue } from "@/db/queries/issues-queries"
+import { deleteIssue, updateIssue } from "@/db/queries/issues-queries"
 import {
   addInstructionToIssue,
   getInstructionsByIssueId,
@@ -9,40 +8,32 @@ import {
 } from "@/db/queries/issues-to-instructions-queries"
 import { SelectInstruction, SelectIssue } from "@/db/schema"
 import { useParams, useRouter } from "next/navigation"
-import { FC, useEffect, useState } from "react"
+import { FC, useState } from "react"
 import { CRUDForm } from "../dashboard/reusable/crud-form"
 import { CRUDPage } from "../dashboard/reusable/crud-page"
 import { MultiSelect } from "../ui/multi-select"
 import { IssueContext } from "./issue-context"
 import { IssueImprover } from "./issue-improver"
 
-interface EditIssueFormProps {
+interface EditIssueProps {
   issue: SelectIssue
+  allInstructions: SelectInstruction[]
+  selectedInstructionIds: string[]
 }
 
-export const EditIssueForm: FC<EditIssueFormProps> = ({ issue }) => {
+export const EditIssue: FC<EditIssueProps> = ({
+  issue,
+  allInstructions,
+  selectedInstructionIds
+}) => {
   const router = useRouter()
   const params = useParams()
 
-  const [selectedInstructions, setSelectedInstructions] = useState<string[]>([])
-  const [allInstructions, setAllInstructions] = useState<SelectInstruction[]>(
-    []
+  const [selectedInstructions, setSelectedInstructions] = useState<string[]>(
+    selectedInstructionIds
   )
   const [name, setName] = useState(issue.name)
   const [content, setContent] = useState(issue.content)
-
-  useEffect(() => {
-    fetchInstructions()
-  }, [])
-
-  const fetchInstructions = async () => {
-    const allInstructionsData = await getInstructionsByProjectId(
-      issue.projectId
-    )
-    const issueInstructions = await getInstructionsByIssueId(issue.id)
-    setAllInstructions(allInstructionsData)
-    setSelectedInstructions(issueInstructions.map(p => p.instruction.id))
-  }
 
   const handleUpdateIssue = async (formData: FormData) => {
     try {
@@ -76,6 +67,12 @@ export const EditIssueForm: FC<EditIssueFormProps> = ({ issue }) => {
     } catch (error) {
       console.error("Failed to update issue:", error)
     }
+  }
+
+  const handleDeleteIssue = async () => {
+    await deleteIssue(issue.id)
+    router.refresh()
+    router.push(`/${params.workspaceId}/${params.projectId}/issues`)
   }
 
   return (
@@ -127,6 +124,7 @@ export const EditIssueForm: FC<EditIssueFormProps> = ({ issue }) => {
           }}
           onContentChange={setContent}
           onNameChange={setName}
+          onDelete={handleDeleteIssue}
         />
       </div>
     </CRUDPage>

@@ -1,8 +1,8 @@
 import { getTemplatesWithInstructionsByProjectId } from "@/db/queries/templates-queries"
-import { CreateIssueForm } from "./create-issue-form"
+import { CreateIssue } from "./create-issue"
 
 export const IssueCreation = async ({ projectId }: { projectId: string }) => {
   const templates = await getTemplatesWithInstructionsByProjectId(projectId)
 
-  return <CreateIssueForm templates={templates} />
+  return <CreateIssue templates={templates} />
 }

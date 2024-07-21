@@ -1,8 +1,9 @@
+import { cn } from "@/lib/utils"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
-import { FC, ReactNode } from "react"
+import { FC, HTMLAttributes, ReactNode } from "react"
 
-interface CRUDPageProps {
+interface CRUDPageProps extends HTMLAttributes<HTMLDivElement> {
   pageTitle: string
   backText: string
   backLink: string
@@ -13,10 +14,16 @@ export const CRUDPage: FC<CRUDPageProps> = ({
   pageTitle,
   backText,
   backLink,
-  children
+  children,
+  ...props
 }) => {
   return (
-    <div className="text-primary mx-auto w-full max-w-[800px] p-6">
+    <div
+      className={cn(
+        "text-primary mx-auto w-full max-w-[800px] p-6",
+        props.className
+      )}
+    >
       <Link
         href={backLink}
         className="text-muted-foreground hover:text-primary flex items-center"

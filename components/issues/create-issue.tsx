@@ -13,17 +13,17 @@ import { getInstructionsForTemplate } from "@/db/queries/templates-to-instructio
 import { SelectInstruction } from "@/db/schema"
 import { SelectTemplate } from "@/db/schema/templates-schema"
 import { useParams, useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { FC, useEffect, useState } from "react"
 import { CRUDForm } from "../dashboard/reusable/crud-form"
 import { MultiSelect } from "../ui/multi-select"
 import { IssueContext } from "./issue-context"
 import { IssueImprover } from "./issue-improver"
 
-interface CreateIssueFormProps {
+interface CreateIssueProps {
   templates: SelectTemplate[]
 }
 
-export function CreateIssueForm({ templates }: CreateIssueFormProps) {
+export const CreateIssue: FC<CreateIssueProps> = ({ templates }) => {
   const params = useParams()
   const router = useRouter()
 

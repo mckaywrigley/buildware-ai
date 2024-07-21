@@ -4,7 +4,7 @@ import { createInstructionRecords } from "@/db/queries/instructions-queries"
 import { useParams, useRouter } from "next/navigation"
 import { CRUDForm } from "../dashboard/reusable/crud-form"
 
-export default function NewInstructionForm() {
+export const CreateInstruction = () => {
   const params = useParams()
   const router = useRouter()
 

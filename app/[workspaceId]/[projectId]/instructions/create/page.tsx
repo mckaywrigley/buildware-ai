@@ -1,5 +1,5 @@
 import { CRUDPage } from "@/components/dashboard/reusable/crud-page"
-import NewInstructionForm from "@/components/instructions/new-instruction-form"
+import { CreateInstruction } from "@/components/instructions/create-instruction"
 
 export const revalidate = 0
 
@@ -10,7 +10,7 @@ export default async function CreateInstructionPage() {
       backText="Back to instructions"
       backLink="../instructions"
     >
-      <NewInstructionForm />
+      <CreateInstruction />
     </CRUDPage>
   )
 }
