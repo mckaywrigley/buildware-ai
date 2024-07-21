@@ -17,11 +17,11 @@ export async function generateImprovedIssue(
   const improvementModel = "claude-3-5-sonnet-20240620"
 
   const systemPrompt = endent`
-    You are an expert project manager.
+    You are a world-class project manager.
 
-    You will be given an issue and a set of improvement instructions.
+    You will be given an issue, improvement instructions, and response instructions.
     
-    Your task is to improve the given issue.
+    Your goal is to improve the given issue.
 
     To do this, you will chat back and forth with the user to create the best possible issue.
 
@@ -42,25 +42,25 @@ export async function generateImprovedIssue(
 
     # Starting Issue
 
-    This is the starting issue as provided by the user:
+    This is the starting issue as provided by the user.
 
-    <starting_issue_name>
-    ${startingIssue.name}
-    </starting_issue_name>
-
-    <starting_issue_content>
-    ${startingIssue.content}
-    </starting_issue_content>
+    <starting_issue>
+      <starting_issue_name>${startingIssue.name || "No name provided."}</starting_issue_name>
+      <starting_issue_content>
+        ${startingIssue.content || "No content provided."}
+      </starting_issue_content>
+    </starting_issue>
 
     ---
 
     # Response Instructions
 
-    Follow these instructions for every response.
+    The response instructions. Follow these instructions for every response.
 
     ## Response Information
 
     Respond with the following information:
+
     - RESPONSE: Enclose your response in <response> tags to help with parsing.
       - IMPROVED_ISSUE: The improved issue.
         - IMPROVED_ISSUE_NAME: The improved issue name.
@@ -68,34 +68,43 @@ export async function generateImprovedIssue(
       - MESSAGE: Your message to the user.
         - EXPLANATION: A brief explanation of the improvements made.
         - NEXT_QUESTION: The next question to ask the user.
-      - IS_DONE: A boolean indicating if the issue is done. When this is true, the issue is complete and you should stop responding. This will trigger the issue to be created.
+      - IS_DONE: A boolean indicating if the issue is done. When this is true, the issue is complete and you should stop responding.
 
     ## Response Format
 
     Respond in the following format:
+
     <response>
       <improved_issue>
         <improved_issue_name>__IMPROVED_ISSUE_NAME__</improved_issue_name>
         <improved_issue_content>__IMPROVED_ISSUE_CONTENT__</improved_issue_content>
       </improved_issue>
-
       <message>
         <explanation>__EXPLANATION_CONTENT__</explanation>
-
         <next_question>__NEXT_QUESTION__</next_question>
       </message>
-
       <is_done>__IS_DONE__</is_done>
     </response>
 
     ## Response Example
 
+    An example response:
+
     <response>
       <improved_issue>
-        <improved_issue_name>__IMPROVED_ISSUE_NAME__</improved_issue_name>
-        <improved_issue_content>__IMPROVED_ISSUE_CONTENT__</improved_issue_content>
+        <improved_issue_name>Issue Name</improved_issue_name>
+        <improved_issue_content>Issue Content</improved_issue_content>
       </improved_issue>
+      <message>
+        <explanation>Explanation...</explanation>
+        <next_question>Next Question...</next_question>
+      </message>
+      <is_done>false</is_done>
     </response>
+
+    ## Begin Response
+
+    Now begin your response.
     `
 
   try {

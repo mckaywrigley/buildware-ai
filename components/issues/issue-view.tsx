@@ -40,9 +40,10 @@ import {
   SelectIssueMessage,
   SelectProject
 } from "@/db/schema"
-import { buildCodeGenPrompt } from "@/lib/ai/build-codegen-prompt"
-import { buildCodePlanPrompt } from "@/lib/ai/build-plan-prompt"
-import { parseAIResponse } from "@/lib/ai/parse-ai-response"
+import { buildCodegenActPrompt } from "@/lib/ai/codegen-system/act/build-codegen-act-prompt"
+import { parseCodegenActResponse } from "@/lib/ai/codegen-system/act/parse-codegen-act-response"
+import { buildCodegenPlanPrompt } from "@/lib/ai/codegen-system/plan/build-codegen-plan-prompt"
+import { buildCodegenThinkPrompt } from "@/lib/ai/codegen-system/think/build-codegen-think-prompt"
 import { Loader2, Pencil, Play, RefreshCw, Trash2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import React, { useEffect, useRef, useState } from "react"
@@ -133,10 +134,13 @@ export const IssueView: React.FC<IssueViewProps> = ({
     try {
       await deleteIssueMessagesByIssueId(issue.id)
       setMessages([])
+
       sequenceRef.current = 1
       globalSequence = 1
 
-      await addMessage("Embedding target branch...")
+      await updateIssue(issue.id, { status: "in_progress" })
+
+      await addMessage("Updating branch embeddings...")
 
       // Embed the target branch to make sure embeddings are up to date
       await embedTargetBranch({
@@ -146,10 +150,9 @@ export const IssueView: React.FC<IssueViewProps> = ({
         installationId: project.githubInstallationId
       })
 
-      await updateIssue(issue.id, { status: "in_progress" })
-      const planMessage = await addMessage("Generating plan...")
+      const embeddingsQueryText = `${issue.name}\n${issue.content}`
 
-      const embeddingsQueryText = `${issue.name} ${issue.content}`
+      await addMessage("Searching codebase...")
 
       const codebaseFiles = await getMostSimilarEmbeddedFiles(
         embeddingsQueryText,
@@ -163,7 +166,9 @@ export const IssueView: React.FC<IssueViewProps> = ({
         )
         .join("\n\n")
 
-      const codeplanPrompt = await buildCodePlanPrompt({
+      const thinkMessage = await addMessage("Thinking...")
+
+      const thinkPrompt = await buildCodegenThinkPrompt({
         issue: {
           name: issue.name,
           description: issue.content
@@ -175,46 +180,70 @@ export const IssueView: React.FC<IssueViewProps> = ({
         instructionsContext
       })
 
-      const aiCodePlanResponse = await generateAIResponse([
-        { role: "user", content: codeplanPrompt }
+      const thinkResponse = await generateAIResponse([
+        { role: "user", content: thinkPrompt }
       ])
 
-      await updateMessage(planMessage.id, aiCodePlanResponse)
-      const prMessage = await addMessage("Generating PR...")
+      await updateMessage(thinkMessage.id, thinkResponse)
 
-      const codegenPrompt = await buildCodeGenPrompt({
-        issue: { title: issue.name, description: issue.content },
+      const planMessage = await addMessage("Generating plan...")
+
+      const planPrompt = await buildCodegenPlanPrompt({
+        issue: {
+          name: issue.name,
+          description: issue.content
+        },
         codebaseFiles: codebaseFiles.map(file => ({
           path: file.path,
           content: file.content ?? ""
         })),
-        plan: aiCodePlanResponse,
-        instructionsContext
+        instructionsContext,
+        thinkPrompt
       })
 
-      const aiCodeGenResponse = await generateAIResponse([
-        { role: "user", content: codegenPrompt }
+      const planResponse = await generateAIResponse([
+        { role: "user", content: planPrompt }
       ])
 
-      const parsedAIResponse = parseAIResponse(aiCodeGenResponse)
+      await updateMessage(planMessage.id, planResponse)
+
+      const codeMessage = await addMessage("Generating PR...")
+
+      const actPrompt = await buildCodegenActPrompt({
+        issue: { name: issue.name, description: issue.content },
+        codebaseFiles: codebaseFiles.map(file => ({
+          path: file.path,
+          content: file.content ?? ""
+        })),
+        instructionsContext,
+        planPrompt
+      })
+
+      const actResponse = await generateAIResponse([
+        { role: "user", content: actPrompt }
+      ])
+
+      const parsedActResponse = parseCodegenActResponse(actResponse)
 
       const { prLink, branchName } = await generatePR(
         issue.name.replace(/\s+/g, "-"),
         project,
-        parsedAIResponse
+        parsedActResponse
       )
 
       await updateIssue(issue.id, {
-        status: "completed",
+        status: "done",
         prLink: prLink || undefined,
         prBranch: branchName
       })
 
       if (prLink) {
-        await updateMessage(prMessage.id, `GitHub PR: ${prLink}`)
+        await updateMessage(codeMessage.id, `GitHub PR: ${prLink}`)
       } else {
-        await updateMessage(prMessage.id, "Failed to create PR")
+        await updateMessage(codeMessage.id, "Failed to create PR")
       }
+
+      await addMessage("Done!")
     } catch (error) {
       console.error("Failed to run issue:", error)
       await addMessage(`Error: Failed to run issue: ${error}`)

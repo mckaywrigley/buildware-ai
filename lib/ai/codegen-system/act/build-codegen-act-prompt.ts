@@ -1,94 +1,50 @@
 import endent from "endent"
-import { limitTokens } from "./limit-tokens"
+import { buildBasePrompt } from "../base-codegen-prompts"
 
-export const buildCodeGenPrompt = async ({
+export const buildCodegenActPrompt = async ({
   issue,
   codebaseFiles,
-  plan,
-  instructionsContext
+  instructionsContext,
+  planPrompt
 }: {
   issue: {
-    title: string
+    name: string
     description: string
   }
   codebaseFiles: {
     path: string
     content: string
   }[]
-  plan: string
   instructionsContext: string
+  planPrompt: string
 }): Promise<string> => {
-  const basePrompt = endent`
-    You are an expert developer who is tasked with implementing a given task.
-  
-    You will be given a task, a codebase, instructions, and an implementation plan.
-    
-    Your goal is to write all the code needed to complete the given task, ensuring it integrates well with the existing codebase and follows best practices.
-  
-    Use the plan to guide your implementation. It may or may not be complete, so double-check your work as you go.
-  
-    Note: Focus solely on the technical implementation. Ignore any mentions of human tasks or non-technical aspects.
-  
-    Encoded in XML tags, here is what you will be given:
-  
-    TASK: Context about the task to complete.
-    INSTRUCTIONS: Instructions on how to complete the task.
-    CODEBASE: Files from the codebase you have access to.
-    IMPLEMENTATION_PLAN: A detailed implementation plan for the given issue.
-    FORMAT: Instructions for how to format your response.
-  
-    ---
-    
-    # Task
-  
-    <task>
-      
-    # Title
-    ${issue.title ?? "No title."}
-  
-    ## Description
-    ${issue.description ?? "No description."}
-  
-    </task>
+  const roleDescription = endent`You are a world-class software engineer.`
 
-    ---
-  
-    # Instructions
-  
-    <instructions>
-  
-    Follow these instructions:
-  
-    ${instructionsContext}
-  
-    </instructions>
-  
-    ---
-  
+  const youWillBeGiven = endent`
+  You will be given a codebase to work with, a task to complete, general instructions & guidelines for the task, an implementation plan for the task, and response instructions.`
+
+  const goalDescription = endent`Your goal is to use this information to write all the code needed to complete the given task.`
+
+  const additionalInstructions = endent``
+
+  const extraSections = endent`
     # Implementation Plan
-  
-    <implementation_plan>
-  
-    ${plan}
-  
-    </implementation_plan>
-  
-    ---
-  
-    # Codebase
-  
-    <codebase>
-    `
 
-  const formatInstructions = `
-    </codebase>
-  
-    ---
-  
-    # Format
-  
-    <format>
-  
+    The plan to use to complete the task.
+
+    <implementation_plan>
+      ${planPrompt}
+    </implementation_plan>`
+
+  const responseInstructions = endent`
+    ## Response Information
+
+    Respond with the following information:
+
+    - FILES: Enclose your response in <files> tags to help with parsing.
+
+    ## Response Format
+
     Generate the full content for each new or modified file.
     
     Only provide the full path for each deleted file.
@@ -160,13 +116,17 @@ export const buildCodeGenPrompt = async ({
     <pr_title>
     __PR_TITLE__
     </pr_title>
-  
-    </format>
-    `
+  `
 
-  const { prompt, tokensUsed } = limitTokens(basePrompt, codebaseFiles)
-  const finalPrompt = `${prompt}${formatInstructions}`
-  console.warn(`Code Gen Prompt: Tokens used: ${tokensUsed}`)
-
-  return finalPrompt
+  return buildBasePrompt({
+    issue,
+    codebaseFiles,
+    instructionsContext,
+    youWillBeGiven,
+    roleDescription,
+    goalDescription,
+    additionalInstructions,
+    extraSections,
+    responseInstructions
+  })
 }

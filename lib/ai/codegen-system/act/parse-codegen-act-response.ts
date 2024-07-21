@@ -1,6 +1,6 @@
 import { AIFileInfo, AIParsedResponse } from "@/types/ai"
 
-export function parseAIResponse(response: string): AIParsedResponse {
+export function parseCodegenActResponse(response: string): AIParsedResponse {
   const files: AIFileInfo[] = []
   const fileListMatch = response.match(/<file_list>([\s\S]*?)<\/file_list>/)
   const fileList = fileListMatch
