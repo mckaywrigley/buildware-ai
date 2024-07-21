@@ -3,10 +3,15 @@
 import { promises as fs } from "fs"
 import path from "path"
 
-export async function savePrompt(prompt: string, issueName: string) {
+export async function savePrompt(
+  prompt: string,
+  issueName: string,
+  step: "think" | "plan" | "code",
+  type: "prompt" | "response"
+) {
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-")
-  const fileName = `${timestamp}.md`
-  const dirPath = path.join(process.cwd(), "evals", issueName)
+  const fileName = `${step}-${type}-${timestamp}.md`
+  const dirPath = path.join(process.cwd(), "buildware-evals", issueName)
   const filePath = path.join(dirPath, fileName)
 
   try {

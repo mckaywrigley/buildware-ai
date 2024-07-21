@@ -3,16 +3,15 @@ import endent from "endent"
 import { limitCodebaseTokens } from "../limit-codebase-tokens"
 
 export const buildBasePrompt = async ({
+  step,
   issue,
   codebaseFiles,
   instructionsContext,
-  roleDescription,
-  youWillBeGiven,
-  goalDescription,
   additionalInstructions,
   extraSections,
   responseInstructions
 }: {
+  step: "think" | "plan" | "code"
   issue: {
     name: string
     description: string
@@ -22,105 +21,70 @@ export const buildBasePrompt = async ({
     content: string
   }[]
   instructionsContext: string
-  roleDescription: string
-  youWillBeGiven: string
-  goalDescription: string
   additionalInstructions: string
   extraSections: string
   responseInstructions: string
-}): Promise<string> => {
-  const firstPromptSection = basePromptFirstSection(
-    roleDescription,
-    youWillBeGiven,
-    goalDescription
-  )
+}): Promise<{ systemPrompt: string; userMessage: string }> => {
+  const codebaseSection = endent`
+    # Codebase
 
-  const codebaseFilesAsText = limitCodebaseTokens(
-    firstPromptSection,
-    codebaseFiles
-  )
+    The codebase to work with.
 
-  const secondPromptSection = basePromptSecondSection(issue)
+    <codebase>
+      ${limitCodebaseTokens("", codebaseFiles)}
+    </codebase>
+  `
 
-  const thirdPromptSection = endent`
+  const taskSection = endent`
+    # Task
+
+    The task to complete.
+
+    <task>
+      <task_name>${issue.name || "No title provided."}</task_name>
+      <task_details>
+        ${issue.description || "No details provided."}
+      </task_details>
+    </task>
+  `
+
+  const instructionsSection = endent`
+    # Instructions and Guidelines
+
+    The instructions and guidelines for the task. Follow these as you build your plan.
+
+    <instructions>
       ${additionalInstructions}
 
       ${instructionsContext || "No additional instructions provided."}
     </instructions>
-    ${
-      extraSections
-        ? endent`
+    ${extraSections ? `\n\n---\n\n${extraSections}` : ""}
+  `
 
-    ---
-
-    ${extraSections}`
-        : ""
-    }
-
-    ---
-
+  const responseSection = endent`
     # Response Instructions
 
     ${responseInstructions}
   `
 
-  const finalPrompt = endent`
-    ${firstPromptSection}
-      ${codebaseFilesAsText}
+  const userMessage = endent`
+    ${codebaseSection}
 
-    ${secondPromptSection}
+    ---
 
-    ${thirdPromptSection}
+    ${taskSection}
+
+    ---
+
+    ${instructionsSection}
+
+    ---
+
+    ${responseSection}
   `
 
   // Save the final prompt
-  await savePrompt(finalPrompt, issue.name)
+  await savePrompt(userMessage, issue.name, step, "prompt")
 
-  return finalPrompt
+  return { systemPrompt: "", userMessage }
 }
-
-export const basePromptFirstSection = (
-  roleDescription: string,
-  youWillBeGiven: string,
-  goalDescription: string
-) => endent`
-  ${roleDescription}
-
-  ${youWillBeGiven}
-
-  ${goalDescription}
-
-  ---
-
-  # Codebase
-
-  The codebase to work with.
-
-  <codebase>`
-
-export const basePromptSecondSection = (issue: {
-  name: string
-  description: string
-}) => endent`
-  </codebase>
-
-  ---
-
-  # Task
-
-  The task to complete.
-
-  <task>
-    <task_name>${issue.name || "No title provided."}</task_name>
-    <task_details>
-      ${issue.description || "No details provided."}
-    </task_details>
-  </task>
-
-  ---
-
-  # Instructions and Guidelines
-
-  The instructions and guidelines for the task. Follow these as you build your plan.
-
-  <instructions>`

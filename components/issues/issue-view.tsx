@@ -1,6 +1,6 @@
 "use client"
 
-import { generateAIResponse } from "@/actions/ai/generate-ai-response"
+import { generateCodegenAIMessage } from "@/actions/ai/generate-codegen-ai-message"
 import { savePrompt } from "@/actions/evals/save-codegen-prompt"
 import { deleteGitHubPR } from "@/actions/github/delete-pr"
 import { embedTargetBranch } from "@/actions/github/embed-target-branch"
@@ -169,64 +169,69 @@ export const IssueView: React.FC<IssueViewProps> = ({
 
       const thinkMessage = await addMessage("Thinking...")
 
-      const thinkPrompt = await buildCodegenThinkPrompt({
-        issue: {
-          name: issue.name,
-          description: issue.content
-        },
-        codebaseFiles: codebaseFiles.map(file => ({
-          path: file.path,
-          content: file.content ?? ""
-        })),
-        instructionsContext
-      })
+      const { systemPrompt: thinkSystemPrompt, userMessage: thinkUserMessage } =
+        await buildCodegenThinkPrompt({
+          issue: {
+            name: issue.name,
+            description: issue.content
+          },
+          codebaseFiles: codebaseFiles.map(file => ({
+            path: file.path,
+            content: file.content ?? ""
+          })),
+          instructionsContext
+        })
 
-      const thinkResponse = await generateAIResponse([
-        { role: "user", content: thinkPrompt }
-      ])
-
-      await savePrompt(thinkPrompt, issue.name)
+      const thinkResponse = await generateCodegenAIMessage(
+        [{ role: "user", content: thinkUserMessage }],
+        thinkSystemPrompt
+      )
 
       await updateMessage(thinkMessage.id, thinkResponse)
+      await savePrompt(thinkResponse, issue.name, "think", "response")
 
       return
 
       const planMessage = await addMessage("Generating plan...")
 
-      const planPrompt = await buildCodegenPlanPrompt({
-        issue: {
-          name: issue.name,
-          description: issue.content
-        },
-        codebaseFiles: codebaseFiles.map(file => ({
-          path: file.path,
-          content: file.content ?? ""
-        })),
-        instructionsContext,
-        thinkPrompt
-      })
+      const { systemPrompt: planSystemPrompt, userMessage: planUserMessage } =
+        await buildCodegenPlanPrompt({
+          issue: {
+            name: issue.name,
+            description: issue.content
+          },
+          codebaseFiles: codebaseFiles.map(file => ({
+            path: file.path,
+            content: file.content ?? ""
+          })),
+          instructionsContext,
+          thinkPrompt: thinkResponse
+        })
 
-      const planResponse = await generateAIResponse([
-        { role: "user", content: planPrompt }
-      ])
+      const planResponse = await generateCodegenAIMessage(
+        [{ role: "user", content: planUserMessage }],
+        planSystemPrompt
+      )
 
       await updateMessage(planMessage.id, planResponse)
 
       const codeMessage = await addMessage("Generating PR...")
 
-      const actPrompt = await buildCodegenActPrompt({
-        issue: { name: issue.name, description: issue.content },
-        codebaseFiles: codebaseFiles.map(file => ({
-          path: file.path,
-          content: file.content ?? ""
-        })),
-        instructionsContext,
-        planPrompt
-      })
+      const { systemPrompt: actSystemPrompt, userMessage: actUserMessage } =
+        await buildCodegenActPrompt({
+          issue: { name: issue.name, description: issue.content },
+          codebaseFiles: codebaseFiles.map(file => ({
+            path: file.path,
+            content: file.content ?? ""
+          })),
+          instructionsContext,
+          planPrompt: planResponse
+        })
 
-      const actResponse = await generateAIResponse([
-        { role: "user", content: actPrompt }
-      ])
+      const actResponse = await generateCodegenAIMessage(
+        [{ role: "user", content: actUserMessage }],
+        actSystemPrompt
+      )
 
       const parsedActResponse = parseCodegenActResponse(actResponse)
 
