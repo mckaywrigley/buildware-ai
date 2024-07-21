@@ -21,7 +21,7 @@ export default async function EditTemplatePage({
 
   return (
     <CRUDPage
-      pageTitle="New template"
+      pageTitle="Edit template"
       backText="Back to templates"
       backLink=".."
     >

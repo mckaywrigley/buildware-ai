@@ -73,7 +73,7 @@ export const IssueView: React.FC<IssueViewProps> = ({
               }
             >
               <Pencil className="mr-2 size-4" />
-              Edit
+              Edit Issue
             </Button>
           </div>
 

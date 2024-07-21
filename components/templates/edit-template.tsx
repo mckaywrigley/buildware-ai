@@ -1,6 +1,6 @@
 "use client"
 
-import { updateTemplate } from "@/db/queries/templates-queries"
+import { deleteTemplate, updateTemplate } from "@/db/queries/templates-queries"
 import { SelectInstruction, SelectTemplate } from "@/db/schema"
 import { useRouter } from "next/navigation"
 import { FC } from "react"
@@ -42,6 +42,12 @@ export const EditTemplate: FC<EditTemplateProps> = ({
     }
   }
 
+  const handleDeleteTemplate = async () => {
+    await deleteTemplate(templateWithInstructions.id)
+    router.refresh()
+    router.push(`../${templateWithInstructions.id}`)
+  }
+
   return (
     <>
       <div className="mb-4">
@@ -59,6 +65,7 @@ export const EditTemplate: FC<EditTemplateProps> = ({
           name: templateWithInstructions.name,
           content: templateWithInstructions.content
         }}
+        onDelete={handleDeleteTemplate}
       />
     </>
   )

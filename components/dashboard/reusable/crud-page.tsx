@@ -4,7 +4,7 @@ import Link from "next/link"
 import { FC, HTMLAttributes, ReactNode } from "react"
 
 interface CRUDPageProps extends HTMLAttributes<HTMLDivElement> {
-  pageTitle: string
+  pageTitle?: string
   backText: string
   backLink: string
   children: ReactNode
@@ -32,9 +32,12 @@ export const CRUDPage: FC<CRUDPageProps> = ({
         {backText}
       </Link>
 
-      <div className="mt-4 text-2xl font-bold">{pageTitle}</div>
-
-      <div className="bg-primary/20 my-8 h-px" />
+      {pageTitle && (
+        <>
+          <div className="mt-4 text-2xl font-bold">{pageTitle}</div>
+          <div className="bg-primary/20 my-8 h-px" />
+        </>
+      )}
 
       <div>{children}</div>
     </div>
