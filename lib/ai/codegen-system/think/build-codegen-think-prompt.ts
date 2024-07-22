@@ -25,7 +25,6 @@ export const buildCodegenThinkPrompt = async ({
   `
 
   const { userMessage } = await buildBasePrompt({
-    step: "think",
     issue,
     codebaseFiles,
     instructionsContext,

@@ -2,7 +2,6 @@ import endent from "endent"
 import { limitCodebaseTokens } from "../limit-codebase-tokens"
 
 export const buildBasePrompt = async ({
-  step,
   issue,
   codebaseFiles,
   instructionsContext,
@@ -10,7 +9,6 @@ export const buildBasePrompt = async ({
   extraSections,
   responseInstructions
 }: {
-  step: "clarify" | "think" | "plan" | "act" | "verify"
   issue: {
     name: string
     description: string

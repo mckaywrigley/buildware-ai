@@ -1,65 +1,73 @@
-import { CodegenThoughts } from "@/components/codegen/think/codegen-thoughts"
+import { ThinkStep } from "@/components/issues/runs/steps/think-step"
 import {
   AIClarificationItem,
   AIFileInfo,
   AIPlanStep,
   AIThought
 } from "@/types/ai"
+import { RunStep } from "@/types/run"
 import { FC } from "react"
+import { ActStep } from "./steps/act-step"
+import { ClarifyStep } from "./steps/clarify-step"
+import { CompletedStep } from "./steps/completed-step"
+import { EmbeddingStep } from "./steps/embedding-step"
+import { PlanStep } from "./steps/plan-step"
+import { PRStep } from "./steps/pr-step"
+import { RetrievalStep } from "./steps/retrieval-step"
+import { StartedStep } from "./steps/started-step"
+import { VerifyStep } from "./steps/verify-step"
 
-interface StepContentProps {
-  step:
-    | "started"
-    | "embedding"
-    | "retrieval"
-    | "clarify"
-    | "think"
-    | "plan"
-    | "act"
-    | "verify"
-    | "pr"
-    | "completed"
+interface RunStepContentProps {
+  step: RunStep
   clarifications: AIClarificationItem[]
   thoughts: AIThought[]
   planSteps: AIPlanStep[]
   generatedFiles: AIFileInfo[]
+  setThoughts: (thoughts: AIThought[]) => void
+  setPlanSteps: (planSteps: AIPlanStep[]) => void
+  setGeneratedFiles: (generatedFiles: AIFileInfo[]) => void
 }
 
-export const StepContent: FC<StepContentProps> = ({
+export const RunStepContent: FC<RunStepContentProps> = ({
   step,
   clarifications,
   thoughts,
   planSteps,
-  generatedFiles
+  generatedFiles,
+  setThoughts,
+  setPlanSteps,
+  setGeneratedFiles
 }) => {
   switch (step) {
     case "started":
-      return <div>Started step content</div>
+      return <StartedStep />
     case "embedding":
-      return <div>Embedding step content</div>
+      return <EmbeddingStep />
     case "retrieval":
-      return <div>Retrieval step content</div>
+      return <RetrievalStep />
     case "clarify":
-      return <div>Clarification step content</div>
+      return <ClarifyStep clarifications={clarifications} />
     case "think":
       return (
-        <CodegenThoughts
-          initialThoughts={thoughts}
-          onUpdate={updatedThoughts => {
-            console.log("Updated thoughts:", updatedThoughts)
+        <ThinkStep
+          thoughts={thoughts}
+          onUpdateThoughts={updatedThoughts => {
+            setThoughts(updatedThoughts)
           }}
         />
       )
     case "plan":
-      return <div>Planning step content</div>
+      return <PlanStep plans={planSteps} onUpdatePlans={setPlanSteps} />
     case "act":
-      return <div>Action step content</div>
+      return (
+        <ActStep files={generatedFiles} onUpdateFiles={setGeneratedFiles} />
+      )
     case "verify":
-      return <div>Verification step content</div>
+      return <VerifyStep />
     case "pr":
-      return <div>Pull request step content</div>
+      return <PRStep />
     case "completed":
-      return <div>Completed step content</div>
+      return <CompletedStep />
     default:
       return null
   }

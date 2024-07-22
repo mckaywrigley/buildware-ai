@@ -27,7 +27,6 @@ export const buildCodegenActPrompt = async ({
   `
 
   const { userMessage } = await buildBasePrompt({
-    step: "act",
     issue,
     codebaseFiles,
     instructionsContext,

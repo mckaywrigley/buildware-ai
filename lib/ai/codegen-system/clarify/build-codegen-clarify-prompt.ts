@@ -25,7 +25,6 @@ export const buildCodegenClarifyPrompt = async ({
   `
 
   const { userMessage } = await buildBasePrompt({
-    step: "clarify",
     issue,
     codebaseFiles,
     instructionsContext,

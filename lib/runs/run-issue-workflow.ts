@@ -26,6 +26,7 @@ import {
   AIPlanStep,
   AIThought
 } from "@/types/ai"
+import { RunStep } from "@/types/run"
 import { Dispatch } from "react"
 import { buildCodegenActPrompt } from "../ai/codegen-system/act/build-codegen-act-prompt"
 import { parseCodegenActResponse } from "../ai/codegen-system/act/parse-codegen-act-response"
@@ -44,25 +45,32 @@ interface RunIssueWorkflowParams {
     issueId: string
     instruction: SelectInstruction
   }[]
-  setCurrentStep: (
-    step:
-      | "started"
-      | "embedding"
-      | "retrieval"
-      | "clarify"
-      | "think"
-      | "plan"
-      | "act"
-      | "verify"
-      | "pr"
-      | "completed"
-      | null
-  ) => void
+  setCurrentStep: (step: RunStep) => void
   setMessages: Dispatch<React.SetStateAction<SelectIssueMessage[]>>
   setClarifications: (clarifications: AIClarificationItem[]) => void
   setThoughts: (thoughts: AIThought[]) => void
   setPlanSteps: (planSteps: AIPlanStep[]) => void
   setGeneratedFiles: (files: AIFileInfo[]) => void
+}
+
+export const mockRunIssueWorkflow = async ({ setCurrentStep }: any) => {
+  const steps: RunStep[] = [
+    "started",
+    "embedding",
+    "retrieval",
+    "clarify",
+    "think",
+    "plan",
+    "act",
+    "verify",
+    "pr",
+    "completed"
+  ]
+
+  for (const step of steps) {
+    setCurrentStep(step)
+    await new Promise(resolve => setTimeout(resolve, 3000))
+  }
 }
 
 export const runIssueWorkflow = async ({

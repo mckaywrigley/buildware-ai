@@ -36,15 +36,14 @@ export const RunIssue: FC<RunIssueProps> = ({
     thoughts,
     planSteps,
     generatedFiles,
-    handleRun
+    handleRun,
+    setThoughts,
+    setPlanSteps,
+    setGeneratedFiles
   } = useRunIssue(issue, initialIssueMessages, project, attachedInstructions)
 
   return (
-    <CRUDPage
-      pageTitle={`Running issue`}
-      backText="Back to issue"
-      backLink={`./`}
-    >
+    <CRUDPage pageTitle={`Run issue`} backText="Back to issue" backLink={`./`}>
       <RunIssueContent
         issue={issue}
         isRunning={isRunning}
@@ -55,6 +54,9 @@ export const RunIssue: FC<RunIssueProps> = ({
         planSteps={planSteps}
         generatedFiles={generatedFiles}
         onRun={handleRun}
+        setThoughts={setThoughts}
+        setPlanSteps={setPlanSteps}
+        setGeneratedFiles={setGeneratedFiles}
       />
     </CRUDPage>
   )

@@ -12,8 +12,9 @@ import {
   AIPlanStep,
   AIThought
 } from "@/types/ai"
+import { RunStep } from "@/types/run"
 import { useState } from "react"
-import { runIssueWorkflow } from "../runs/run-issue-workflow"
+import { mockRunIssueWorkflow } from "../runs/run-issue-workflow"
 
 export const useRunIssue = (
   issue: SelectIssue,
@@ -26,19 +27,7 @@ export const useRunIssue = (
   }[]
 ) => {
   const [isRunning, setIsRunning] = useState(false)
-  const [currentStep, setCurrentStep] = useState<
-    | "started"
-    | "embedding"
-    | "retrieval"
-    | "clarify"
-    | "think"
-    | "plan"
-    | "act"
-    | "verify"
-    | "pr"
-    | "completed"
-    | null
-  >(null)
+  const [currentStep, setCurrentStep] = useState<RunStep>(null)
   const [messages, setMessages] =
     useState<SelectIssueMessage[]>(initialIssueMessages)
   const [clarifications, setClarifications] = useState<AIClarificationItem[]>(
@@ -56,17 +45,20 @@ export const useRunIssue = (
 
     setIsRunning(true)
     try {
-      await runIssueWorkflow({
-        issue,
-        project,
-        attachedInstructions,
-        setCurrentStep,
-        setMessages,
-        setClarifications,
-        setThoughts,
-        setPlanSteps,
-        setGeneratedFiles
+      await mockRunIssueWorkflow({
+        setCurrentStep
       })
+      // await runIssueWorkflow({
+      //   issue,
+      //   project,
+      //   attachedInstructions,
+      //   setCurrentStep,
+      //   setMessages,
+      //   setClarifications,
+      //   setThoughts,
+      //   setPlanSteps,
+      //   setGeneratedFiles
+      // })
     } catch (error) {
       console.error("Error running issue:", error)
     } finally {
@@ -82,6 +74,9 @@ export const useRunIssue = (
     thoughts,
     planSteps,
     generatedFiles,
-    handleRun
+    handleRun,
+    setThoughts,
+    setPlanSteps,
+    setGeneratedFiles
   }
 }

@@ -1,38 +1,33 @@
 import { MessageMarkdown } from "@/components/instructions/message-markdown"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardTitle } from "@/components/ui/card"
+import { Progress } from "@/components/ui/progress"
 import { SelectIssue, SelectIssueMessage } from "@/db/schema"
+import { trackRunProgress } from "@/lib/runs/track-run-progress"
 import {
   AIClarificationItem,
   AIFileInfo,
   AIPlanStep,
   AIThought
 } from "@/types/ai"
+import { RunStep } from "@/types/run"
 import { Loader2, Play, RefreshCw } from "lucide-react"
 import { FC } from "react"
-import { StepContent } from "./run-step-content"
+import { RunStepContent } from "./run-step-content"
 
 interface RunIssueContentProps {
   issue: SelectIssue
   isRunning: boolean
-  currentStep:
-    | "started"
-    | "embedding"
-    | "retrieval"
-    | "clarify"
-    | "think"
-    | "plan"
-    | "act"
-    | "verify"
-    | "pr"
-    | "completed"
-    | null
+  currentStep: RunStep
   messages: SelectIssueMessage[]
   clarifications: AIClarificationItem[]
   thoughts: AIThought[]
   planSteps: AIPlanStep[]
   generatedFiles: AIFileInfo[]
+  setPlanSteps: (planSteps: AIPlanStep[]) => void
+  setGeneratedFiles: (generatedFiles: AIFileInfo[]) => void
   onRun: () => void
+  setThoughts: (updatedThoughts: AIThought[]) => void
 }
 
 export const RunIssueContent: FC<RunIssueContentProps> = ({
@@ -44,7 +39,10 @@ export const RunIssueContent: FC<RunIssueContentProps> = ({
   thoughts,
   planSteps,
   generatedFiles,
-  onRun
+  setPlanSteps,
+  setGeneratedFiles,
+  onRun,
+  setThoughts
 }) => {
   return (
     <div className="flex flex-col gap-12">
@@ -74,13 +72,18 @@ export const RunIssueContent: FC<RunIssueContentProps> = ({
         </CardContent>
       </Card>
 
+      <Progress value={trackRunProgress(currentStep)} />
+
       {currentStep && (
-        <StepContent
+        <RunStepContent
           step={currentStep}
           clarifications={clarifications}
           thoughts={thoughts}
           planSteps={planSteps}
           generatedFiles={generatedFiles}
+          setPlanSteps={setPlanSteps}
+          setGeneratedFiles={setGeneratedFiles}
+          setThoughts={setThoughts}
         />
       )}
 

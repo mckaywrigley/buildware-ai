@@ -1,26 +1,28 @@
 "use client"
 
 import { AIThought } from "@/types/ai"
-import { FC, useState } from "react"
+import { FC } from "react"
 import ReactTextareaAutosize from "react-textarea-autosize"
+import { StepLoader } from "./step-loader"
 
-interface CodegenThoughtsProps {
-  initialThoughts: AIThought[]
-  onUpdate: (updatedThoughts: AIThought[]) => void
+interface ThinkStepProps {
+  thoughts: AIThought[]
+  onUpdateThoughts: (updatedThoughts: AIThought[]) => void
 }
 
-export const CodegenThoughts: FC<CodegenThoughtsProps> = ({
-  initialThoughts,
-  onUpdate
+export const ThinkStep: FC<ThinkStepProps> = ({
+  thoughts,
+  onUpdateThoughts
 }) => {
-  const [thoughts, setThoughts] = useState<AIThought[]>(initialThoughts)
-
   const handleThoughtChange = (index: number, newText: string) => {
     const updatedThoughts = thoughts.map((thought, i) =>
       i === index ? { ...thought, text: newText } : thought
     )
-    setThoughts(updatedThoughts)
-    onUpdate(updatedThoughts)
+    onUpdateThoughts(updatedThoughts)
+  }
+
+  if (thoughts.length === 0) {
+    return <StepLoader text="Thinking..." />
   }
 
   return (
