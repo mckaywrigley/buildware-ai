@@ -23,6 +23,7 @@ interface RunStepContentProps {
   thoughts: AIThought[]
   planSteps: AIPlanStep[]
   generatedFiles: AIFileInfo[]
+  setClarifications: (clarifications: AIClarificationItem[]) => void
   setThoughts: (thoughts: AIThought[]) => void
   setPlanSteps: (planSteps: AIPlanStep[]) => void
   setGeneratedFiles: (generatedFiles: AIFileInfo[]) => void
@@ -34,6 +35,7 @@ export const RunStepContent: FC<RunStepContentProps> = ({
   thoughts,
   planSteps,
   generatedFiles,
+  setClarifications,
   setThoughts,
   setPlanSteps,
   setGeneratedFiles
@@ -46,16 +48,14 @@ export const RunStepContent: FC<RunStepContentProps> = ({
     case "retrieval":
       return <RetrievalStep />
     case "clarify":
-      return <ClarifyStep clarifications={clarifications} />
-    case "think":
       return (
-        <ThinkStep
-          thoughts={thoughts}
-          onUpdateThoughts={updatedThoughts => {
-            setThoughts(updatedThoughts)
-          }}
+        <ClarifyStep
+          clarifications={clarifications}
+          onUpdateClarifications={setClarifications}
         />
       )
+    case "think":
+      return <ThinkStep thoughts={thoughts} onUpdateThoughts={setThoughts} />
     case "plan":
       return <PlanStep plans={planSteps} onUpdatePlans={setPlanSteps} />
     case "act":

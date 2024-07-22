@@ -33,13 +33,13 @@ export const ClarifyStep: FC<ClarifyStepProps> = ({
       </div>
 
       {clarifications.map((clarification, index) => (
-        <div key={clarification.id} className="relative">
+        <div key={index} className="relative">
           <div className="bg-primary text-primary-foreground absolute -left-8 top-2 flex size-6 items-center justify-center rounded-full text-sm font-semibold">
             {index + 1}
           </div>
           <ReactTextareaAutosize
             className="clarification-text border-border bg-card focus:ring-primary w-full resize-none rounded-lg border p-4 pl-6 shadow-sm transition-shadow focus:shadow-md focus:outline-none focus:ring-2"
-            value={clarification.text}
+            value={clarification.content}
             onChange={e => handleClarificationChange(index, e.target.value)}
             minRows={2}
             maxRows={10}

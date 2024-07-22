@@ -69,7 +69,7 @@ export const mockRunIssueWorkflow = async ({ setCurrentStep }: any) => {
 
   for (const step of steps) {
     setCurrentStep(step)
-    await new Promise(resolve => setTimeout(resolve, 3000))
+    await new Promise(resolve => setTimeout(resolve, 1000))
   }
 }
 

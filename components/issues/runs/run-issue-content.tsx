@@ -26,6 +26,7 @@ interface RunIssueContentProps {
   generatedFiles: AIFileInfo[]
   setPlanSteps: (planSteps: AIPlanStep[]) => void
   setGeneratedFiles: (generatedFiles: AIFileInfo[]) => void
+  setClarifications: (clarifications: AIClarificationItem[]) => void
   onRun: () => void
   setThoughts: (updatedThoughts: AIThought[]) => void
 }
@@ -41,6 +42,7 @@ export const RunIssueContent: FC<RunIssueContentProps> = ({
   generatedFiles,
   setPlanSteps,
   setGeneratedFiles,
+  setClarifications,
   onRun,
   setThoughts
 }) => {
@@ -84,6 +86,7 @@ export const RunIssueContent: FC<RunIssueContentProps> = ({
           setPlanSteps={setPlanSteps}
           setGeneratedFiles={setGeneratedFiles}
           setThoughts={setThoughts}
+          setClarifications={setClarifications}
         />
       )}
 

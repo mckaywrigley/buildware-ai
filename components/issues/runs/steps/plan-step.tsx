@@ -1,13 +1,13 @@
 "use client"
 
-import { AIPlan } from "@/types/ai"
+import { AIPlanStep } from "@/types/ai"
 import { FC } from "react"
 import ReactTextareaAutosize from "react-textarea-autosize"
 import { StepLoader } from "./step-loader"
 
 interface PlanStepProps {
-  plans: AIPlan[]
-  onUpdatePlans: (updatedPlans: AIPlan[]) => void
+  plans: AIPlanStep[]
+  onUpdatePlans: (updatedPlans: AIPlanStep[]) => void
 }
 
 export const PlanStep: FC<PlanStepProps> = ({ plans, onUpdatePlans }) => {

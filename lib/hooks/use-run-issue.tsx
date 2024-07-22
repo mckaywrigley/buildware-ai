@@ -76,6 +76,7 @@ export const useRunIssue = (
     generatedFiles,
     handleRun,
     setThoughts,
+    setClarifications,
     setPlanSteps,
     setGeneratedFiles
   }

@@ -38,6 +38,7 @@ export const RunIssue: FC<RunIssueProps> = ({
     generatedFiles,
     handleRun,
     setThoughts,
+    setClarifications,
     setPlanSteps,
     setGeneratedFiles
   } = useRunIssue(issue, initialIssueMessages, project, attachedInstructions)
@@ -54,6 +55,7 @@ export const RunIssue: FC<RunIssueProps> = ({
         planSteps={planSteps}
         generatedFiles={generatedFiles}
         onRun={handleRun}
+        setClarifications={setClarifications}
         setThoughts={setThoughts}
         setPlanSteps={setPlanSteps}
         setGeneratedFiles={setGeneratedFiles}

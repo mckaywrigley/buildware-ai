@@ -23,7 +23,7 @@ export const trackRunProgress = (step: RunStep): number => {
     case "completed":
       return 100
     case null:
-      return 0
+      return 1
     default:
       return 0
   }
