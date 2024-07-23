@@ -34,6 +34,7 @@ import {
   updateIssue,
   updateIssueMessage
 } from "@/db/queries"
+import { incrementProjectRuns } from "@/db/queries/projects-queries"
 import { SelectIssue, SelectIssueMessage, SelectProject } from "@/db/schema"
 import { buildCodeGenPrompt } from "@/lib/ai/build-codegen-prompt"
 import { buildCodePlanPrompt } from "@/lib/ai/build-plan-prompt"
@@ -71,8 +72,8 @@ export const IssueView: React.FC<IssueViewProps> = ({
   const [isDeleteOpen, setIsDeleteOpen] = React.useState(false)
   const [selectedInstruction, setSelectedInstruction] = React.useState<{
     id: string
-    content: string
     name: string
+    content: string
   } | null>(null)
   const [isRunning, setIsRunning] = React.useState(false)
   const [messages, setMessages] = useState<SelectIssueMessage[]>([])
@@ -135,6 +136,9 @@ export const IssueView: React.FC<IssueViewProps> = ({
       globalSequence = 1
 
       await addMessage("Embedding target branch...")
+
+      // Increment the total runs count
+      await incrementProjectRuns(project.id)
 
       // Embed the target branch to make sure embeddings are up to date
       await embedTargetBranch({

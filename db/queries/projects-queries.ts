@@ -111,3 +111,30 @@ export async function deleteProject(id: string): Promise<void> {
     throw error
   }
 }
+
+export async function incrementProjectRuns(projectId: string): Promise<void> {
+  try {
+    await db
+      .update(projectsTable)
+      .set({ totalRuns: sql`${projectsTable.totalRuns} + 1` })
+      .where(eq(projectsTable.id, projectId))
+    revalidatePath("/")
+  } catch (error) {
+    console.error(`Error incrementing total runs for project ${projectId}:`, error)
+    throw error
+  }
+}
+
+export async function getTotalRuns(projectId: string): Promise<number> {
+  try {
+    const result = await db
+      .select({ totalRuns: projectsTable.totalRuns })
+      .from(projectsTable)
+      .where(eq(projectsTable.id, projectId))
+      .limit(1)
+    return result[0]?.totalRuns ?? 0
+  } catch (error) {
+    console.error(`Error getting total runs for project ${projectId}:`, error)
+    throw error
+  }
+}
