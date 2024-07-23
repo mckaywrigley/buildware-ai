@@ -1,10 +1,5 @@
 import { ThinkStep } from "@/components/issues/runs/steps/think-step"
-import {
-  AIClarificationItem,
-  AIFileInfo,
-  AIPlanStep,
-  AIThought
-} from "@/types/ai"
+import { AIClarificationItem, AIPlanStep, AIThought } from "@/types/ai"
 import { RunStep } from "@/types/run"
 import { FC } from "react"
 import { ActStep } from "./steps/act-step"
@@ -22,11 +17,10 @@ interface RunStepContentProps {
   clarifications: AIClarificationItem[]
   thoughts: AIThought[]
   planSteps: AIPlanStep[]
-  generatedFiles: AIFileInfo[]
   setClarifications: (clarifications: AIClarificationItem[]) => void
   setThoughts: (thoughts: AIThought[]) => void
   setPlanSteps: (planSteps: AIPlanStep[]) => void
-  setGeneratedFiles: (generatedFiles: AIFileInfo[]) => void
+  onNextStep: () => void
 }
 
 export const RunStepContent: FC<RunStepContentProps> = ({
@@ -34,11 +28,10 @@ export const RunStepContent: FC<RunStepContentProps> = ({
   clarifications,
   thoughts,
   planSteps,
-  generatedFiles,
   setClarifications,
   setThoughts,
   setPlanSteps,
-  setGeneratedFiles
+  onNextStep
 }) => {
   switch (step) {
     case "started":
@@ -52,16 +45,27 @@ export const RunStepContent: FC<RunStepContentProps> = ({
         <ClarifyStep
           clarifications={clarifications}
           onUpdateClarifications={setClarifications}
+          onNextStep={onNextStep}
         />
       )
     case "think":
-      return <ThinkStep thoughts={thoughts} onUpdateThoughts={setThoughts} />
-    case "plan":
-      return <PlanStep plans={planSteps} onUpdatePlans={setPlanSteps} />
-    case "act":
       return (
-        <ActStep files={generatedFiles} onUpdateFiles={setGeneratedFiles} />
+        <ThinkStep
+          thoughts={thoughts}
+          onUpdateThoughts={setThoughts}
+          onNextStep={onNextStep}
+        />
       )
+    case "plan":
+      return (
+        <PlanStep
+          plans={planSteps}
+          onUpdatePlans={setPlanSteps}
+          onNextStep={onNextStep}
+        />
+      )
+    case "act":
+      return <ActStep />
     case "verify":
       return <VerifyStep />
     case "pr":

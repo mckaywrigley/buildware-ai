@@ -31,6 +31,7 @@ export const RunIssue: FC<RunIssueProps> = ({
   const {
     isRunning,
     currentStep,
+    setCurrentStep,
     messages,
     clarifications,
     thoughts,
@@ -49,6 +50,7 @@ export const RunIssue: FC<RunIssueProps> = ({
         issue={issue}
         isRunning={isRunning}
         currentStep={currentStep}
+        setCurrentStep={setCurrentStep}
         messages={messages}
         clarifications={clarifications}
         thoughts={thoughts}

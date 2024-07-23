@@ -29,6 +29,7 @@ interface RunIssueContentProps {
   setClarifications: (clarifications: AIClarificationItem[]) => void
   onRun: () => void
   setThoughts: (updatedThoughts: AIThought[]) => void
+  setCurrentStep: (step: RunStep) => void
 }
 
 export const RunIssueContent: FC<RunIssueContentProps> = ({
@@ -39,13 +40,37 @@ export const RunIssueContent: FC<RunIssueContentProps> = ({
   clarifications,
   thoughts,
   planSteps,
-  generatedFiles,
   setPlanSteps,
-  setGeneratedFiles,
   setClarifications,
   onRun,
-  setThoughts
+  setThoughts,
+  setCurrentStep
 }) => {
+  const handleNextStep = () => {
+    // Define the order of steps
+    const stepOrder: RunStep[] = [
+      "started",
+      "embedding",
+      "retrieval",
+      "clarify",
+      "think",
+      "plan",
+      "act",
+      "verify",
+      "pr",
+      "completed"
+    ]
+
+    // Find the index of the current step
+    const currentIndex = stepOrder.indexOf(currentStep)
+
+    // If there's a next step, update the current step
+    if (currentIndex < stepOrder.length - 1) {
+      const nextStep = stepOrder[currentIndex + 1]
+      setCurrentStep(nextStep)
+    }
+  }
+
   return (
     <div className="flex flex-col gap-12">
       <Button variant="create" onClick={onRun} disabled={isRunning}>
@@ -82,11 +107,10 @@ export const RunIssueContent: FC<RunIssueContentProps> = ({
           clarifications={clarifications}
           thoughts={thoughts}
           planSteps={planSteps}
-          generatedFiles={generatedFiles}
           setPlanSteps={setPlanSteps}
-          setGeneratedFiles={setGeneratedFiles}
           setThoughts={setThoughts}
           setClarifications={setClarifications}
+          onNextStep={handleNextStep}
         />
       )}
 

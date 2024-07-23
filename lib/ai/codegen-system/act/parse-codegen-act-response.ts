@@ -1,6 +1,6 @@
-import { AIFileInfo, AIParsedResponse } from "@/types/ai"
+import { AIFileInfo, AIParsedActResponse } from "@/types/ai"
 
-export function parseCodegenActResponse(response: string): AIParsedResponse {
+export function parseCodegenActResponse(response: string): AIParsedActResponse {
   const pullRequestMatch = response.match(
     /<pull_request>([\s\S]*?)<\/pull_request>/
   )

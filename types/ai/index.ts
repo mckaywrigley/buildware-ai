@@ -5,7 +5,7 @@ export interface AIFileInfo {
   status: "new" | "modified" | "deleted"
 }
 
-export interface AIParsedResponse {
+export interface AIParsedActResponse {
   files: AIFileInfo[]
   prTitle: string
   prDescription: string
