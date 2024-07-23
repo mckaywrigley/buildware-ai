@@ -65,7 +65,6 @@ export function SiteHeader() {
   }
 
   const [hamburgerMenuIsOpen, setHamburgerMenuIsOpen] = useState(false)
-  // const [stars, setStars] = useState(0)
 
   useEffect(() => {
     const html = document.querySelector("html")
@@ -82,27 +81,6 @@ export function SiteHeader() {
       window.removeEventListener("resize", closeHamburgerNavigation)
     }
   }, [setHamburgerMenuIsOpen])
-
-  // useEffect(() => {
-  //   const getGitHubRepoStars = async () => {
-  //     const url = `https://api.github.com/repos/mckaywrigley/buildware-ai`
-  //     try {
-  //       const response = await fetch(url, {
-  //         headers: {
-  //           Accept: "application/vnd.github.v3+json"
-  //         }
-  //       })
-  //       if (!response.ok) {
-  //         throw new Error(`Error: ${response.status}`)
-  //       }
-  //       const data = await response.json()
-  //       setStars(data.stargazers_count)
-  //     } catch (error) {
-  //       console.error("Failed to fetch GitHub stars:", error)
-  //     }
-  //   }
-  //   getGitHubRepoStars()
-  // }, [])
 
   return (
     <>
@@ -145,6 +123,10 @@ export function SiteHeader() {
                   <Star className="size-4" />
                   <div>Star us on GitHub</div>
                 </Button>
+              </Link>
+
+              <Link href="/feedback" className="mr-4">
+                <Button variant="outline">Feedback</Button>
               </Link>
 
               {process.env.NEXT_PUBLIC_APP_MODE === "simple" ? (
@@ -230,6 +212,19 @@ export function SiteHeader() {
                 </Link>
               </motion.li>
             ))}
+            <motion.li
+              variants={mobileLinkVar}
+              className="border-grey-dark border-b py-0.5 pl-6 md:border-none"
+            >
+              <Link
+                className={`hover:text-grey flex h-[var(--navigation-height)] w-full items-center text-xl transition-[color,transform] duration-300 md:translate-y-0 md:text-sm md:transition-colors ${
+                  hamburgerMenuIsOpen ? "[&_a]:translate-y-0" : ""
+                }`}
+                href="/feedback"
+              >
+                Feedback
+              </Link>
+            </motion.li>
           </motion.ul>
         </motion.nav>
       </AnimatePresence>
