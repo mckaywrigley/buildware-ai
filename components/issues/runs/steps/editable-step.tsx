@@ -75,9 +75,9 @@ export const EditableStep: FC<EditableStepProps<AIThought>> = ({
 
       {localItems.map((item, index) => (
         <div key={item.number} className="relative">
-          <div className="bg-primary text-primary-foreground absolute -left-8 top-2 flex size-6 items-center justify-center rounded-full text-sm font-semibold">
+          {/* <div className="bg-primary text-primary-foreground absolute -left-8 top-2 flex size-6 items-center justify-center rounded-full text-sm font-semibold">
             {item.number}
-          </div>
+          </div> */}
           <ReactTextareaAutosize
             className="thought-text border-border bg-card focus:ring-primary w-full resize-none rounded-lg border p-4 pl-6 shadow-sm transition-shadow focus:shadow-md focus:outline-none focus:ring-2"
             value={item.text}
@@ -88,7 +88,7 @@ export const EditableStep: FC<EditableStepProps<AIThought>> = ({
           <Button
             variant="ghost"
             size="icon"
-            className="absolute -right-12 top-2"
+            className=""
             onClick={() => handleRemoveItem(index)}
             disabled={localItems.length === 1} // Disable button if it's the only item
           >

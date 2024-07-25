@@ -1,10 +1,22 @@
 "use client"
 
-import { CRUDPage } from "@/components/dashboard/reusable/crud-page"
 import { MessageMarkdown } from "@/components/instructions/message-markdown"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from "@/components/ui/dialog"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from "@/components/ui/tooltip"
 import {
   SelectInstruction,
   SelectIssue,
@@ -13,9 +25,11 @@ import {
 } from "@/db/schema"
 import { useRunIssue } from "@/lib/hooks/use-run-issue"
 import { trackRunProgress } from "@/lib/runs/track-run-progress"
-import { Loader2, Play, RefreshCw } from "lucide-react"
+import { Loader2, Play, RefreshCw, Info, ArrowLeft } from "lucide-react"
 import { FC } from "react"
 import { RunStepContent } from "./run-step-content"
+import { useRouter } from "next/navigation"
+import { cn } from "@/lib/utils"
 
 interface RunIssueProps {
   issue: SelectIssue
@@ -34,6 +48,7 @@ export const RunIssue: FC<RunIssueProps> = ({
   project,
   attachedInstructions
 }) => {
+  const router = useRouter()
   const {
     isRunning,
     currentStep,
@@ -50,62 +65,107 @@ export const RunIssue: FC<RunIssueProps> = ({
   } = useRunIssue(issue, initialIssueMessages, project, attachedInstructions)
 
   return (
-    <CRUDPage pageTitle={`Run issue`} backText="Back to issue" backLink={`./`}>
-      <div className="flex flex-col gap-12">
-        <Button variant="create" onClick={handleRun} disabled={isRunning}>
-          {isRunning ? (
-            <>
-              <Loader2 className="mr-2 size-4 animate-spin" />
-              Running...
-            </>
-          ) : issue.status === "completed" ? (
-            <>
-              <RefreshCw className="mr-2 size-4" />
-              Redo Run
-            </>
-          ) : (
-            <>
-              <Play className="mr-2 size-4" />
-              Start Run
-            </>
-          )}
-        </Button>
-
-        <Card className="bg-secondary/50 flex flex-col gap-2 p-4">
-          <CardTitle>{issue.name}</CardTitle>
-          <CardContent className="p-0">
-            <MessageMarkdown content={issue.content} />
-          </CardContent>
-        </Card>
-
-        <Progress value={trackRunProgress(currentStep)} />
-
-        {waitingForConfirmation && (
-          <Button onClick={handleConfirmation}>Confirm and Continue</Button>
-        )}
-
-        {currentStep && (
-          <RunStepContent
-            step={currentStep}
-            clarifications={clarifications}
-            thoughts={thoughts}
-            planSteps={planSteps}
-            setPlanSteps={setPlanSteps}
-            setThoughts={setThoughts}
-            setClarifications={setClarifications}
-          />
-        )}
-
-        <div className="space-y-8">
+    <>
+      <div className="w-full border-b">
+        <div className="flex h-14 items-center justify-between px-4 lg:h-[59px]">
+          <div className="flex items-center">
+            <Button
+              variant="ghost"
+              onClick={() => router.push(`.`)}
+              className="mr-2"
+            >
+              <ArrowLeft className="mr-2 size-4" />
+              Back
+            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <Dialog>
+                  <TooltipTrigger asChild>
+                    <DialogTrigger asChild>
+                      <Button variant="ghost" size="icon" className="mr-2">
+                        <Info className="size-4" />
+                      </Button>
+                    </DialogTrigger>
+                  </TooltipTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>{issue.name}</DialogTitle>
+                    </DialogHeader>
+                    <MessageMarkdown content={issue.content} />
+                  </DialogContent>
+                </Dialog>
+                <TooltipContent>
+                  <div>View your issue</div>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+          <div className="w-full max-w-2xl">
+            <Progress
+              value={trackRunProgress(currentStep)}
+              className="w-full"
+            />
+          </div>
+          <Button
+            variant="create"
+            onClick={handleRun}
+            disabled={isRunning}
+            className="ml-4"
+          >
+            {isRunning ? (
+              <>
+                <Loader2 className="mr-2 size-4 animate-spin" />
+                Running...
+              </>
+            ) : issue.status === "completed" ? (
+              <>
+                <RefreshCw className="mr-2 size-4" />
+                Redo Run
+              </>
+            ) : (
+              <>
+                <Play className="mr-2 size-4" />
+                Start Run
+              </>
+            )}
+          </Button>
+        </div>
+      </div>
+      <div className="grid grid-cols-4 gap-8 pb-16">
+        <div className="col-span-1 space-y-8 border-r p-6">
           {messages.map(message => (
             <Card key={message.id}>
-              <CardContent className="bg-secondary p-4">
+              <CardContent className="bg-secondary p-2">
                 <MessageMarkdown content={message.content} />
               </CardContent>
             </Card>
           ))}
         </div>
+        <div className="col-span-3 p-6">
+          {currentStep && (
+            <RunStepContent
+              step={currentStep}
+              clarifications={clarifications}
+              thoughts={thoughts}
+              planSteps={planSteps}
+              setPlanSteps={setPlanSteps}
+              setThoughts={setThoughts}
+              setClarifications={setClarifications}
+            />
+          )}
+        </div>
       </div>
-    </CRUDPage>
+
+      <div
+        className={cn(
+          "bg-background fixed bottom-0 left-[280px] right-0 border-t p-4 transition-all duration-300 ease-in-out",
+          waitingForConfirmation ? "translate-y-0" : "translate-y-full"
+        )}
+      >
+        <div className="flex justify-end">
+          <Button onClick={handleConfirmation}>Confirm and Continue</Button>
+        </div>
+      </div>
+    </>
   )
 }

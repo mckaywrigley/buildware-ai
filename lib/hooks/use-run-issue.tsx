@@ -38,8 +38,43 @@ export const useRunIssue = (
 ) => {
   const [isRunning, setIsRunning] = useState(false)
   const [currentStep, setCurrentStep] = useState<RunStep>("think")
-  const [messages, setMessages] =
-    useState<SelectIssueMessage[]>(initialIssueMessages)
+  const [messages, setMessages] = useState<SelectIssueMessage[]>([
+    {
+      id: "1",
+      issueId: issue.id,
+      content: "Initial issue description",
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      id: "2",
+      issueId: issue.id,
+      content: "Could you please provide more details?",
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      id: "3",
+      issueId: issue.id,
+      content: "Sure, here are some additional details...",
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      id: "4",
+      issueId: issue.id,
+      content: "Thank you. I'll start working on this issue.",
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      id: "5",
+      issueId: issue.id,
+      content: "Great, looking forward to the solution!",
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+  ])
   const [clarifications, setClarifications] = useState<AIClarificationItem[]>(
     []
   )
@@ -48,7 +83,7 @@ export const useRunIssue = (
   )
   const [planSteps, setPlanSteps] = useState<AIPlanStep[]>([])
   const [generatedFiles, setGeneratedFiles] = useState<AIFileInfo[]>([])
-  const [waitingForConfirmation, setWaitingForConfirmation] = useState(false)
+  const [waitingForConfirmation, setWaitingForConfirmation] = useState(true)
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
   const [codebaseFiles, setCodebaseFiles] = useState<
     { path: string; content: string }[]
