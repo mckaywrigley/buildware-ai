@@ -40,7 +40,7 @@ export const Integrations: FC<IntegrationsProps> = ({
 
       <div className="flex max-w-[300px] flex-col gap-4">
         <ConnectGitHub isGitHubConnected={isGitHubConnected} />
-       
+
         <ConnectLinear isLinearConnected={isLinearConnected} />
       </div>
     </div>

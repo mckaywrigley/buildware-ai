@@ -1,5 +1,5 @@
 import { CRUDPage } from "@/components/dashboard/reusable/crud-page"
-import NewTemplateForm from "@/components/templates/new-template-form"
+import { CreateTemplate } from "@/components/templates/create-template"
 import { getInstructionsByProjectId } from "@/db/queries/instructions-queries"
 
 export const revalidate = 0
@@ -17,7 +17,7 @@ export default async function CreateTemplatePage({
       backText="Back to templates"
       backLink="../templates"
     >
-      <NewTemplateForm instructions={instructions} />
+      <CreateTemplate instructions={instructions} />
     </CRUDPage>
   )
 }

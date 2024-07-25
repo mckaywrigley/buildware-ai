@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import ReactTextareaAutosize from "react-textarea-autosize"
+import { DeleteDialog } from "./delete-dialog"
 
 interface CRUDFormProps {
   itemName: string
@@ -15,6 +16,7 @@ interface CRUDFormProps {
     name: string
     content: string
   }
+  onDelete?: () => Promise<void>
   onContentChange?: (content: string) => void
   onNameChange?: (name: string) => void
 }
@@ -24,6 +26,7 @@ export const CRUDForm = ({
   buttonText,
   onSubmit,
   data,
+  onDelete,
   onContentChange,
   onNameChange
 }: CRUDFormProps) => {
@@ -82,6 +85,14 @@ export const CRUDForm = ({
       </Card>
 
       <div className="flex items-center justify-between">
+        {onDelete && (
+          <DeleteDialog
+            title={`Delete ${itemName}`}
+            description={`Are you sure you want to delete this ${itemName.toLowerCase()}? This action cannot be undone.`}
+            onDelete={onDelete}
+          />
+        )}
+
         <div className="ml-auto space-x-2">
           <Button
             type="button"

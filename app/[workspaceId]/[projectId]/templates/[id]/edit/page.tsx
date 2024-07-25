@@ -1,5 +1,5 @@
 import { CRUDPage } from "@/components/dashboard/reusable/crud-page"
-import EditTemplateForm from "@/components/templates/edit-template-form"
+import { EditTemplate } from "@/components/templates/edit-template"
 import { NotFound } from "@/components/utility/not-found"
 import { getInstructionsByProjectId } from "@/db/queries/instructions-queries"
 import { getTemplateWithInstructionById } from "@/db/queries/templates-queries"
@@ -21,11 +21,11 @@ export default async function EditTemplatePage({
 
   return (
     <CRUDPage
-      pageTitle="New template"
+      pageTitle="Edit template"
       backText="Back to templates"
       backLink=".."
     >
-      <EditTemplateForm
+      <EditTemplate
         templateWithInstructions={template}
         instructions={instructions}
       />

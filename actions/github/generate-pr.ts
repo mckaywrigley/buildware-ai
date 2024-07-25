@@ -2,12 +2,12 @@
 
 import { getAuthenticatedOctokit } from "@/actions/github/auth"
 import { SelectProject } from "@/db/schema"
-import { AIParsedResponse } from "@/types/ai"
+import { AIParsedActResponse } from "@/types/ai"
 
 export async function generatePR(
   branchName: string,
   project: SelectProject,
-  parsedResponse: AIParsedResponse
+  parsedResponse: AIParsedActResponse
 ): Promise<{ prLink: string | null; branchName: string }> {
   const octokit = await getAuthenticatedOctokit(project.githubInstallationId!)
   const [owner, repo] = project.githubRepoFullName!.split("/")
@@ -15,7 +15,7 @@ export async function generatePR(
   // Create a new branch
   const baseBranch = project.githubTargetBranch || "main"
   const timestamp = Date.now()
-  let newBranch = `buildware-ai/${branchName}/${timestamp}`
+  let newBranch = `buildware-ai/${branchName.replace(/\s+/g, "-")}/${timestamp}`
   let baseRef: any
 
   try {

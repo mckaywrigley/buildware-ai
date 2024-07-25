@@ -9,7 +9,7 @@ import {
   issueMessagesTable
 } from "../schema/issue-messages-schema"
 
-export async function createIssueMessageRecord(
+export async function createIssueMessage(
   data: InsertIssueMessage
 ): Promise<SelectIssueMessage> {
   try {
@@ -21,19 +21,6 @@ export async function createIssueMessageRecord(
     return result
   } catch (error) {
     console.error("Error creating issue message record:", error)
-    throw error
-  }
-}
-
-export async function getIssueMessageById(
-  id: string
-): Promise<SelectIssueMessage | undefined> {
-  try {
-    return db.query.issueMessages.findFirst({
-      where: eq(issueMessagesTable.id, id)
-    })
-  } catch (error) {
-    console.error(`Error getting issue message by id ${id}:`, error)
     throw error
   }
 }
