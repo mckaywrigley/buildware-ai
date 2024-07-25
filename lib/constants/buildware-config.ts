@@ -12,9 +12,9 @@ export const BUILDWARE_MAX_OUTPUT_TOKENS = 4096
 
 // Max: 200000
 // (dev)
-// export const BUILDWARE_MAX_INPUT_TOKENS = 10000
+export const BUILDWARE_MAX_INPUT_TOKENS = 10000
 // (prod)
-export const BUILDWARE_MAX_INPUT_TOKENS = 200000
+// export const BUILDWARE_MAX_INPUT_TOKENS = 200000
 
 // claude-3-5-sonnet-20240620 or claude-3-haiku-20240307
 // DEV: claude-3-haiku-20240307
