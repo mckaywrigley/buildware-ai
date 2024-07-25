@@ -23,7 +23,6 @@ import { runPRStep } from "../runs/run-pr-step"
 import { runRetrievalStep } from "../runs/run-retrieval-step"
 import { runStartStep } from "../runs/run-start-step"
 import { runThinkStep } from "../runs/run-think-step"
-import { runVerifyStep } from "../runs/run-verify-step"
 
 export const useRunIssue = (
   issue: SelectIssue,
@@ -72,7 +71,7 @@ export const useRunIssue = (
     runPlanStep,
     runActStep,
     runPRStep,
-    runVerifyStep,
+    // runVerifyStep,
     runCompletedStep
   ]
 
@@ -88,10 +87,9 @@ export const useRunIssue = (
         "plan",
         "act",
         "pr",
-        "verify",
+        // "verify",
         "completed"
       ][stepIndex]
-      console.log("stepName", stepName)
 
       setCurrentStep(stepName as RunStep)
 
@@ -126,7 +124,6 @@ export const useRunIssue = (
         setCurrentStepIndex(stepIndex)
       } else {
         const nextStepIndex = stepIndex + 1
-        console.log("stepIndex + 1", nextStepIndex)
         setCurrentStepIndex(nextStepIndex)
         runNextStep(nextStepIndex)
       }
@@ -149,7 +146,6 @@ export const useRunIssue = (
   const handleConfirmation = () => {
     setWaitingForConfirmation(false)
     const nextStepIndex = currentStepIndex + 1
-    console.log("currentStepIndex + 1", nextStepIndex)
     setCurrentStepIndex(nextStepIndex)
     runNextStep(nextStepIndex)
   }

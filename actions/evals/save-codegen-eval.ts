@@ -18,7 +18,7 @@ export async function saveCodegenEval(
   try {
     await fs.mkdir(dirPath, { recursive: true })
     await fs.writeFile(filePath, prompt)
-    console.log(`Prompt saved to ${filePath}`)
+    console.warn(`Prompt saved to ${filePath}`)
   } catch (error) {
     console.error("Error saving prompt:", error)
   }
