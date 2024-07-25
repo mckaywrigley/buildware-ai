@@ -5,7 +5,10 @@ export const BUILDWARE_EMBEDDING_MODEL = "text-embedding-3-large"
 export const BUILDWARE_EMBEDDING_DIMENSIONS = 256
 
 // Max: 8192
-export const BUILDWARE_MAX_OUTPUT_TOKENS = 8192
+// (prod)
+// export const BUILDWARE_MAX_OUTPUT_TOKENS = 8192
+// (dev)
+export const BUILDWARE_MAX_OUTPUT_TOKENS = 4096
 
 // Max: 200000
 export const BUILDWARE_MAX_INPUT_TOKENS = 200000

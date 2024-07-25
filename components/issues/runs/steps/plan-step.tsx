@@ -7,14 +7,9 @@ import { EditableStep } from "./editable-step"
 interface PlanStepProps {
   plans: AIPlanStep[]
   onUpdatePlans: (updatedPlans: AIPlanStep[]) => void
-  onNextStep: () => void
 }
 
-export const PlanStep: FC<PlanStepProps> = ({
-  plans,
-  onUpdatePlans,
-  onNextStep
-}) => {
+export const PlanStep: FC<PlanStepProps> = ({ plans, onUpdatePlans }) => {
   return (
     <EditableStep
       items={plans}
@@ -22,7 +17,6 @@ export const PlanStep: FC<PlanStepProps> = ({
       title="Plan"
       description="Edit the AI's plans if needed."
       itemName="plan"
-      onNextStep={onNextStep}
     />
   )
 }

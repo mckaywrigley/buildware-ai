@@ -1,6 +1,10 @@
 import { generateCodegenAIMessage } from "@/actions/ai/generate-codegen-ai-message"
 import { saveCodegenEval } from "@/actions/evals/save-codegen-eval"
-import { createIssueMessage, updateIssue } from "@/db/queries"
+import {
+  createIssueMessage,
+  updateIssue,
+  updateIssueMessage
+} from "@/db/queries"
 import { buildCodegenThinkPrompt } from "@/lib/ai/codegen-system/think/build-codegen-think-prompt"
 import { parseCodegenThinkResponse } from "@/lib/ai/codegen-system/think/parse-codegen-think-response"
 import { BUILDWARE_THINK_LLM } from "@/lib/constants/buildware-config"
@@ -36,14 +40,12 @@ export const runThinkStep = async ({
       model: BUILDWARE_THINK_LLM
     })
 
-    const thinkAIMessage = await createIssueMessage({
-      issueId: issue.id,
-      content: thinkAIResponse
-    })
-    setMessages(prev => [...prev, thinkAIMessage])
-
     const parsedThinkResponse = parseCodegenThinkResponse(thinkAIResponse)
     setThoughts(parsedThinkResponse.thoughts)
+
+    await updateIssueMessage(thinkStatusMessage.id, {
+      content: "Issue thought about."
+    })
 
     await saveCodegenEval(
       `${thinkSystemPrompt}\n\n${thinkUserMessage}`,

@@ -1,6 +1,10 @@
 import { generateCodegenAIMessage } from "@/actions/ai/generate-codegen-ai-message"
 import { saveCodegenEval } from "@/actions/evals/save-codegen-eval"
-import { createIssueMessage, updateIssue } from "@/db/queries"
+import {
+  createIssueMessage,
+  updateIssue,
+  updateIssueMessage
+} from "@/db/queries"
 import { buildCodegenPlanPrompt } from "@/lib/ai/codegen-system/plan/build-codegen-plan-prompt"
 import { parseCodegenPlanResponse } from "@/lib/ai/codegen-system/plan/parse-codegen-plan-response"
 import { BUILDWARE_PLAN_LLM } from "@/lib/constants/buildware-config"
@@ -38,14 +42,12 @@ export const runPlanStep = async ({
       model: BUILDWARE_PLAN_LLM
     })
 
-    const planAIMessage = await createIssueMessage({
-      issueId: issue.id,
-      content: planAIResponse
-    })
-    setMessages(prev => [...prev, planAIMessage])
-
     const parsedPlanResponse = parseCodegenPlanResponse(planAIResponse)
     setPlanSteps(parsedPlanResponse.steps)
+
+    await updateIssueMessage(planStatusMessage.id, {
+      content: "Issue planned."
+    })
 
     await saveCodegenEval(
       `${planSystemPrompt}\n\n${planUserMessage}`,

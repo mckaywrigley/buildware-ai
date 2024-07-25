@@ -1,6 +1,10 @@
 import { generateCodegenAIMessage } from "@/actions/ai/generate-codegen-ai-message"
 import { saveCodegenEval } from "@/actions/evals/save-codegen-eval"
-import { createIssueMessage, updateIssue } from "@/db/queries"
+import {
+  createIssueMessage,
+  updateIssue,
+  updateIssueMessage
+} from "@/db/queries"
 import { buildCodegenClarifyPrompt } from "@/lib/ai/codegen-system/clarify/build-codegen-clarify-prompt"
 import { parseCodegenClarifyResponse } from "@/lib/ai/codegen-system/clarify/parse-codegen-clarify-response"
 import { BUILDWARE_CLARIFY_LLM } from "@/lib/constants/buildware-config"
@@ -41,14 +45,12 @@ export const runClarifyStep = async ({
       model: BUILDWARE_CLARIFY_LLM
     })
 
-    const clarifyAIMessage = await createIssueMessage({
-      issueId: issue.id,
-      content: clarifyAIResponse
-    })
-    setMessages(prev => [...prev, clarifyAIMessage])
-
     const parsedClarifyResponse = parseCodegenClarifyResponse(clarifyAIResponse)
     setClarifications(parsedClarifyResponse.clarifications)
+
+    await updateIssueMessage(clarifyStatusMessage.id, {
+      content: "Awaiting your clarifications..."
+    })
 
     await saveCodegenEval(
       `${clarifySystemPrompt}\n\n${clarifyUserMessage}`,
@@ -57,6 +59,10 @@ export const runClarifyStep = async ({
       "prompt"
     )
     await saveCodegenEval(clarifyAIResponse, issue.name, "clarify", "response")
+
+    await updateIssueMessage(clarifyStatusMessage.id, {
+      content: "Issue clarified."
+    })
   } catch (error) {
     console.error("Error running clarify step:", error)
     await updateIssue(issue.id, { status: "failed" })

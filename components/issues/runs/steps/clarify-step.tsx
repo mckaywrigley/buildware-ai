@@ -3,23 +3,25 @@
 import { Button } from "@/components/ui/button"
 import { AIClarificationItem } from "@/types/ai"
 import { Plus, Trash2 } from "lucide-react"
-import { FC, useState } from "react"
+import { FC, useEffect, useState } from "react"
 import ReactTextareaAutosize from "react-textarea-autosize"
 import { StepLoader } from "./step-loader"
 
 interface ClarifyStepProps {
   clarifications: AIClarificationItem[]
   onUpdateClarifications: (updatedClarifications: AIClarificationItem[]) => void
-  onNextStep: () => void
 }
 
 export const ClarifyStep: FC<ClarifyStepProps> = ({
   clarifications,
-  onUpdateClarifications,
-  onNextStep
+  onUpdateClarifications
 }) => {
   const [localClarifications, setLocalClarifications] =
     useState<AIClarificationItem[]>(clarifications)
+
+  useEffect(() => {
+    setLocalClarifications(clarifications)
+  }, [clarifications])
 
   const handleClarificationChange = (
     index: number,
@@ -101,10 +103,6 @@ export const ClarifyStep: FC<ClarifyStepProps> = ({
       >
         <Plus className="mr-2 size-4" />
         Add clarification
-      </Button>
-
-      <Button variant="default" className="mt-4 w-full" onClick={onNextStep}>
-        Confirm and Continue
       </Button>
     </div>
   )

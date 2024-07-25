@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { AIThought } from "@/types/ai"
 import { Plus, Trash2 } from "lucide-react"
-import { FC, useState } from "react"
+import { FC, useEffect, useState } from "react"
 import ReactTextareaAutosize from "react-textarea-autosize"
 import { StepLoader } from "./step-loader"
 
@@ -11,7 +11,6 @@ interface EditableStepProps<T extends { number: number; text: string }> {
   title: string
   description: string
   itemName: string
-  onNextStep: () => void
 }
 
 export const EditableStep: FC<EditableStepProps<AIThought>> = ({
@@ -19,10 +18,13 @@ export const EditableStep: FC<EditableStepProps<AIThought>> = ({
   onUpdateItems,
   title,
   description,
-  itemName,
-  onNextStep
+  itemName
 }) => {
   const [localItems, setLocalItems] = useState<AIThought[]>(items)
+
+  useEffect(() => {
+    setLocalItems(items)
+  }, [items])
 
   const handleItemChange = (index: number, newText: string) => {
     const updatedItems = localItems.map((item, i) =>
@@ -106,10 +108,6 @@ export const EditableStep: FC<EditableStepProps<AIThought>> = ({
       >
         <Plus className="mr-2 size-4" />
         Add {itemName}
-      </Button>
-
-      <Button variant="default" className="mt-4 w-full" onClick={onNextStep}>
-        Confirm and Continue
       </Button>
     </div>
   )

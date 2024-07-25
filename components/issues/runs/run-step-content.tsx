@@ -20,7 +20,6 @@ interface RunStepContentProps {
   setClarifications: (clarifications: AIClarificationItem[]) => void
   setThoughts: (thoughts: AIThought[]) => void
   setPlanSteps: (planSteps: AIPlanStep[]) => void
-  onNextStep: () => void
 }
 
 export const RunStepContent: FC<RunStepContentProps> = ({
@@ -30,8 +29,7 @@ export const RunStepContent: FC<RunStepContentProps> = ({
   planSteps,
   setClarifications,
   setThoughts,
-  setPlanSteps,
-  onNextStep
+  setPlanSteps
 }) => {
   switch (step) {
     case "started":
@@ -45,25 +43,12 @@ export const RunStepContent: FC<RunStepContentProps> = ({
         <ClarifyStep
           clarifications={clarifications}
           onUpdateClarifications={setClarifications}
-          onNextStep={onNextStep}
         />
       )
     case "think":
-      return (
-        <ThinkStep
-          thoughts={thoughts}
-          onUpdateThoughts={setThoughts}
-          onNextStep={onNextStep}
-        />
-      )
+      return <ThinkStep thoughts={thoughts} onUpdateThoughts={setThoughts} />
     case "plan":
-      return (
-        <PlanStep
-          plans={planSteps}
-          onUpdatePlans={setPlanSteps}
-          onNextStep={onNextStep}
-        />
-      )
+      return <PlanStep plans={planSteps} onUpdatePlans={setPlanSteps} />
     case "act":
       return <ActStep />
     case "verify":

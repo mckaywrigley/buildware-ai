@@ -15,10 +15,7 @@ import {
 import { RunStep } from "@/types/run"
 import { useState } from "react"
 import { parseCodegenActResponse } from "../ai/codegen-system/act/parse-codegen-act-response"
-import { parseCodegenThinkResponse } from "../ai/codegen-system/think/parse-codegen-think-response"
-import { MOCK_THINK_DATA } from "../constants/codegen-mock-data/think/mock-think-data"
 import { runActStep } from "../runs/run-act-step"
-import { runClarifyStep } from "../runs/run-clarify-step"
 import { runCompletedStep } from "../runs/run-completed-step"
 import { runEmbeddingStep } from "../runs/run-embedding-step"
 import { runPlanStep } from "../runs/run-plan-step"
@@ -39,18 +36,16 @@ export const useRunIssue = (
   }[]
 ) => {
   const [isRunning, setIsRunning] = useState(false)
-  const [currentStep, setCurrentStep] = useState<RunStep>("think")
+  const [currentStep, setCurrentStep] = useState<RunStep>(null)
   const [messages, setMessages] =
     useState<SelectIssueMessage[]>(initialIssueMessages)
   const [clarifications, setClarifications] = useState<AIClarificationItem[]>(
     []
   )
-  const [thoughts, setThoughts] = useState<AIThought[]>(
-    parseCodegenThinkResponse(MOCK_THINK_DATA).thoughts
-  )
+  const [thoughts, setThoughts] = useState<AIThought[]>([])
   const [planSteps, setPlanSteps] = useState<AIPlanStep[]>([])
   const [generatedFiles, setGeneratedFiles] = useState<AIFileInfo[]>([])
-
+  const [waitingForConfirmation, setWaitingForConfirmation] = useState(false)
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
   const [codebaseFiles, setCodebaseFiles] = useState<
     { path: string; content: string }[]
@@ -67,11 +62,12 @@ export const useRunIssue = (
     plan: null,
     act: null
   })
-  const steps = [
+
+  const stepFunctions = [
     runStartStep,
     runEmbeddingStep,
     runRetrievalStep,
-    runClarifyStep,
+    // runClarifyStep,
     runThinkStep,
     runPlanStep,
     runActStep,
@@ -80,10 +76,26 @@ export const useRunIssue = (
     runCompletedStep
   ]
 
-  const runNextStep = async () => {
-    if (currentStepIndex < steps.length) {
-      const currentStep = steps[currentStepIndex]
-      await currentStep({
+  const runNextStep = async (stepIndex = currentStepIndex) => {
+    if (stepIndex < stepFunctions.length) {
+      const currentStepFunction = stepFunctions[stepIndex]
+      const stepName = [
+        "started",
+        "embedding",
+        "retrieval",
+        // "clarify",
+        "think",
+        "plan",
+        "act",
+        "pr",
+        "verify",
+        "completed"
+      ][stepIndex]
+      console.log("stepName", stepName)
+
+      setCurrentStep(stepName as RunStep)
+
+      await currentStepFunction({
         issue,
         project,
         attachedInstructions,
@@ -107,7 +119,19 @@ export const useRunIssue = (
         setAIResponses: (type: keyof typeof aiResponses, response: string) =>
           setAIResponses(prev => ({ ...prev, [type]: response }))
       })
-      setCurrentStepIndex(prevIndex => prevIndex + 1)
+
+      // If the step is think or plan, we need to wait for confirmation
+      if (["think", "plan"].includes(stepName)) {
+        setWaitingForConfirmation(true)
+        setCurrentStepIndex(stepIndex)
+      } else {
+        const nextStepIndex = stepIndex + 1
+        console.log("stepIndex + 1", nextStepIndex)
+        setCurrentStepIndex(nextStepIndex)
+        runNextStep(nextStepIndex)
+      }
+    } else {
+      setIsRunning(false)
     }
   }
 
@@ -118,13 +142,16 @@ export const useRunIssue = (
     }
 
     setIsRunning(true)
-    try {
-      await runNextStep()
-    } catch (error) {
-      console.error("Error running issue:", error)
-    } finally {
-      setIsRunning(false)
-    }
+    setCurrentStepIndex(0)
+    runNextStep(0)
+  }
+
+  const handleConfirmation = () => {
+    setWaitingForConfirmation(false)
+    const nextStepIndex = currentStepIndex + 1
+    console.log("currentStepIndex + 1", nextStepIndex)
+    setCurrentStepIndex(nextStepIndex)
+    runNextStep(nextStepIndex)
   }
 
   return {
@@ -135,11 +162,12 @@ export const useRunIssue = (
     thoughts,
     planSteps,
     generatedFiles,
+    waitingForConfirmation,
     handleRun,
     setThoughts,
     setClarifications,
     setPlanSteps,
     setGeneratedFiles,
-    setCurrentStep
+    handleConfirmation
   }
 }

@@ -7,13 +7,11 @@ import { EditableStep } from "./editable-step"
 interface ThinkStepProps {
   thoughts: AIThought[]
   onUpdateThoughts: (updatedThoughts: AIThought[]) => void
-  onNextStep: () => void
 }
 
 export const ThinkStep: FC<ThinkStepProps> = ({
   thoughts,
-  onUpdateThoughts,
-  onNextStep
+  onUpdateThoughts
 }) => {
   return (
     <EditableStep
@@ -22,7 +20,6 @@ export const ThinkStep: FC<ThinkStepProps> = ({
       title="Think"
       description="Edit, remove, or add new thoughts as needed."
       itemName="thought"
-      onNextStep={onNextStep}
     />
   )
 }
