@@ -15,6 +15,8 @@ import {
 import { RunStep } from "@/types/run"
 import { useState } from "react"
 import { parseCodegenActResponse } from "../ai/codegen-system/act/parse-codegen-act-response"
+import { parseCodegenThinkResponse } from "../ai/codegen-system/think/parse-codegen-think-response"
+import { MOCK_THINK_DATA } from "../constants/codegen-mock-data/think/mock-think-data"
 import { runActStep } from "../runs/run-act-step"
 import { runCompletedStep } from "../runs/run-completed-step"
 import { runEmbeddingStep } from "../runs/run-embedding-step"
@@ -35,13 +37,15 @@ export const useRunIssue = (
   }[]
 ) => {
   const [isRunning, setIsRunning] = useState(false)
-  const [currentStep, setCurrentStep] = useState<RunStep>(null)
+  const [currentStep, setCurrentStep] = useState<RunStep>("think")
   const [messages, setMessages] =
     useState<SelectIssueMessage[]>(initialIssueMessages)
   const [clarifications, setClarifications] = useState<AIClarificationItem[]>(
     []
   )
-  const [thoughts, setThoughts] = useState<AIThought[]>([])
+  const [thoughts, setThoughts] = useState<AIThought[]>(
+    parseCodegenThinkResponse(MOCK_THINK_DATA).thoughts
+  )
   const [planSteps, setPlanSteps] = useState<AIPlanStep[]>([])
   const [generatedFiles, setGeneratedFiles] = useState<AIFileInfo[]>([])
   const [waitingForConfirmation, setWaitingForConfirmation] = useState(false)
