@@ -25,11 +25,12 @@ import {
 import { useRunIssue } from "@/lib/hooks/use-run-issue"
 import { trackRunProgress } from "@/lib/runs/track-run-progress"
 import { Loader2, Play, RefreshCw, Info, ArrowLeft } from "lucide-react"
-import { FC } from "react"
+import { FC, useState, useEffect } from "react"
 import { RunStepContent } from "./run-step-content"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { IssueMessages } from "./issue-messages"
+import { RunStep } from "@/types/run"
 
 interface RunIssueProps {
   issue: SelectIssue
@@ -49,6 +50,7 @@ export const RunIssue: FC<RunIssueProps> = ({
   attachedInstructions
 }) => {
   const router = useRouter()
+  const [selectedStep, setSelectedStep] = useState<RunStep | null>(null)
   const {
     isRunning,
     currentStep,
@@ -63,6 +65,32 @@ export const RunIssue: FC<RunIssueProps> = ({
     handleConfirmation,
     waitingForConfirmation
   } = useRunIssue(issue, initialIssueMessages, project, attachedInstructions)
+
+  useEffect(() => {
+    setSelectedStep(null)
+  }, [currentStep])
+
+  const stepOrder: RunStep[] = [
+    "started",
+    "embedding",
+    "retrieval",
+    //"clarify",
+    "think",
+    "plan",
+    "act",
+    "pr",
+    //"verify",
+    "completed"
+  ]
+
+  const handleStepClick = (step: RunStep) => {
+    const currentStepIndex = stepOrder.indexOf(currentStep)
+    const clickedStepIndex = stepOrder.indexOf(step)
+
+    if (clickedStepIndex <= currentStepIndex) {
+      setSelectedStep(step)
+    }
+  }
 
   return (
     <>
@@ -132,23 +160,24 @@ export const RunIssue: FC<RunIssueProps> = ({
         </div>
       </div>
       <div className="flex flex-1">
-        <div className="grid grid-cols-4 gap-8 pb-16">
-          <IssueMessages
-            currentStep={currentStep}
-            waitingForConfirmation={waitingForConfirmation}
-          />
-          <div className="col-span-3 p-6">
-            {currentStep && (
-              <RunStepContent
-                step={currentStep}
-                clarifications={clarifications}
-                thoughts={thoughts}
-                planSteps={planSteps}
-                setPlanSteps={setPlanSteps}
-                setThoughts={setThoughts}
-                setClarifications={setClarifications}
-              />
-            )}
+        <div className="grid w-full grid-cols-12 gap-8 pb-16">
+          <div className="col-span-4 p-4">
+            <IssueMessages
+              currentStep={currentStep}
+              waitingForConfirmation={waitingForConfirmation}
+              onStepClick={handleStepClick}
+            />
+          </div>
+          <div className="col-span-8 p-6">
+            <RunStepContent
+              step={selectedStep || currentStep}
+              clarifications={clarifications}
+              thoughts={thoughts}
+              planSteps={planSteps}
+              setPlanSteps={setPlanSteps}
+              setThoughts={setThoughts}
+              setClarifications={setClarifications}
+            />
           </div>
         </div>
       </div>

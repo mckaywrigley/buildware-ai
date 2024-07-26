@@ -36,11 +36,13 @@ const messages = [
 interface IssueMessagesProps {
   currentStep: RunStep
   waitingForConfirmation: boolean
+  onStepClick?: (step: RunStep) => void
 }
 
 export const IssueMessages = ({
   currentStep,
-  waitingForConfirmation
+  waitingForConfirmation,
+  onStepClick
 }: IssueMessagesProps) => {
   const getStepStatus = (step: string) => {
     if (step === currentStep) return "current"
@@ -57,7 +59,17 @@ export const IssueMessages = ({
           return (
             <div key={index} className="relative">
               <div className="flex items-center justify-between py-2">
-                <div className="flex items-center">
+                <div
+                  className={cn(
+                    "flex items-center",
+                    (status === "completed" || status === "current") &&
+                      "cursor-pointer hover:underline"
+                  )}
+                  onClick={() =>
+                    (status === "completed" || status === "current") &&
+                    onStepClick?.(step as RunStep)
+                  }
+                >
                   <div
                     className={`relative z-10 mr-4 rounded-full p-1 ${
                       status === "current"
