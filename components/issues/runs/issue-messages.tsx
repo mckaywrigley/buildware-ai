@@ -1,24 +1,24 @@
 import { MessageMarkdown } from "@/components/instructions/message-markdown"
 import {
-  CircleDot,
-  Cpu,
-  CirclePlus,
-  List,
-  ListChecks,
+  Check,
   ChevronsLeftRight,
+  CircleDot,
+  CirclePlus,
+  Cpu,
   DiamondPlus,
-  Check
+  List,
+  ListChecks
 } from "lucide-react"
 
 const messages = [
-  { text: "Started", icon: <CircleDot className="mr-2 size-4" /> },
-  { text: "Embedding", icon: <Cpu className="mr-2 size-4" /> },
-  { text: "Retrieval", icon: <CirclePlus className="mr-2 size-4" /> },
-  { text: "Think", icon: <List className="mr-2 size-4" /> },
-  { text: "Plan", icon: <ListChecks className="mr-2 size-4" /> },
-  { text: "Act", icon: <ChevronsLeftRight className="mr-2 size-4" /> },
-  { text: "PR", icon: <DiamondPlus className="mr-2 size-4" /> },
-  { text: "Completed", icon: <Check className="mr-2 size-4" /> }
+  { text: "Started", icon: <CircleDot className="size-4" /> },
+  { text: "Embedding", icon: <Cpu className="size-4" /> },
+  { text: "Retrieval", icon: <CirclePlus className="size-4" /> },
+  { text: "Think", icon: <List className="size-4" /> },
+  { text: "Plan", icon: <ListChecks className="size-4" /> },
+  { text: "Act", icon: <ChevronsLeftRight className="size-4" /> },
+  { text: "PR", icon: <DiamondPlus className="size-4" /> },
+  { text: "Completed", icon: <Check className="size-4" /> }
 ]
 
 export const IssueMessages = () => (
@@ -27,7 +27,7 @@ export const IssueMessages = () => (
       {messages.map(({ text, icon }, index) => (
         <div key={index}>
           <div className="flex items-center py-2">
-            {icon}
+            <div className="mr-2">{icon}</div>
             <MessageMarkdown content={text} />
           </div>
           {index < messages.length - 1 && (
