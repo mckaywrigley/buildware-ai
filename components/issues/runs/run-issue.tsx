@@ -2,7 +2,6 @@
 
 import { MessageMarkdown } from "@/components/instructions/message-markdown"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import {
   Dialog,
@@ -30,6 +29,7 @@ import { FC } from "react"
 import { RunStepContent } from "./run-step-content"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
+import { IssueMessages } from "./issue-messages"
 
 interface RunIssueProps {
   issue: SelectIssue
@@ -52,7 +52,7 @@ export const RunIssue: FC<RunIssueProps> = ({
   const {
     isRunning,
     currentStep,
-    messages,
+    //messages,
     clarifications,
     thoughts,
     planSteps,
@@ -132,15 +132,7 @@ export const RunIssue: FC<RunIssueProps> = ({
         </div>
       </div>
       <div className="grid grid-cols-4 gap-8 pb-16">
-        <div className="col-span-1 space-y-8 border-r p-6">
-          {messages.map(message => (
-            <Card key={message.id}>
-              <CardContent className="bg-secondary p-2">
-                <MessageMarkdown content={message.content} />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <IssueMessages />
         <div className="col-span-3 p-6">
           {currentStep && (
             <RunStepContent
