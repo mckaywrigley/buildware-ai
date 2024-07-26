@@ -131,20 +131,25 @@ export const RunIssue: FC<RunIssueProps> = ({
           </Button>
         </div>
       </div>
-      <div className="grid grid-cols-4 gap-8 pb-16">
-        <IssueMessages />
-        <div className="col-span-3 p-6">
-          {currentStep && (
-            <RunStepContent
-              step={currentStep}
-              clarifications={clarifications}
-              thoughts={thoughts}
-              planSteps={planSteps}
-              setPlanSteps={setPlanSteps}
-              setThoughts={setThoughts}
-              setClarifications={setClarifications}
-            />
-          )}
+      <div className="flex flex-1">
+        <div className="grid grid-cols-4 gap-8 pb-16">
+          <IssueMessages
+            currentStep={currentStep}
+            waitingForConfirmation={waitingForConfirmation}
+          />
+          <div className="col-span-3 p-6">
+            {currentStep && (
+              <RunStepContent
+                step={currentStep}
+                clarifications={clarifications}
+                thoughts={thoughts}
+                planSteps={planSteps}
+                setPlanSteps={setPlanSteps}
+                setThoughts={setThoughts}
+                setClarifications={setClarifications}
+              />
+            )}
+          </div>
         </div>
       </div>
 

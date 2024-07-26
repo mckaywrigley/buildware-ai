@@ -37,7 +37,7 @@ export const useRunIssue = (
   }[]
 ) => {
   const [isRunning, setIsRunning] = useState(false)
-  const [currentStep, setCurrentStep] = useState<RunStep>("think")
+  const [currentStep, setCurrentStep] = useState<RunStep>(null)
   const [messages, setMessages] = useState<SelectIssueMessage[]>([
     {
       id: "1",
@@ -172,6 +172,7 @@ export const useRunIssue = (
   }
 
   const handleRun = async () => {
+    console.log(project)
     if (!project.githubRepoFullName || !project.githubTargetBranch) {
       alert("Please connect your project to a GitHub repository first.")
       return

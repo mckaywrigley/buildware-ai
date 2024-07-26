@@ -90,3 +90,18 @@
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes gradientSlide {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 0% 100%;
+  }
+}
+
+.bg-gradient-line {
+  background: linear-gradient(to bottom, #22c55e, #16a34a, #22c55e);
+  background-size: 100% 200%;
+  animation: gradientSlide 2s linear infinite;
+}
