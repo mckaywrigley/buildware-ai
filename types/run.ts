@@ -22,7 +22,7 @@ export type StepName =
 
 export type StepStatus = "not_started" | "in_progress" | "done" | "error"
 
-export type RunStep = {
+export type RunStepStatuses = {
   [key in StepName]: StepStatus
 }
 
@@ -62,6 +62,8 @@ export interface RunStepParams {
   actAIResponse: string
   parsedActResponse: AIParsedActResponse | null
 
-  // Add this new property
+  // Step statuses
+  stepStatuses: RunStepStatuses
+  setStepStatuses: React.Dispatch<React.SetStateAction<RunStepStatuses>>
   updateStepStatus: (status: StepStatus) => void
 }

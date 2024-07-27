@@ -23,6 +23,7 @@ export const runRetrievalStep = async ({
           `<instruction name="${instruction.name}">\n${instruction.content}\n</instruction>`
       )
       .join("\n\n")
+
     return { codebaseFiles, instructionsContext }
   } catch (error) {
     console.error("Error running retrieval step:", error)

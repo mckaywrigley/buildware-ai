@@ -53,7 +53,7 @@ export const RunIssue = ({
     setPlanSteps,
     handleConfirmation,
     waitingForConfirmation,
-    steps
+    stepStatuses
   } = useRunIssue(issue, project, attachedInstructions)
 
   useEffect(() => {
@@ -166,7 +166,7 @@ export const RunIssue = ({
               currentStep={currentStep}
               waitingForConfirmation={waitingForConfirmation}
               onStepClick={handleStepClick}
-              steps={steps}
+              stepStatuses={stepStatuses}
             />
           </div>
 

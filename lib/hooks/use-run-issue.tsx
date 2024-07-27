@@ -7,11 +7,9 @@ import {
   AIPlanStep,
   AIThought
 } from "@/types/ai"
-import { RunStep, StepName, StepStatus } from "@/types/run"
+import { RunStepStatuses, StepName, StepStatus } from "@/types/run"
 import { useState } from "react"
 import { parseCodegenActResponse } from "../ai/codegen-system/act/parse-codegen-act-response"
-import { parseCodegenThinkResponse } from "../ai/codegen-system/think/parse-codegen-think-response"
-import { MOCK_THINK_DATA } from "../constants/codegen-mock-data/think/mock-think-data"
 import { runActStep } from "../runs/run-act-step"
 import { runCompletedStep } from "../runs/run-completed-step"
 import { runEmbeddingStep } from "../runs/run-embedding-step"
@@ -35,9 +33,7 @@ export const useRunIssue = (
   const [clarifications, setClarifications] = useState<AIClarificationItem[]>(
     []
   )
-  const [thoughts, setThoughts] = useState<AIThought[]>(
-    parseCodegenThinkResponse(MOCK_THINK_DATA).thoughts
-  )
+  const [thoughts, setThoughts] = useState<AIThought[]>([])
   const [planSteps, setPlanSteps] = useState<AIPlanStep[]>([])
   const [generatedFiles, setGeneratedFiles] = useState<AIFileInfo[]>([])
   const [waitingForConfirmation, setWaitingForConfirmation] = useState(false)
@@ -58,7 +54,7 @@ export const useRunIssue = (
     act: null
   })
 
-  const [steps, setSteps] = useState<RunStep>({
+  const [stepStatuses, setStepStatuses] = useState<RunStepStatuses>({
     started: "not_started",
     embedding: "not_started",
     retrieval: "not_started",
@@ -73,7 +69,7 @@ export const useRunIssue = (
   })
 
   const updateStepStatus = (step: StepName, status: StepStatus) => {
-    setSteps(prevSteps => ({ ...prevSteps, [step]: status }))
+    setStepStatuses(prevSteps => ({ ...prevSteps, [step]: status }))
   }
 
   const stepFunctions = [
@@ -87,21 +83,23 @@ export const useRunIssue = (
     runCompletedStep
   ]
 
+  const stepNames: StepName[] = [
+    "started",
+    "embedding",
+    "retrieval",
+    "think",
+    "plan",
+    "act",
+    "pr",
+    "completed"
+  ]
+
   const runNextStep = async (stepIndex = currentStepIndex) => {
-    await new Promise(resolve => setTimeout(resolve, 1000)) // wait 1s for animation
+    await new Promise(resolve => setTimeout(resolve, 500)) // wait 0.5s for animation
 
     if (stepIndex < stepFunctions.length) {
       const currentStepFunction = stepFunctions[stepIndex]
-      const stepName = [
-        "started",
-        "embedding",
-        "retrieval",
-        "think",
-        "plan",
-        "act",
-        "pr",
-        "completed"
-      ][stepIndex] as StepName
+      const stepName = stepNames[stepIndex]
 
       updateStepStatus(stepName, "in_progress")
 
@@ -124,6 +122,8 @@ export const useRunIssue = (
           parsedActResponse: aiResponses.act
             ? parseCodegenActResponse(aiResponses.act)
             : null,
+          stepStatuses,
+          setStepStatuses,
           setCodebaseFiles,
           setInstructionsContext,
           setAIResponses: (type: keyof typeof aiResponses, response: string) =>
@@ -131,22 +131,22 @@ export const useRunIssue = (
           updateStepStatus: (status: StepStatus) =>
             updateStepStatus(stepName, status)
         })
-        updateStepStatus(stepName, "done")
+
+        // If the step is think or plan, we need to wait for confirmation
+        if (["think", "plan"].includes(stepName)) {
+          setWaitingForConfirmation(true)
+          setCurrentStepIndex(stepIndex)
+        } else {
+          updateStepStatus(stepName, "done")
+          const nextStepIndex = stepIndex + 1
+          setCurrentStepIndex(nextStepIndex)
+          runNextStep(nextStepIndex)
+        }
       } catch (error) {
         console.error(`Error in step ${stepName}:`, error)
         updateStepStatus(stepName, "error")
         setIsRunning(false)
         return
-      }
-
-      // If the step is think or plan, we need to wait for confirmation
-      if (["think", "plan"].includes(stepName)) {
-        setWaitingForConfirmation(true)
-        setCurrentStepIndex(stepIndex)
-      } else {
-        const nextStepIndex = stepIndex + 1
-        setCurrentStepIndex(nextStepIndex)
-        runNextStep(nextStepIndex)
       }
     } else {
       setIsRunning(false)
@@ -166,6 +166,7 @@ export const useRunIssue = (
 
   const handleConfirmation = () => {
     setWaitingForConfirmation(false)
+    updateStepStatus(stepNames[currentStepIndex], "done")
     const nextStepIndex = currentStepIndex + 1
     setCurrentStepIndex(nextStepIndex)
     runNextStep(nextStepIndex)
@@ -185,7 +186,7 @@ export const useRunIssue = (
     setPlanSteps,
     setGeneratedFiles,
     handleConfirmation,
-    steps,
+    stepStatuses,
     updateStepStatus
   }
 }

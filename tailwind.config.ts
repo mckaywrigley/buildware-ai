@@ -147,7 +147,7 @@ const config = {
         shimmer: "shimmer 8s infinite",
         marquee: "marquee var(--duration) infinite linear",
         "marquee-vertical": "marquee-vertical var(--duration) linear infinite",
-        "line-grow": "line-grow 1s ease-out forwards"
+        "line-grow": "line-grow 0.5s ease-out forwards"
       }
     }
   },

@@ -13,10 +13,15 @@ export const runActStep = async ({
   planAIResponse,
   setCurrentStep,
   setGeneratedFiles,
-  setAIResponses
+  setAIResponses,
+  setStepStatuses
 }: RunStepParams) => {
   try {
     setCurrentStep("act")
+    setStepStatuses(prevStatuses => ({
+      ...prevStatuses,
+      act: "in_progress"
+    }))
     await updateIssue(issue.id, { status: "act" })
 
     const { systemPrompt: actSystemPrompt, userMessage: actUserMessage } =
@@ -44,6 +49,11 @@ export const runActStep = async ({
       "prompt"
     )
     await saveCodegenEval(actAIResponse, issue.name, "act", "response")
+
+    setStepStatuses(prevStatuses => ({
+      ...prevStatuses,
+      act: "done"
+    }))
 
     return { parsedActResponse }
   } catch (error) {
