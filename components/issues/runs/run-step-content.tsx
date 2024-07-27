@@ -1,18 +1,16 @@
 import { ThinkStep } from "@/components/issues/runs/steps/think-step"
 import { AIClarificationItem, AIPlanStep, AIThought } from "@/types/ai"
-import { RunStep } from "@/types/run"
+import { StepName } from "@/types/run"
 import { ActStep } from "./steps/act-step"
-import { ClarifyStep } from "./steps/clarify-step"
 import { CompletedStep } from "./steps/completed-step"
 import { EmbeddingStep } from "./steps/embedding-step"
 import { PlanStep } from "./steps/plan-step"
 import { PRStep } from "./steps/pr-step"
 import { RetrievalStep } from "./steps/retrieval-step"
 import { StartedStep } from "./steps/started-step"
-import { VerifyStep } from "./steps/verify-step"
 
 interface RunStepContentProps {
-  step: RunStep
+  step: StepName | null
   clarifications: AIClarificationItem[]
   thoughts: AIThought[]
   planSteps: AIPlanStep[]
@@ -23,10 +21,8 @@ interface RunStepContentProps {
 
 export const RunStepContent = ({
   step,
-  clarifications,
   thoughts,
   planSteps,
-  setClarifications,
   setThoughts,
   setPlanSteps
 }: RunStepContentProps) => {
@@ -37,21 +33,12 @@ export const RunStepContent = ({
       return <EmbeddingStep />
     case "retrieval":
       return <RetrievalStep />
-    case "clarify":
-      return (
-        <ClarifyStep
-          clarifications={clarifications}
-          onUpdateClarifications={setClarifications}
-        />
-      )
     case "think":
       return <ThinkStep thoughts={thoughts} onUpdateThoughts={setThoughts} />
     case "plan":
       return <PlanStep plans={planSteps} onUpdatePlans={setPlanSteps} />
     case "act":
       return <ActStep />
-    case "verify":
-      return <VerifyStep />
     case "pr":
       return <PRStep />
     case "completed":

@@ -16,11 +16,7 @@ export const runPRStep = async ({
     setCurrentStep("pr")
     await updateIssue(issue.id, { status: "pr" })
 
-    const { prLink, branchName } = await generatePR(
-      issue.name,
-      project,
-      parsedActResponse
-    )
+    const { prLink } = await generatePR(issue.name, project, parsedActResponse)
 
     // Update issue with PR link
     await updateIssue(issue.id, { prLink })

@@ -1,6 +1,6 @@
 import { MessageMarkdown } from "@/components/instructions/message-markdown"
 import { cn } from "@/lib/utils"
-import { RunStep } from "@/types/run"
+import { StepName } from "@/types/run"
 import {
   AlertTriangle,
   Check,
@@ -29,17 +29,17 @@ const messages = [
   { text: "Completed", icon: <Check className="size-4" />, step: "completed" }
 ]
 
-interface IssueMessagesProps {
-  currentStep: RunStep
+interface RunStepStatusListProps {
+  currentStep: StepName
   waitingForConfirmation: boolean
-  onStepClick?: (step: RunStep) => void
+  onStepClick?: (step: StepName) => void
 }
 
-export const IssueMessages = ({
+export const RunStepStatusList = ({
   currentStep,
   waitingForConfirmation,
   onStepClick
-}: IssueMessagesProps) => {
+}: RunStepStatusListProps) => {
   // const [hoveredStep, setHoveredStep] = useState<string | null>(null)
 
   const getStepStatus = (step: string) => {
@@ -70,7 +70,7 @@ export const IssueMessages = ({
                   )}
                   onClick={() =>
                     (status === "completed" || status === "current") &&
-                    onStepClick?.(step as RunStep)
+                    onStepClick?.(step as StepName)
                   }
                 >
                   <div

@@ -7,7 +7,7 @@ import {
   AIPlanStep,
   AIThought
 } from "@/types/ai"
-import { RunStep } from "@/types/run"
+import { RunStep, StepName, StepStatus } from "@/types/run"
 import { useState } from "react"
 import { parseCodegenActResponse } from "../ai/codegen-system/act/parse-codegen-act-response"
 import { parseCodegenThinkResponse } from "../ai/codegen-system/think/parse-codegen-think-response"
@@ -31,7 +31,7 @@ export const useRunIssue = (
   }[]
 ) => {
   const [isRunning, setIsRunning] = useState(false)
-  const [currentStep, setCurrentStep] = useState<RunStep>(null)
+  const [currentStep, setCurrentStep] = useState<StepName | null>(null)
   const [clarifications, setClarifications] = useState<AIClarificationItem[]>(
     []
   )
@@ -58,60 +58,86 @@ export const useRunIssue = (
     act: null
   })
 
+  const [steps, setSteps] = useState<RunStep>({
+    started: "not_started",
+    embedding: "not_started",
+    retrieval: "not_started",
+    think: "not_started",
+    plan: "not_started",
+    act: "not_started",
+    pr: "not_started",
+    completed: "not_started",
+    // unimplemented steps
+    clarify: "not_started",
+    verify: "not_started"
+  })
+
+  const updateStepStatus = (step: StepName, status: StepStatus) => {
+    setSteps(prevSteps => ({ ...prevSteps, [step]: status }))
+  }
+
   const stepFunctions = [
     runStartStep,
     runEmbeddingStep,
     runRetrievalStep,
-    // runClarifyStep,
     runThinkStep,
     runPlanStep,
     runActStep,
     runPRStep,
-    // runVerifyStep,
     runCompletedStep
   ]
 
   const runNextStep = async (stepIndex = currentStepIndex) => {
+    await new Promise(resolve => setTimeout(resolve, 1000)) // wait 1s for animation
+
     if (stepIndex < stepFunctions.length) {
       const currentStepFunction = stepFunctions[stepIndex]
       const stepName = [
         "started",
         "embedding",
         "retrieval",
-        // "clarify",
         "think",
         "plan",
         "act",
         "pr",
-        // "verify",
         "completed"
-      ][stepIndex]
+      ][stepIndex] as StepName
 
-      setCurrentStep(stepName as RunStep)
+      updateStepStatus(stepName, "in_progress")
 
-      await currentStepFunction({
-        issue,
-        project,
-        attachedInstructions,
-        setCurrentStep,
-        setClarifications,
-        setThoughts,
-        setPlanSteps,
-        setGeneratedFiles,
-        codebaseFiles,
-        instructionsContext,
-        clarifyAIResponse: aiResponses.clarify ?? "",
-        thinkAIResponse: aiResponses.think ?? "",
-        planAIResponse: aiResponses.plan ?? "",
-        actAIResponse: aiResponses.act ?? "",
-        parsedActResponse: aiResponses.act
-          ? parseCodegenActResponse(aiResponses.act)
-          : null,
-        setCodebaseFiles,
-        setInstructionsContext,
-        setAIResponses: (type: keyof typeof aiResponses, response: string) =>
-          setAIResponses(prev => ({ ...prev, [type]: response }))
-      })
+      try {
+        await currentStepFunction({
+          issue,
+          project,
+          attachedInstructions,
+          setCurrentStep,
+          setClarifications,
+          setThoughts,
+          setPlanSteps,
+          setGeneratedFiles,
+          codebaseFiles,
+          instructionsContext,
+          clarifyAIResponse: aiResponses.clarify ?? "",
+          thinkAIResponse: aiResponses.think ?? "",
+          planAIResponse: aiResponses.plan ?? "",
+          actAIResponse: aiResponses.act ?? "",
+          parsedActResponse: aiResponses.act
+            ? parseCodegenActResponse(aiResponses.act)
+            : null,
+          setCodebaseFiles,
+          setInstructionsContext,
+          setAIResponses: (type: keyof typeof aiResponses, response: string) =>
+            setAIResponses(prev => ({ ...prev, [type]: response })),
+          updateStepStatus: (status: StepStatus) =>
+            updateStepStatus(stepName, status)
+        })
+        updateStepStatus(stepName, "done")
+      } catch (error) {
+        console.error(`Error in step ${stepName}:`, error)
+        updateStepStatus(stepName, "error")
+        setIsRunning(false)
+        return
+      }
 
       // If the step is think or plan, we need to wait for confirmation
       if (["think", "plan"].includes(stepName)) {
@@ -158,6 +184,8 @@ export const useRunIssue = (
     setClarifications,
     setPlanSteps,
     setGeneratedFiles,
-    handleConfirmation
+    handleConfirmation,
+    steps,
+    updateStepStatus
   }
 }

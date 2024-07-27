@@ -7,20 +7,27 @@ import {
   AIThought
 } from "@/types/ai"
 
-export type RunStep =
+export type StepName =
   | "started"
   | "embedding"
   | "retrieval"
-  | "clarify"
   | "think"
   | "plan"
   | "act"
-  | "verify"
   | "pr"
   | "completed"
-  | null
+  // unimplemented steps
+  | "clarify"
+  | "verify"
+
+export type StepStatus = "not_started" | "in_progress" | "done" | "error"
+
+export type RunStep = {
+  [key in StepName]: StepStatus
+}
 
 export interface RunStepParams {
+  // Core data
   issue: SelectIssue
   project: SelectProject
   attachedInstructions: {
@@ -28,18 +35,13 @@ export interface RunStepParams {
     issueId: string
     instruction: SelectInstruction
   }[]
-  setCurrentStep: (step: RunStep) => void
+
+  // State setters
+  setCurrentStep: (step: StepName) => void
   setClarifications: (clarifications: AIClarificationItem[]) => void
   setThoughts: (thoughts: AIThought[]) => void
   setPlanSteps: (planSteps: AIPlanStep[]) => void
   setGeneratedFiles: (files: AIFileInfo[]) => void
-  codebaseFiles: { path: string; content: string }[]
-  instructionsContext: string
-  clarifyAIResponse: string
-  thinkAIResponse: string
-  planAIResponse: string
-  actAIResponse: string
-  parsedActResponse: AIParsedActResponse | null
   setCodebaseFiles: React.Dispatch<
     React.SetStateAction<{ path: string; content: string }[]>
   >
@@ -48,4 +50,18 @@ export interface RunStepParams {
     type: "clarify" | "think" | "plan" | "act",
     response: string
   ) => void
+
+  // Current state
+  codebaseFiles: { path: string; content: string }[]
+  instructionsContext: string
+
+  // AI responses
+  clarifyAIResponse: string
+  thinkAIResponse: string
+  planAIResponse: string
+  actAIResponse: string
+  parsedActResponse: AIParsedActResponse | null
+
+  // Add this new property
+  updateStepStatus: (status: StepStatus) => void
 }

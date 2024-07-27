@@ -1,12 +1,8 @@
 import { updateIssue } from "@/db/queries"
 import { RunStepParams } from "@/types/run"
 
-export const runVerifyStep = async ({
-  issue,
-  setCurrentStep
-}: RunStepParams) => {
+export const runVerifyStep = async ({ issue }: RunStepParams) => {
   try {
-    setCurrentStep("verify")
     await updateIssue(issue.id, { status: "verify" })
 
     // Implement verification logic here
