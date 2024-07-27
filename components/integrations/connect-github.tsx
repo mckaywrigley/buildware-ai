@@ -2,16 +2,14 @@
 
 import { Github } from "lucide-react"
 import { useParams, useRouter } from "next/navigation"
-import { FC, useState } from "react"
+import { useState } from "react"
 import { Integration } from "./integration"
 
 interface ConnectGitHubProps {
   isGitHubConnected: boolean
 }
 
-export const ConnectGitHub: FC<ConnectGitHubProps> = ({
-  isGitHubConnected
-}) => {
+export const ConnectGitHub = ({ isGitHubConnected }: ConnectGitHubProps) => {
   const router = useRouter()
   const params = useParams()
 

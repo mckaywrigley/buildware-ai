@@ -1,7 +1,6 @@
 "use client"
 
 import { AIPlanStep } from "@/types/ai"
-import { FC } from "react"
 import { EditableStep } from "./editable-step"
 
 interface PlanStepProps {
@@ -9,7 +8,7 @@ interface PlanStepProps {
   onUpdatePlans: (updatedPlans: AIPlanStep[]) => void
 }
 
-export const PlanStep: FC<PlanStepProps> = ({ plans, onUpdatePlans }) => {
+export const PlanStep = ({ plans, onUpdatePlans }: PlanStepProps) => {
   return (
     <EditableStep
       items={plans}

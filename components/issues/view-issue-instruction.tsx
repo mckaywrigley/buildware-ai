@@ -7,17 +7,16 @@ import {
   DialogTitle
 } from "@/components/ui/dialog"
 import { SelectInstruction } from "@/db/schema"
-import React from "react"
 
 interface ViewIssueInstructionProps {
   selectedInstruction: SelectInstruction | null
   onClose: () => void
 }
 
-export const ViewIssueInstruction: React.FC<ViewIssueInstructionProps> = ({
+export const ViewIssueInstruction = ({
   selectedInstruction,
   onClose
-}) => {
+}: ViewIssueInstructionProps) => {
   return (
     <Dialog open={!!selectedInstruction} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">

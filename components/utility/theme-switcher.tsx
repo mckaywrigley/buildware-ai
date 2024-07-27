@@ -2,12 +2,9 @@
 
 import { Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
-import { FC } from "react"
 import { Button } from "../ui/button"
 
-interface ThemeSwitcherProps {}
-
-export const ThemeSwitcher: FC<ThemeSwitcherProps> = () => {
+export const ThemeSwitcher = () => {
   const { setTheme, theme } = useTheme()
 
   const handleChange = (theme: "dark" | "light") => {

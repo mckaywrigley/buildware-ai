@@ -23,7 +23,7 @@ import { cn } from "@/lib/utils"
 import { RunStep } from "@/types/run"
 import { ArrowLeft, Info, Loader2, Play, RefreshCw } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { FC, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { IssueMessages } from "./issue-messages"
 import { RunStepContent } from "./run-step-content"
 
@@ -37,11 +37,11 @@ interface RunIssueProps {
   }[]
 }
 
-export const RunIssue: FC<RunIssueProps> = ({
+export const RunIssue = ({
   issue,
   project,
   attachedInstructions
-}) => {
+}: RunIssueProps) => {
   const router = useRouter()
   const [selectedStep, setSelectedStep] = useState<RunStep | null>(null)
   const {

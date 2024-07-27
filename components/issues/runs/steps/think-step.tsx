@@ -1,7 +1,6 @@
 "use client"
 
 import { AIThought } from "@/types/ai"
-import { FC } from "react"
 import { EditableStep } from "./editable-step"
 
 interface ThinkStepProps {
@@ -9,10 +8,7 @@ interface ThinkStepProps {
   onUpdateThoughts: (updatedThoughts: AIThought[]) => void
 }
 
-export const ThinkStep: FC<ThinkStepProps> = ({
-  thoughts,
-  onUpdateThoughts
-}) => {
+export const ThinkStep = ({ thoughts, onUpdateThoughts }: ThinkStepProps) => {
   return (
     <EditableStep
       items={thoughts}

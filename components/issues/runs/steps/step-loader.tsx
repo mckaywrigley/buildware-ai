@@ -1,11 +1,10 @@
 import { Loader } from "lucide-react"
-import { FC } from "react"
 
 interface StepLoaderProps {
   text: string
 }
 
-export const StepLoader: FC<StepLoaderProps> = ({ text }) => {
+export const StepLoader = ({ text }: StepLoaderProps) => {
   return (
     <div className="flex animate-pulse items-center gap-2">
       <Loader className="size-4 animate-spin" />

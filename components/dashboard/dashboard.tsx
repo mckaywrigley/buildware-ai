@@ -27,7 +27,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { FC, useState } from "react"
+import { useState } from "react"
 import { CreateProjectButton } from "../projects/create-project-button"
 import { ThemeSwitcher } from "../utility/theme-switcher"
 import { WorkspaceSelect } from "../workspaces/workspace-select"
@@ -73,12 +73,12 @@ const PROJECT_LINKS = [
   }
 ]
 
-export const Dashboard: FC<DashboardProps> = ({
+export const Dashboard = ({
   children,
   workspaces,
   workspaceId,
   projects
-}) => {
+}: DashboardProps) => {
   const pathname = usePathname()
   const [openProjects, setOpenProjects] = useState<string[]>([])
 

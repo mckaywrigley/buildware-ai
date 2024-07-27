@@ -2,7 +2,6 @@
 
 import { deleteTemplate } from "@/db/queries/templates-queries"
 import { SelectInstruction, SelectTemplate } from "@/db/schema"
-import { FC } from "react"
 import { DataItem } from "../dashboard/reusable/data-item"
 import { DataList } from "../dashboard/reusable/data-list"
 
@@ -18,9 +17,9 @@ interface TemplatesListProps {
   projectId: string
 }
 
-export const TemplatesList: FC<TemplatesListProps> = ({
+export const TemplatesList = ({
   templatesWithInstructions
-}) => {
+}: TemplatesListProps) => {
   const handleDeleteTemplate = async (id: string) => {
     await deleteTemplate(id)
   }

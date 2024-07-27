@@ -1,15 +1,15 @@
+import { MessageMarkdown } from "@/components/instructions/message-markdown"
 import { Button } from "@/components/ui/button"
-import { AIThought } from "@/types/ai"
-import { MoreHorizontal, Plus, Trash2, Edit } from "lucide-react"
-import { FC, useEffect, useState } from "react"
-import ReactTextareaAutosize from "react-textarea-autosize"
-import { StepLoader } from "./step-loader"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger
 } from "@/components/ui/popover"
-import { MessageMarkdown } from "@/components/instructions/message-markdown"
+import { AIThought } from "@/types/ai"
+import { Edit, MoreHorizontal, Plus, Trash2 } from "lucide-react"
+import { useEffect, useState } from "react"
+import ReactTextareaAutosize from "react-textarea-autosize"
+import { StepLoader } from "./step-loader"
 
 interface EditableStepProps<T extends { number: number; text: string }> {
   items: T[]
@@ -18,14 +18,13 @@ interface EditableStepProps<T extends { number: number; text: string }> {
   description: string
   itemName: string
 }
-
-export const EditableStep: FC<EditableStepProps<AIThought>> = ({
+export const EditableStep = ({
   items,
   onUpdateItems,
   title,
   description,
   itemName
-}) => {
+}: EditableStepProps<AIThought>) => {
   const [localItems, setLocalItems] = useState<AIThought[]>(items)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
 

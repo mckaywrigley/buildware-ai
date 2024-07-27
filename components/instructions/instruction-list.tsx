@@ -2,7 +2,6 @@
 
 import { deleteInstruction } from "@/db/queries/instructions-queries"
 import { SelectInstruction } from "@/db/schema"
-import { FC } from "react"
 import { DataItem } from "../dashboard/reusable/data-item"
 import { DataList } from "../dashboard/reusable/data-list"
 
@@ -10,9 +9,7 @@ interface InstructionsListProps {
   instructions: SelectInstruction[]
 }
 
-export const InstructionsList: FC<InstructionsListProps> = ({
-  instructions
-}) => {
+export const InstructionsList = ({ instructions }: InstructionsListProps) => {
   const handleDelete = async (id: string) => {
     await deleteInstruction(id)
   }

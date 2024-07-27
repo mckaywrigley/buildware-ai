@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { Check, Copy, Download } from "lucide-react"
-import { FC, HTMLAttributes, memo } from "react"
+import { HTMLAttributes, memo } from "react"
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
 import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism"
 import { useCopyToClipboard } from "./use-copy-to-clipboard"
@@ -50,8 +50,8 @@ export const generateRandomString = (length: number, lowercase = false) => {
   return lowercase ? result.toLowerCase() : result
 }
 
-export const MessageCodeBlock: FC<MessageCodeBlockProps> = memo(
-  ({ language, value, ...props }) => {
+export const MessageCodeBlock = memo(
+  ({ language, value, ...props }: MessageCodeBlockProps) => {
     const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 })
 
     const downloadAsFile = () => {

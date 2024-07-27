@@ -15,7 +15,7 @@ import { SelectProject } from "@/db/schema"
 import { cn } from "@/lib/utils"
 import { GitHubRepository } from "@/types/github"
 import { useParams, useRouter } from "next/navigation"
-import { FC, HTMLAttributes, useEffect, useState } from "react"
+import { HTMLAttributes, useEffect, useState } from "react"
 import { ConnectGitHub } from "../integrations/connect-github"
 import { DeleteProjectButton } from "./delete-project-button"
 
@@ -24,11 +24,11 @@ interface ProjectSetupProps extends HTMLAttributes<HTMLDivElement> {
   repos: GitHubRepository[]
 }
 
-export const ProjectSetup: FC<ProjectSetupProps> = ({
+export const ProjectSetup = ({
   project,
   repos,
   ...props
-}) => {
+}: ProjectSetupProps) => {
   const router = useRouter()
   const params = useParams()
 

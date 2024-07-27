@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog"
 import { Pencil } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { FC, useState } from "react"
+import { useState } from "react"
 import { CRUDPage } from "./crud-page"
 
 interface InstructionAndTemplateViewProps {
@@ -29,9 +29,11 @@ interface InstructionAndTemplateViewProps {
   }[]
 }
 
-export const InstructionAndTemplateView: FC<
-  InstructionAndTemplateViewProps
-> = ({ item, type, attachedInstructions = [] }) => {
+export const InstructionAndTemplateView = ({
+  item,
+  type,
+  attachedInstructions = []
+}: InstructionAndTemplateViewProps) => {
   const router = useRouter()
   const [selectedInstruction, setSelectedInstruction] = useState<{
     id: string

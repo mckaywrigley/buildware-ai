@@ -2,16 +2,14 @@
 
 import { CircleDot } from "lucide-react"
 import { useParams, useRouter } from "next/navigation"
-import { FC, useState } from "react"
+import { useState } from "react"
 import { Integration } from "./integration"
 
 interface ConnectLinearProps {
   isLinearConnected: boolean
 }
 
-export const ConnectLinear: FC<ConnectLinearProps> = ({
-  isLinearConnected
-}) => {
+export const ConnectLinear = ({ isLinearConnected }: ConnectLinearProps) => {
   const router = useRouter()
   const params = useParams()
 

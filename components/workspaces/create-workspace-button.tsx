@@ -14,13 +14,13 @@ import { createWorkspace } from "@/db/queries/workspaces-queries"
 import { cn } from "@/lib/utils"
 import { PlusIcon } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { FC, HTMLAttributes, useState } from "react"
+import { HTMLAttributes, useState } from "react"
 
 interface CreateWorkspaceButtonProps extends HTMLAttributes<HTMLDivElement> {}
 
-export const CreateWorkspaceButton: FC<CreateWorkspaceButtonProps> = ({
+export const CreateWorkspaceButton = ({
   ...props
-}) => {
+}: CreateWorkspaceButtonProps) => {
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [workspaceName, setWorkspaceName] = useState("")
