@@ -1,6 +1,5 @@
 import { relations } from "drizzle-orm"
 import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core"
-import { issueMessagesTable } from "./issue-messages-schema"
 import { issuesToInstructionsTable } from "./issues-to-instructions-schema"
 import { projectsTable } from "./projects-schema"
 
@@ -27,8 +26,7 @@ export const issuesRelations = relations(issuesTable, ({ one, many }) => ({
     fields: [issuesTable.projectId],
     references: [projectsTable.id]
   }),
-  issueToInstructions: many(issuesToInstructionsTable),
-  issueMessages: many(issueMessagesTable)
+  issueToInstructions: many(issuesToInstructionsTable)
 }))
 
 export type InsertIssue = typeof issuesTable.$inferInsert

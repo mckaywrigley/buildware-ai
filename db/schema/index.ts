@@ -1,7 +1,6 @@
 export * from "./embedded-branches-schema"
 export * from "./embedded-files-schema"
 export * from "./instructions-schema"
-export * from "./issue-messages-schema"
 export * from "./issues-schema"
 export * from "./issues-to-instructions-schema"
 export * from "./profiles-schema"

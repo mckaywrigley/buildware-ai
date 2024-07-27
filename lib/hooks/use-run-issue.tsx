@@ -1,11 +1,6 @@
 "use client"
 
-import {
-  SelectInstruction,
-  SelectIssue,
-  SelectIssueMessage,
-  SelectProject
-} from "@/db/schema"
+import { SelectInstruction, SelectIssue, SelectProject } from "@/db/schema"
 import {
   AIClarificationItem,
   AIFileInfo,
@@ -28,7 +23,6 @@ import { runThinkStep } from "../runs/run-think-step"
 
 export const useRunIssue = (
   issue: SelectIssue,
-  initialIssueMessages: SelectIssueMessage[],
   project: SelectProject,
   attachedInstructions: {
     instructionId: string
@@ -38,43 +32,6 @@ export const useRunIssue = (
 ) => {
   const [isRunning, setIsRunning] = useState(false)
   const [currentStep, setCurrentStep] = useState<RunStep>(null)
-  const [messages, setMessages] = useState<SelectIssueMessage[]>([
-    {
-      id: "1",
-      issueId: issue.id,
-      content: "Initial issue description",
-      createdAt: new Date(),
-      updatedAt: new Date()
-    },
-    {
-      id: "2",
-      issueId: issue.id,
-      content: "Could you please provide more details?",
-      createdAt: new Date(),
-      updatedAt: new Date()
-    },
-    {
-      id: "3",
-      issueId: issue.id,
-      content: "Sure, here are some additional details...",
-      createdAt: new Date(),
-      updatedAt: new Date()
-    },
-    {
-      id: "4",
-      issueId: issue.id,
-      content: "Thank you. I'll start working on this issue.",
-      createdAt: new Date(),
-      updatedAt: new Date()
-    },
-    {
-      id: "5",
-      issueId: issue.id,
-      content: "Great, looking forward to the solution!",
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }
-  ])
   const [clarifications, setClarifications] = useState<AIClarificationItem[]>(
     []
   )
@@ -137,7 +94,6 @@ export const useRunIssue = (
         project,
         attachedInstructions,
         setCurrentStep,
-        setMessages,
         setClarifications,
         setThoughts,
         setPlanSteps,
@@ -193,7 +149,6 @@ export const useRunIssue = (
   return {
     isRunning,
     currentStep,
-    messages,
     clarifications,
     thoughts,
     planSteps,

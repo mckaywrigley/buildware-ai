@@ -1,6 +1,8 @@
 import { MessageMarkdown } from "@/components/instructions/message-markdown"
+import { cn } from "@/lib/utils"
 import { RunStep } from "@/types/run"
 import {
+  AlertTriangle,
   Check,
   ChevronsLeftRight,
   CircleDot,
@@ -9,14 +11,8 @@ import {
   DiamondPlus,
   List,
   ListChecks,
-  MessageSquare,
-  RefreshCcw,
-  Trash2,
-  FoldVertical,
-  Loader2,
-  AlertTriangle
+  Loader2
 } from "lucide-react"
-import { cn } from "@/lib/utils"
 
 const messages = [
   { text: "Started", icon: <CircleDot className="size-4" />, step: "started" },
@@ -44,6 +40,8 @@ export const IssueMessages = ({
   waitingForConfirmation,
   onStepClick
 }: IssueMessagesProps) => {
+  // const [hoveredStep, setHoveredStep] = useState<string | null>(null)
+
   const getStepStatus = (step: string) => {
     if (step === currentStep) return "current"
     const currentIndex = messages.findIndex(m => m.step === currentStep)
@@ -57,7 +55,12 @@ export const IssueMessages = ({
         {messages.map(({ text, icon, step }, index) => {
           const status = getStepStatus(step)
           return (
-            <div key={index} className="relative">
+            <div
+              key={index}
+              className="relative"
+              // onMouseEnter={() => setHoveredStep(step)}
+              // onMouseLeave={() => setHoveredStep(null)}
+            >
               <div className="flex items-center justify-between py-2">
                 <div
                   className={cn(
@@ -91,28 +94,17 @@ export const IssueMessages = ({
                   </div>
                   <MessageMarkdown content={text} />
                 </div>
-                <div className="flex items-center space-x-1">
-                  <div className="rounded-full p-1 hover:bg-zinc-800">
-                    <MessageSquare className="size-4 cursor-pointer" />
-                  </div>
-                  <div className="rounded-full p-1 hover:bg-zinc-800">
-                    <RefreshCcw className="size-4 cursor-pointer" />
-                  </div>
-                  <div className="rounded-full p-1 hover:bg-zinc-800">
-                    <Trash2 className="size-4 cursor-pointer" />
-                  </div>
-                  <div className="rounded-full p-1 hover:bg-zinc-800">
-                    <FoldVertical className="size-4 cursor-pointer" />
-                  </div>
-                </div>
+
+                {/* <RunStepStatus isHovered={hoveredStep === step} /> */}
               </div>
+
               {index < messages.length - 1 && (
                 <>
                   <div
                     className={cn(
                       "-z-11 absolute left-[0.70rem] top-7 h-[calc(100%+0.5rem)] w-[2px]",
                       status === "completed"
-                        ? "bg-gradient-line"
+                        ? "animate-line-grow bg-gradient-to-b from-[var(--run-line-gradient-color-one)] via-[var(--run-line-gradient-color-two)] to-[var(--run-line-gradient-color-three)]"
                         : "bg-zinc-700"
                     )}
                   />

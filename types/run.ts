@@ -1,9 +1,4 @@
-import {
-  SelectInstruction,
-  SelectIssue,
-  SelectIssueMessage,
-  SelectProject
-} from "@/db/schema"
+import { SelectInstruction, SelectIssue, SelectProject } from "@/db/schema"
 import {
   AIClarificationItem,
   AIFileInfo,
@@ -34,7 +29,6 @@ export interface RunStepParams {
     instruction: SelectInstruction
   }[]
   setCurrentStep: (step: RunStep) => void
-  setMessages: React.Dispatch<React.SetStateAction<SelectIssueMessage[]>>
   setClarifications: (clarifications: AIClarificationItem[]) => void
   setThoughts: (thoughts: AIThought[]) => void
   setPlanSteps: (planSteps: AIPlanStep[]) => void

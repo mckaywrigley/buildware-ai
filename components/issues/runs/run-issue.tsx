@@ -2,7 +2,6 @@
 
 import { MessageMarkdown } from "@/components/instructions/message-markdown"
 import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
 import {
   Dialog,
   DialogContent,
@@ -10,31 +9,26 @@ import {
   DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog"
+import { Progress } from "@/components/ui/progress"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger
 } from "@/components/ui/tooltip"
-import {
-  SelectInstruction,
-  SelectIssue,
-  SelectIssueMessage,
-  SelectProject
-} from "@/db/schema"
+import { SelectInstruction, SelectIssue, SelectProject } from "@/db/schema"
 import { useRunIssue } from "@/lib/hooks/use-run-issue"
 import { trackRunProgress } from "@/lib/runs/track-run-progress"
-import { Loader2, Play, RefreshCw, Info, ArrowLeft } from "lucide-react"
-import { FC, useState, useEffect } from "react"
-import { RunStepContent } from "./run-step-content"
-import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { IssueMessages } from "./issue-messages"
 import { RunStep } from "@/types/run"
+import { ArrowLeft, Info, Loader2, Play, RefreshCw } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { FC, useEffect, useState } from "react"
+import { IssueMessages } from "./issue-messages"
+import { RunStepContent } from "./run-step-content"
 
 interface RunIssueProps {
   issue: SelectIssue
-  initialIssueMessages: SelectIssueMessage[]
   project: SelectProject
   attachedInstructions: {
     instructionId: string
@@ -45,7 +39,6 @@ interface RunIssueProps {
 
 export const RunIssue: FC<RunIssueProps> = ({
   issue,
-  initialIssueMessages,
   project,
   attachedInstructions
 }) => {
@@ -64,7 +57,7 @@ export const RunIssue: FC<RunIssueProps> = ({
     setPlanSteps,
     handleConfirmation,
     waitingForConfirmation
-  } = useRunIssue(issue, initialIssueMessages, project, attachedInstructions)
+  } = useRunIssue(issue, project, attachedInstructions)
 
   useEffect(() => {
     setSelectedStep(null)

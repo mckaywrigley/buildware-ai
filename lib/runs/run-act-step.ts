@@ -1,10 +1,6 @@
 import { generateCodegenAIMessage } from "@/actions/ai/generate-codegen-ai-message"
 import { saveCodegenEval } from "@/actions/evals/save-codegen-eval"
-import {
-  createIssueMessage,
-  updateIssue,
-  updateIssueMessage
-} from "@/db/queries"
+import { updateIssue } from "@/db/queries"
 import { buildCodegenActPrompt } from "@/lib/ai/codegen-system/act/build-codegen-act-prompt"
 import { parseCodegenActResponse } from "@/lib/ai/codegen-system/act/parse-codegen-act-response"
 import { BUILDWARE_ACT_LLM } from "@/lib/constants/buildware-config"
@@ -16,18 +12,12 @@ export const runActStep = async ({
   instructionsContext,
   planAIResponse,
   setCurrentStep,
-  setMessages,
   setGeneratedFiles,
   setAIResponses
 }: RunStepParams) => {
   try {
     setCurrentStep("act")
     await updateIssue(issue.id, { status: "act" })
-    const actStatusMessage = await createIssueMessage({
-      issueId: issue.id,
-      content: "Acting on issue..."
-    })
-    setMessages(prev => [...prev, actStatusMessage])
 
     const { systemPrompt: actSystemPrompt, userMessage: actUserMessage } =
       await buildCodegenActPrompt({
@@ -46,10 +36,6 @@ export const runActStep = async ({
 
     const parsedActResponse = parseCodegenActResponse(actAIResponse)
     setGeneratedFiles(parsedActResponse.files)
-
-    await updateIssueMessage(actStatusMessage.id, {
-      content: "Issue acted on."
-    })
 
     await saveCodegenEval(
       `${actSystemPrompt}\n\n${actUserMessage}`,
