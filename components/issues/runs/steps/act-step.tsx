@@ -1,8 +1,5 @@
-import { FC } from "react"
 import { StepLoader } from "./step-loader"
 
-interface ActStepProps {}
-
-export const ActStep: FC<ActStepProps> = ({}) => {
+export const ActStep = () => {
   return <StepLoader text="Generating code..." />
 }

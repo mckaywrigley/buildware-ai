@@ -1,7 +1,3 @@
-import { FC } from "react"
-
-interface CompletedStepProps {}
-
-export const CompletedStep: FC<CompletedStepProps> = ({}) => {
+export const CompletedStep = () => {
   return <div>Run Complete</div>
 }

@@ -4,7 +4,7 @@ import { createProject } from "@/db/queries/projects-queries"
 import { cn } from "@/lib/utils"
 import { PlusIcon } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { FC, HTMLAttributes } from "react"
+import { HTMLAttributes } from "react"
 
 interface CreateProjectButtonProps extends HTMLAttributes<HTMLDivElement> {
   params: {
@@ -12,10 +12,10 @@ interface CreateProjectButtonProps extends HTMLAttributes<HTMLDivElement> {
   }
 }
 
-export const CreateProjectButton: FC<CreateProjectButtonProps> = ({
+export const CreateProjectButton = ({
   params,
   ...props
-}) => {
+}: CreateProjectButtonProps) => {
   const router = useRouter()
 
   const handleCreateProject = async () => {

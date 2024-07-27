@@ -1,11 +1,6 @@
 "use client"
 
-import {
-  SelectInstruction,
-  SelectIssue,
-  SelectIssueMessage,
-  SelectProject
-} from "@/db/schema"
+import { SelectInstruction, SelectIssue, SelectProject } from "@/db/schema"
 import {
   AIClarificationItem,
   AIFileInfo,
@@ -28,7 +23,6 @@ import { runThinkStep } from "../runs/run-think-step"
 
 export const useRunIssue = (
   issue: SelectIssue,
-  initialIssueMessages: SelectIssueMessage[],
   project: SelectProject,
   attachedInstructions: {
     instructionId: string
@@ -37,9 +31,7 @@ export const useRunIssue = (
   }[]
 ) => {
   const [isRunning, setIsRunning] = useState(false)
-  const [currentStep, setCurrentStep] = useState<RunStep>("think")
-  const [messages, setMessages] =
-    useState<SelectIssueMessage[]>(initialIssueMessages)
+  const [currentStep, setCurrentStep] = useState<RunStep>(null)
   const [clarifications, setClarifications] = useState<AIClarificationItem[]>(
     []
   )
@@ -102,7 +94,6 @@ export const useRunIssue = (
         project,
         attachedInstructions,
         setCurrentStep,
-        setMessages,
         setClarifications,
         setThoughts,
         setPlanSteps,
@@ -157,7 +148,6 @@ export const useRunIssue = (
   return {
     isRunning,
     currentStep,
-    messages,
     clarifications,
     thoughts,
     planSteps,

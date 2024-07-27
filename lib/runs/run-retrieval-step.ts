@@ -1,22 +1,17 @@
 import { getMostSimilarEmbeddedFiles } from "@/actions/retrieval/get-similar-files"
-import { createIssueMessage, updateIssue } from "@/db/queries"
+import { updateIssue } from "@/db/queries"
 import { RunStepParams } from "@/types/run"
 
 export const runRetrievalStep = async ({
   issue,
   project,
   attachedInstructions,
-  setCurrentStep,
-  setMessages
+  setCurrentStep
 }: RunStepParams) => {
   try {
     setCurrentStep("retrieval")
     await updateIssue(issue.id, { status: "retrieval" })
-    const retrievalMessage = await createIssueMessage({
-      issueId: issue.id,
-      content: "Retrieving relevant codebase files..."
-    })
-    setMessages(prev => [...prev, retrievalMessage])
+
     const embeddingsQueryText = `${issue.name} ${issue.content}`
     const codebaseFiles = await getMostSimilarEmbeddedFiles(
       embeddingsQueryText,

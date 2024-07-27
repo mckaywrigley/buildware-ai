@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils"
-import React, { FC, HTMLAttributes } from "react"
+import React, { HTMLAttributes } from "react"
 import remarkGfm from "remark-gfm"
 import remarkMath from "remark-math"
 import { MessageCodeBlock } from "./message-codeblock"
@@ -9,10 +9,10 @@ interface MessageMarkdownProps extends HTMLAttributes<HTMLDivElement> {
   content: string
 }
 
-export const MessageMarkdown: FC<MessageMarkdownProps> = ({
+export const MessageMarkdown = ({
   content,
   ...props
-}) => {
+}: MessageMarkdownProps) => {
   return (
     <MessageMarkdownMemoized
       className={cn(

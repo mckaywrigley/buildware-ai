@@ -1,10 +1,6 @@
 import { generateCodegenAIMessage } from "@/actions/ai/generate-codegen-ai-message"
 import { saveCodegenEval } from "@/actions/evals/save-codegen-eval"
-import {
-  createIssueMessage,
-  updateIssue,
-  updateIssueMessage
-} from "@/db/queries"
+import { updateIssue } from "@/db/queries"
 import { buildCodegenThinkPrompt } from "@/lib/ai/codegen-system/think/build-codegen-think-prompt"
 import { parseCodegenThinkResponse } from "@/lib/ai/codegen-system/think/parse-codegen-think-response"
 import { BUILDWARE_THINK_LLM } from "@/lib/constants/buildware-config"
@@ -15,17 +11,11 @@ export const runThinkStep = async ({
   codebaseFiles,
   instructionsContext,
   setCurrentStep,
-  setMessages,
   setThoughts
 }: RunStepParams) => {
   try {
     setCurrentStep("think")
     await updateIssue(issue.id, { status: "think" })
-    const thinkStatusMessage = await createIssueMessage({
-      issueId: issue.id,
-      content: "Thinking about issue..."
-    })
-    setMessages(prev => [...prev, thinkStatusMessage])
 
     const { systemPrompt: thinkSystemPrompt, userMessage: thinkUserMessage } =
       await buildCodegenThinkPrompt({
@@ -42,10 +32,6 @@ export const runThinkStep = async ({
 
     const parsedThinkResponse = parseCodegenThinkResponse(thinkAIResponse)
     setThoughts(parsedThinkResponse.thoughts)
-
-    await updateIssueMessage(thinkStatusMessage.id, {
-      content: "Issue thought about."
-    })
 
     await saveCodegenEval(
       `${thinkSystemPrompt}\n\n${thinkUserMessage}`,

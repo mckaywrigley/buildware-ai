@@ -3,7 +3,6 @@
 import { deleteTemplate, updateTemplate } from "@/db/queries/templates-queries"
 import { SelectInstruction, SelectTemplate } from "@/db/schema"
 import { useRouter } from "next/navigation"
-import { FC } from "react"
 import { CRUDForm } from "../dashboard/reusable/crud-form"
 import { TemplateSelect } from "./template-select"
 
@@ -18,10 +17,10 @@ interface EditTemplateProps {
   }
 }
 
-export const EditTemplate: FC<EditTemplateProps> = ({
+export const EditTemplate = ({
   instructions,
   templateWithInstructions
-}) => {
+}: EditTemplateProps) => {
   const router = useRouter()
 
   const handleUpdateTemplate = async (formData: FormData) => {

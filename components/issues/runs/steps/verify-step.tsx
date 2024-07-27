@@ -1,8 +1,5 @@
-import { FC } from "react"
 import { StepLoader } from "./step-loader"
 
-interface VerifyStepProps {}
-
-export const VerifyStep: FC<VerifyStepProps> = ({}) => {
+export const VerifyStep = () => {
   return <StepLoader text="Verifying..." />
 }

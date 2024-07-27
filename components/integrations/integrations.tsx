@@ -1,7 +1,7 @@
 "use client"
 
 import { useSearchParams } from "next/navigation"
-import { FC, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { ConnectGitHub } from "./connect-github"
 import { ConnectLinear } from "./connect-linear"
 
@@ -10,10 +10,10 @@ interface IntegrationsProps {
   isLinearConnected: boolean
 }
 
-export const Integrations: FC<IntegrationsProps> = ({
+export const Integrations = ({
   isGitHubConnected,
   isLinearConnected
-}) => {
+}: IntegrationsProps) => {
   const searchParams = useSearchParams()
 
   const [error, setError] = useState("")

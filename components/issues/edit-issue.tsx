@@ -8,7 +8,7 @@ import {
 } from "@/db/queries/issues-to-instructions-queries"
 import { SelectInstruction, SelectIssue } from "@/db/schema"
 import { useParams, useRouter } from "next/navigation"
-import { FC, useState } from "react"
+import { useState } from "react"
 import { CRUDForm } from "../dashboard/reusable/crud-form"
 import { CRUDPage } from "../dashboard/reusable/crud-page"
 import { MultiSelect } from "../ui/multi-select"
@@ -21,11 +21,11 @@ interface EditIssueProps {
   selectedInstructionIds: string[]
 }
 
-export const EditIssue: FC<EditIssueProps> = ({
+export const EditIssue = ({
   issue,
   allInstructions,
   selectedInstructionIds
-}) => {
+}: EditIssueProps) => {
   const router = useRouter()
   const params = useParams()
 

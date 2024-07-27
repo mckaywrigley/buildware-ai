@@ -27,7 +27,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { FC, useState } from "react"
+import { useState } from "react"
 import { CreateProjectButton } from "../projects/create-project-button"
 import { ThemeSwitcher } from "../utility/theme-switcher"
 import { WorkspaceSelect } from "../workspaces/workspace-select"
@@ -73,12 +73,12 @@ const PROJECT_LINKS = [
   }
 ]
 
-export const Dashboard: FC<DashboardProps> = ({
+export const Dashboard = ({
   children,
   workspaces,
   workspaceId,
   projects
-}) => {
+}: DashboardProps) => {
   const pathname = usePathname()
   const [openProjects, setOpenProjects] = useState<string[]>([])
 
@@ -220,7 +220,7 @@ export const Dashboard: FC<DashboardProps> = ({
       </Sheet>
       {/* END MOBILE  */}
 
-      <main className="bg-secondary/50 flex max-h-screen flex-1 flex-col gap-4 overflow-y-auto p-4 lg:gap-6 lg:p-6">
+      <main className="bg-secondary/50 flex max-h-screen flex-1 flex-col overflow-y-auto  ">
         {children}
       </main>
 

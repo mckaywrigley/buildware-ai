@@ -3,7 +3,6 @@ import { NotFound } from "@/components/utility/not-found"
 import {
   getInstructionsByIssueId,
   getIssueById,
-  getIssueMessagesByIssueId,
   getProjectById
 } from "@/db/queries"
 
@@ -17,7 +16,6 @@ export default async function RunIssuePage({
   }
 }) {
   const issue = await getIssueById(issueId)
-  const issueMessages = await getIssueMessagesByIssueId(issueId)
   const project = await getProjectById(projectId)
   const attachedInstructions = await getInstructionsByIssueId(issueId)
 
@@ -32,7 +30,6 @@ export default async function RunIssuePage({
   return (
     <RunIssue
       issue={issue}
-      initialIssueMessages={issueMessages}
       project={project}
       attachedInstructions={attachedInstructions}
     />

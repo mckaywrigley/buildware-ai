@@ -1,7 +1,6 @@
 export * from "./embedded-branches-queries"
 export * from "./embedded-files-queries"
 export * from "./instructions-queries"
-export * from "./issue-messages-queries"
 export * from "./issues-queries"
 export * from "./issues-to-instructions-queries"
 export * from "./profiles-queries"

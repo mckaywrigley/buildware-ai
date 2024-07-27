@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { FC, ReactNode } from "react"
+import { ReactNode } from "react"
 import { Button } from "../../ui/button"
 
 interface DataListProps {
@@ -15,7 +15,7 @@ interface DataListProps {
   children: ReactNode
 }
 
-export const DataList: FC<DataListProps> = ({
+export const DataList = ({
   title,
   subtitle,
   readMoreLink,
@@ -24,7 +24,7 @@ export const DataList: FC<DataListProps> = ({
   createText,
   dataListTitle,
   children
-}) => {
+}: DataListProps) => {
   return (
     <div className="text-primary mx-auto w-full max-w-[800px] p-6">
       <div className="mb-2 text-2xl font-bold">{title}</div>

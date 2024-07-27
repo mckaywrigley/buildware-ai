@@ -2,7 +2,6 @@
 
 import { MoreHorizontal, Pencil, Trash } from "lucide-react"
 import Link from "next/link"
-import { FC } from "react"
 import { Button } from "../../ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover"
 import { Separator } from "../../ui/separator"
@@ -16,7 +15,7 @@ interface DataItemProps {
   onDelete: (id: string) => Promise<void>
 }
 
-export const DataItem: FC<DataItemProps> = ({ data, type, onDelete }) => {
+export const DataItem = ({ data, type, onDelete }: DataItemProps) => {
   return (
     <div className="bg-secondary border-primary/20 group relative rounded border p-4">
       <Link

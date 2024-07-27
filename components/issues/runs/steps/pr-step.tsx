@@ -1,8 +1,5 @@
-import { FC } from "react"
 import { StepLoader } from "./step-loader"
 
-interface PRStepProps {}
-
-export const PRStep: FC<PRStepProps> = ({}) => {
+export const PRStep = () => {
   return <StepLoader text="Creating PR..." />
 }

@@ -5,7 +5,7 @@ import { SelectWorkspace } from "@/db/schema/workspaces-schema"
 import { cn } from "@/lib/utils"
 import { Check, ChevronDown } from "lucide-react"
 import { useParams, useRouter } from "next/navigation"
-import { FC, HTMLAttributes, useEffect, useState } from "react"
+import { HTMLAttributes, useEffect, useState } from "react"
 import { Button } from "../ui/button"
 import {
   Command,
@@ -23,7 +23,7 @@ interface WorkspaceSelectProps extends HTMLAttributes<HTMLDivElement> {
   workspaces: SelectWorkspace[]
 }
 
-export const WorkspaceSelect: FC<WorkspaceSelectProps> = ({ workspaces }) => {
+export const WorkspaceSelect = ({ workspaces }: WorkspaceSelectProps) => {
   const workspaceValues = workspaces.map(workspace => ({
     value: workspace.id,
     label: workspace.name

@@ -4,7 +4,7 @@ import { createTemplateRecords } from "@/db/queries/templates-queries"
 import { addInstructionToTemplate } from "@/db/queries/templates-to-instructions-queries"
 import { SelectInstruction } from "@/db/schema"
 import { useParams, useRouter } from "next/navigation"
-import { FC, useState } from "react"
+import { useState } from "react"
 import { CRUDForm } from "../dashboard/reusable/crud-form"
 import { MultiSelect } from "../ui/multi-select"
 
@@ -12,7 +12,7 @@ interface NewTemplateProps {
   instructions: SelectInstruction[]
 }
 
-export const CreateTemplate: FC<NewTemplateProps> = ({ instructions }) => {
+export const CreateTemplate = ({ instructions }: NewTemplateProps) => {
   const params = useParams()
   const router = useRouter()
   const [selectedInstructions, setSelectedInstructions] = useState<string[]>([])

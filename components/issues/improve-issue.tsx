@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 import Anthropic from "@anthropic-ai/sdk"
 import endent from "endent"
 import { Loader2, Send, Sparkles } from "lucide-react"
-import { FC, HTMLAttributes, useEffect, useState } from "react"
+import { HTMLAttributes, useEffect, useState } from "react"
 import ReactTextareaAutosize from "react-textarea-autosize"
 import { MessageMarkdown } from "../instructions/message-markdown"
 import { Button } from "../ui/button"
@@ -26,11 +26,11 @@ interface ImproveIssueProps extends HTMLAttributes<HTMLDivElement> {
   onUpdateIssue: (issue: { name: string; content: string }) => void
 }
 
-export const ImproveIssue: FC<ImproveIssueProps> = ({
+export const ImproveIssue = ({
   startingIssue,
   onUpdateIssue,
   ...props
-}) => {
+}: ImproveIssueProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isGenerating, setIsGenerating] = useState(true)
   const [improvedIssue, setImprovedIssue] = useState(startingIssue)

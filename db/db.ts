@@ -24,7 +24,6 @@ const dbSchema = {
   embeddedFiles: schema.embeddedFilesTable,
   embeddedBranches: schema.embeddedBranchesTable,
   issuesToInstructions: schema.issuesToInstructionsTable,
-  issueMessages: schema.issueMessagesTable,
   workspaces: schema.workspacesTable,
 
   // Relations
@@ -36,7 +35,6 @@ const dbSchema = {
   embeddedFilesRelations: schema.embeddedFilesRelations,
   embeddedBranchesRelations: schema.embeddedBranchesRelations,
   issuesToInstructionsRelations: schema.issueToInstructionsRelations,
-  issueMessagesRelations: schema.issueMessagesRelations,
   workspacesRelations: schema.workspacesRelations
 }
 

@@ -7,7 +7,7 @@ import { SelectInstruction, SelectIssue, SelectProject } from "@/db/schema"
 import { Pencil, Play } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import React, { useState } from "react"
+import { useState } from "react"
 import { CRUDPage } from "../dashboard/reusable/crud-page"
 import { ViewIssueContext } from "./view-issue-context"
 import { ViewIssueInstruction } from "./view-issue-instruction"
@@ -23,12 +23,12 @@ interface IssueViewProps {
   workspaceId: string
 }
 
-export const IssueView: React.FC<IssueViewProps> = ({
+export const IssueView = ({
   item,
   project,
   attachedInstructions,
   workspaceId
-}) => {
+}: IssueViewProps) => {
   const router = useRouter()
 
   const [selectedInstruction, setSelectedInstruction] =

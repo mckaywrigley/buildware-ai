@@ -43,9 +43,9 @@
     --color-two: #fe8bbb;
     --color-three: #9e7aff;
 
-    /* --color-one: #37ecba;
-    --color-two: #72afd3;
-    --color-three: #ff2e63; */
+    --run-line-gradient-color-one: #22c55e;
+    --run-line-gradient-color-two: #16a34a;
+    --run-line-gradient-color-three: #22c55e;
   }
 
   .dark {

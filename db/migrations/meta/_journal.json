@@ -15,6 +15,13 @@
       "when": 1721592578326,
       "tag": "0001_fat_rachel_grey",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1722059853277,
+      "tag": "0002_brief_charles_xavier",
+      "breakpoints": true
     }
   ]
 }

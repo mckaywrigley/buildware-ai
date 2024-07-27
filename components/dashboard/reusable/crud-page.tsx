@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
-import { FC, HTMLAttributes, ReactNode } from "react"
+import { HTMLAttributes, ReactNode } from "react"
 
 interface CRUDPageProps extends HTMLAttributes<HTMLDivElement> {
   pageTitle?: string
@@ -10,13 +10,13 @@ interface CRUDPageProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode
 }
 
-export const CRUDPage: FC<CRUDPageProps> = ({
+export const CRUDPage = ({
   pageTitle,
   backText,
   backLink,
   children,
   ...props
-}) => {
+}: CRUDPageProps) => {
   return (
     <div
       className={cn(

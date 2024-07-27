@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils"
 import { Loader2 } from "lucide-react"
-import { FC, HTMLAttributes, ReactNode } from "react"
+import { HTMLAttributes, ReactNode } from "react"
 import { Button } from "../ui/button"
 
 interface IntegrationProps extends HTMLAttributes<HTMLDivElement> {
@@ -12,7 +12,7 @@ interface IntegrationProps extends HTMLAttributes<HTMLDivElement> {
   onClick: () => void
 }
 
-export const Integration: FC<IntegrationProps> = ({
+export const Integration = ({
   name,
   icon,
   isConnecting,
@@ -20,7 +20,7 @@ export const Integration: FC<IntegrationProps> = ({
   disabled,
   onClick,
   ...props
-}) => {
+}: IntegrationProps) => {
   return (
     <div
       className={cn(

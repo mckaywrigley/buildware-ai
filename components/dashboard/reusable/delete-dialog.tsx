@@ -10,7 +10,7 @@ import {
   AlertDialogTrigger
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
-import { FC, useState } from "react"
+import { useState } from "react"
 
 interface DeleteDialogProps {
   title: string
@@ -18,11 +18,11 @@ interface DeleteDialogProps {
   onDelete: () => Promise<void>
 }
 
-export const DeleteDialog: FC<DeleteDialogProps> = ({
+export const DeleteDialog = ({
   title,
   description,
   onDelete
-}) => {
+}: DeleteDialogProps) => {
   const [isOpen, setIsOpen] = useState(false)
 
   const handleDelete = async () => {

@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { AIClarificationItem } from "@/types/ai"
 import { Plus, Trash2 } from "lucide-react"
-import { FC, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import ReactTextareaAutosize from "react-textarea-autosize"
 import { StepLoader } from "./step-loader"
 
@@ -12,10 +12,10 @@ interface ClarifyStepProps {
   onUpdateClarifications: (updatedClarifications: AIClarificationItem[]) => void
 }
 
-export const ClarifyStep: FC<ClarifyStepProps> = ({
+export const ClarifyStep = ({
   clarifications,
   onUpdateClarifications
-}) => {
+}: ClarifyStepProps) => {
   const [localClarifications, setLocalClarifications] =
     useState<AIClarificationItem[]>(clarifications)
 

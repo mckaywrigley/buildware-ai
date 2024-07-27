@@ -1,6 +1,6 @@
 import { SelectInstruction } from "@/db/schema"
 import { Eye } from "lucide-react"
-import { FC, useState } from "react"
+import { useState } from "react"
 import { MessageMarkdown } from "../instructions/message-markdown"
 import { Button } from "../ui/button"
 import {
@@ -19,11 +19,11 @@ interface ViewIssueContextProps {
   selectedInstructions: SelectInstruction[]
 }
 
-export const ViewIssueContext: FC<ViewIssueContextProps> = ({
+export const ViewIssueContext = ({
   name,
   content,
   selectedInstructions
-}) => {
+}: ViewIssueContextProps) => {
   const [isOpen, setIsOpen] = useState(false)
 
   return (

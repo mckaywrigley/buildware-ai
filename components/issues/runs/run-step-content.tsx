@@ -1,7 +1,6 @@
 import { ThinkStep } from "@/components/issues/runs/steps/think-step"
 import { AIClarificationItem, AIPlanStep, AIThought } from "@/types/ai"
 import { RunStep } from "@/types/run"
-import { FC } from "react"
 import { ActStep } from "./steps/act-step"
 import { ClarifyStep } from "./steps/clarify-step"
 import { CompletedStep } from "./steps/completed-step"
@@ -22,7 +21,7 @@ interface RunStepContentProps {
   setPlanSteps: (planSteps: AIPlanStep[]) => void
 }
 
-export const RunStepContent: FC<RunStepContentProps> = ({
+export const RunStepContent = ({
   step,
   clarifications,
   thoughts,
@@ -30,7 +29,7 @@ export const RunStepContent: FC<RunStepContentProps> = ({
   setClarifications,
   setThoughts,
   setPlanSteps
-}) => {
+}: RunStepContentProps) => {
   switch (step) {
     case "started":
       return <StartedStep />

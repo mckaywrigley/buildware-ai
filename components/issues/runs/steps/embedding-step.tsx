@@ -1,8 +1,5 @@
-import { FC } from "react"
 import { StepLoader } from "./step-loader"
 
-interface EmbeddingStepProps {}
-
-export const EmbeddingStep: FC<EmbeddingStepProps> = ({}) => {
+export const EmbeddingStep = () => {
   return <StepLoader text="Embedding branch..." />
 }

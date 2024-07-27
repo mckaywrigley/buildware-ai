@@ -131,6 +131,10 @@ const config = {
           to: {
             "background-position": "0% 0%"
           }
+        },
+        "line-grow": {
+          "0%": { transform: "scaleY(0)", transformOrigin: "top" },
+          "100%": { transform: "scaleY(1)", transformOrigin: "top" }
         }
       },
       animation: {
@@ -142,7 +146,8 @@ const config = {
         "fade-up": "fade-up 1000ms var(--animation-delay, 0ms) ease forwards",
         shimmer: "shimmer 8s infinite",
         marquee: "marquee var(--duration) infinite linear",
-        "marquee-vertical": "marquee-vertical var(--duration) linear infinite"
+        "marquee-vertical": "marquee-vertical var(--duration) linear infinite",
+        "line-grow": "line-grow 1s ease-out forwards"
       }
     }
   },

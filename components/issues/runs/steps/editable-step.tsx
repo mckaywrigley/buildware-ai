@@ -1,7 +1,13 @@
+import { MessageMarkdown } from "@/components/instructions/message-markdown"
 import { Button } from "@/components/ui/button"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from "@/components/ui/popover"
 import { AIThought } from "@/types/ai"
-import { Plus, Trash2 } from "lucide-react"
-import { FC, useEffect, useState } from "react"
+import { Edit, MoreHorizontal, Plus, Trash2 } from "lucide-react"
+import { useEffect, useState } from "react"
 import ReactTextareaAutosize from "react-textarea-autosize"
 import { StepLoader } from "./step-loader"
 
@@ -12,15 +18,15 @@ interface EditableStepProps<T extends { number: number; text: string }> {
   description: string
   itemName: string
 }
-
-export const EditableStep: FC<EditableStepProps<AIThought>> = ({
+export const EditableStep = ({
   items,
   onUpdateItems,
   title,
   description,
   itemName
-}) => {
+}: EditableStepProps<AIThought>) => {
   const [localItems, setLocalItems] = useState<AIThought[]>(items)
+  const [editingIndex, setEditingIndex] = useState<number | null>(null)
 
   useEffect(() => {
     setLocalItems(items)
@@ -62,6 +68,15 @@ export const EditableStep: FC<EditableStepProps<AIThought>> = ({
     onUpdateItems(renumberedItems)
   }
 
+  const handleEditItem = (index: number) => {
+    setEditingIndex(index)
+  }
+
+  const handleSaveItem = () => {
+    setEditingIndex(null)
+    onUpdateItems(localItems)
+  }
+
   if (localItems.length === 0) {
     return <StepLoader text={`Generating ${itemName}s...`} />
   }
@@ -74,26 +89,62 @@ export const EditableStep: FC<EditableStepProps<AIThought>> = ({
       </div>
 
       {localItems.map((item, index) => (
-        <div key={item.number} className="relative">
-          <div className="bg-primary text-primary-foreground absolute -left-8 top-2 flex size-6 items-center justify-center rounded-full text-sm font-semibold">
-            {item.number}
+        <div key={item.number} className="relative pt-6">
+          <div className="text-muted-foreground absolute left-1 top-0 text-sm font-medium">
+            Step {item.number}
           </div>
-          <ReactTextareaAutosize
-            className="thought-text border-border bg-card focus:ring-primary w-full resize-none rounded-lg border p-4 pl-6 shadow-sm transition-shadow focus:shadow-md focus:outline-none focus:ring-2"
-            value={item.text}
-            onChange={e => handleItemChange(index, e.target.value)}
-            minRows={2}
-            maxRows={10}
-          />
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute -right-12 top-2"
-            onClick={() => handleRemoveItem(index)}
-            disabled={localItems.length === 1} // Disable button if it's the only item
-          >
-            <Trash2 className="size-4" />
-          </Button>
+          <div className="absolute -top-2 right-0">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon" className="size-8">
+                  <MoreHorizontal className="size-4" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="bg-secondary mr-2 w-40 border p-2">
+                <div className="flex flex-col space-y-2">
+                  <Button
+                    variant="ghost"
+                    className="hover:bg-secondary-foreground/10 justify-start"
+                    onClick={() => handleEditItem(index)}
+                  >
+                    <Edit className="mr-2 size-4" />
+                    Edit
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="hover:bg-secondary-foreground/10 justify-start text-red-500"
+                    onClick={() => handleRemoveItem(index)}
+                    disabled={localItems.length === 1}
+                  >
+                    <Trash2 className="mr-2 size-4 text-red-500" />
+                    Delete
+                  </Button>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
+          {editingIndex === index ? (
+            <>
+              <ReactTextareaAutosize
+                className="thought-text border-border bg-card focus:ring-primary w-full resize-none rounded-lg border p-4 pl-6 pr-10 shadow-sm transition-shadow focus:shadow-md focus:outline-none focus:ring-2"
+                value={item.text}
+                onChange={e => handleItemChange(index, e.target.value)}
+                minRows={2}
+                maxRows={10}
+              />
+              <Button
+                variant="outline"
+                className="mt-2"
+                onClick={handleSaveItem}
+              >
+                Save
+              </Button>
+            </>
+          ) : (
+            <div className="thought-text border-border bg-card w-full rounded-lg border p-4 pl-6 pr-10 shadow-sm">
+              <MessageMarkdown content={item.text} />
+            </div>
+          )}
         </div>
       ))}
 
