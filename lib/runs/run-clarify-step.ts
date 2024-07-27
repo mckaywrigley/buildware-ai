@@ -5,7 +5,6 @@ import { buildCodegenClarifyPrompt } from "@/lib/ai/codegen-system/clarify/build
 import { parseCodegenClarifyResponse } from "@/lib/ai/codegen-system/clarify/parse-codegen-clarify-response"
 import { BUILDWARE_CLARIFY_LLM } from "@/lib/constants/buildware-config"
 import { RunStepParams } from "@/types/run"
-import console from "console"
 
 export const runClarifyStep = async ({
   issue,

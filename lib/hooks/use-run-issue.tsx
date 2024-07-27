@@ -40,7 +40,7 @@ export const useRunIssue = (
   )
   const [planSteps, setPlanSteps] = useState<AIPlanStep[]>([])
   const [generatedFiles, setGeneratedFiles] = useState<AIFileInfo[]>([])
-  const [waitingForConfirmation, setWaitingForConfirmation] = useState(true)
+  const [waitingForConfirmation, setWaitingForConfirmation] = useState(false)
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
   const [codebaseFiles, setCodebaseFiles] = useState<
     { path: string; content: string }[]
@@ -128,7 +128,6 @@ export const useRunIssue = (
   }
 
   const handleRun = async () => {
-    console.log(project)
     if (!project.githubRepoFullName || !project.githubTargetBranch) {
       alert("Please connect your project to a GitHub repository first.")
       return
