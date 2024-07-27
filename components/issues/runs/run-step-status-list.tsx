@@ -38,11 +38,11 @@ interface RunStepStatusListProps {
 const getGradientClass = (currentStatus: string, nextStatus: string) => {
   if (currentStatus === "done") {
     if (nextStatus === "in_progress") {
-      return "bg-gradient-to-b from-green-500 via-green-600 to-yellow-600"
+      return "bg-gradient-to-b from-green-500 to-yellow-600"
     } else if (nextStatus === "done") {
-      return "bg-gradient-to-b from-green-500 via-green-600 to-green-700"
-    } else {
       return "bg-gradient-to-b from-green-500 to-green-600"
+    } else {
+      return "bg-gradient-to-b from-green-500 to-zinc-700"
     }
   }
   return "bg-zinc-700"
