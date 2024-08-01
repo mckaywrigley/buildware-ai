@@ -22,6 +22,7 @@ import {
   CircleDot,
   Menu,
   Pencil,
+  PlusCircle,
   Settings,
   StickyNote
 } from "lucide-react"
@@ -64,6 +65,12 @@ const PROJECT_LINKS = [
     href: (workspaceId: string, projectId: string) =>
       `/${workspaceId}/${projectId}/instructions`,
     icon: Pencil
+  },
+  {
+    label: "Context",
+    href: (workspaceId: string, projectId: string) =>
+      `/${workspaceId}/${projectId}/context`,
+    icon: PlusCircle
   },
   {
     label: "Settings",

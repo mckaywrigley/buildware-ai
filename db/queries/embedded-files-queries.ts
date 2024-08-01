@@ -41,3 +41,10 @@ export async function deleteAllEmbeddedFilesByEmbeddedBranchId(
     throw error
   }
 }
+
+export async function getEmbeddedFilesByProjectId(projectId: string) {
+  const embeddedFiles = await db.query.embeddedFiles.findMany({
+    where: eq(embeddedFilesTable.projectId, projectId)
+  })
+  return embeddedFiles
+}
