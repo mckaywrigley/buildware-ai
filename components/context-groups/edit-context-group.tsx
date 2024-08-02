@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { MultiSelect } from "@/components/ui/multi-select"
 import { updateContextGroup } from "@/db/queries/context-groups-queries"
 import {
   addEmbeddedFileToContextGroup,
@@ -12,15 +11,21 @@ import {
 import { SelectContextGroup } from "@/db/schema/context-groups-schema"
 import { SelectContextGroupToEmbeddedFile } from "@/db/schema/context-groups-to-embedded-files-schema"
 import { SelectEmbeddedFile } from "@/db/schema/embedded-files-schema"
+import { getEmbeddedFilesAndFolders } from "@/db/queries/embedded-files-queries"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import { DeleteDialog } from "../dashboard/reusable/delete-dialog"
+import { deleteContextGroup } from "@/db/queries/context-groups-queries"
+import { ContextMultiSelect } from "./context-multi-select"
 
 interface EditContextGroupProps {
   contextGroup: SelectContextGroup
   embeddedFiles: (SelectContextGroupToEmbeddedFile & {
     embeddedFile: SelectEmbeddedFile
   })[]
-  allEmbeddedFilesInProject: SelectEmbeddedFile[]
+  allEmbeddedFilesInProject: Awaited<
+    ReturnType<typeof getEmbeddedFilesAndFolders>
+  >
 }
 
 export const EditContextGroup = ({
@@ -53,14 +58,18 @@ export const EditContextGroup = ({
       )
       const currentFileIds = currentFiles.map(file => file.embeddedFileId)
 
-      for (const fileId of selectedFileIds) {
-        if (!currentFileIds.includes(fileId)) {
-          await addEmbeddedFileToContextGroup(contextGroup.id, fileId)
+      const selectedFiles = allEmbeddedFilesInProject.filter(
+        file => file.type === "file" && selectedFileIds.includes(file.id)
+      )
+
+      for (const file of selectedFiles) {
+        if (!currentFileIds.includes(file.id)) {
+          await addEmbeddedFileToContextGroup(contextGroup.id, file.id)
         }
       }
 
       for (const fileId of currentFileIds) {
-        if (!selectedFileIds.includes(fileId)) {
+        if (!selectedFiles.some(file => file.id === fileId)) {
           await removeEmbeddedFileFromContextGroup(contextGroup.id, fileId)
         }
       }
@@ -73,6 +82,17 @@ export const EditContextGroup = ({
     }
   }
 
+  const handleDeleteContextGroup = async () => {
+    try {
+      await deleteContextGroup(contextGroup.id)
+      router.refresh()
+      router.push("..")
+    } catch (error) {
+      console.error("Error deleting context group:", error)
+      alert("An error occurred while deleting the context group")
+    }
+  }
+
   return (
     <div className="space-y-4">
       <Input
@@ -81,21 +101,31 @@ export const EditContextGroup = ({
         onChange={e => setName(e.target.value)}
       />
 
-      <MultiSelect
-        label="Embedded File"
-        data={allEmbeddedFilesInProject.map(file => ({
-          id: file.id,
-          name: file.path
+      <ContextMultiSelect
+        label="Embedded File or Folder"
+        data={allEmbeddedFilesInProject.map(item => ({
+          id: item.id,
+          name: item.path,
+          type: item.type,
+          path: item.path
         }))}
         selectedIds={selectedFileIds}
         onToggleSelect={setSelectedFileIds}
       />
 
-      <div className="flex justify-end space-x-2">
-        <Button variant="outline" onClick={() => router.back()}>
-          Cancel
-        </Button>
-        <Button onClick={handleUpdateContextGroup}>Save</Button>
+      <div className="flex items-center justify-between">
+        <DeleteDialog
+          title="Delete Context Group"
+          description="Are you sure you want to delete this context group? This action cannot be undone."
+          onDelete={handleDeleteContextGroup}
+        />
+
+        <div className="flex space-x-2">
+          <Button variant="outline" onClick={() => router.back()}>
+            Cancel
+          </Button>
+          <Button onClick={handleUpdateContextGroup}>Save</Button>
+        </div>
       </div>
     </div>
   )

@@ -1,5 +1,6 @@
 import { IssueView } from "@/components/issues/issue-view"
 import { NotFound } from "@/components/utility/not-found"
+import { getContextGroupsByIssueId } from "@/db/queries/issue-to-context-groups-queries"
 import { getIssueById } from "@/db/queries/issues-queries"
 import { getInstructionsByIssueId } from "@/db/queries/issues-to-instructions-queries"
 import { getProjectById } from "@/db/queries/projects-queries"
@@ -24,12 +25,14 @@ export default async function IssuePage({
   }
 
   const attachedInstructions = await getInstructionsByIssueId(issue.id)
+  const attachedContextGroups = await getContextGroupsByIssueId(issue.id)
 
   return (
     <IssueView
       item={issue}
       project={project}
       attachedInstructions={attachedInstructions}
+      attachedContextGroups={attachedContextGroups}
       workspaceId={params.workspaceId}
     />
   )

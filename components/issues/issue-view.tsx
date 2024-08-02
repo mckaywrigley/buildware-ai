@@ -3,7 +3,12 @@
 import { MessageMarkdown } from "@/components/instructions/message-markdown"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardTitle } from "@/components/ui/card"
-import { SelectInstruction, SelectIssue, SelectProject } from "@/db/schema"
+import {
+  SelectContextGroup,
+  SelectInstruction,
+  SelectIssue,
+  SelectProject
+} from "@/db/schema"
 import { Pencil, Play } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -20,13 +25,19 @@ interface IssueViewProps {
     issueId: string
     instruction: SelectInstruction
   }[]
+  attachedContextGroups: {
+    contextGroupId: string
+    issueId: string
+    contextGroup: SelectContextGroup
+  }[]
   workspaceId: string
 }
 
-export const IssueView = ({
+export const IssueView = async ({
   item,
   project,
   attachedInstructions,
+  attachedContextGroups,
   workspaceId
 }: IssueViewProps) => {
   const router = useRouter()
@@ -59,6 +70,9 @@ export const IssueView = ({
                 content={item.content}
                 selectedInstructions={attachedInstructions.map(
                   ai => ai.instruction
+                )}
+                selectedContextGroups={attachedContextGroups.map(
+                  cg => cg.contextGroup
                 )}
               />
             </div>
@@ -93,6 +107,28 @@ export const IssueView = ({
                     }
                   >
                     {instruction.instruction.name}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {attachedContextGroups.length > 0 && (
+            <div className="my-6">
+              <div className="mb-2 text-lg font-semibold">
+                Attached Context Groups
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {attachedContextGroups.map(({ contextGroup }) => (
+                  <Button
+                    key={contextGroup.id}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      /* Implement context group view logic */
+                    }}
+                  >
+                    {contextGroup.name}
                   </Button>
                 ))}
               </div>

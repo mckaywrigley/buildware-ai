@@ -7,6 +7,7 @@ import { embeddedBranchesTable } from "@/db/schema"
 import { embeddedFilesTable } from "@/db/schema/embedded-files-schema"
 import { BUILDWARE_MAX_INPUT_TOKENS } from "@/lib/constants/buildware-config"
 import { and, cosineDistance, desc, eq, gt, sql } from "drizzle-orm"
+import { getContextGroupFiles } from "./get-context-group-files"
 
 export const getMostSimilarEmbeddedFiles = async (
   text: string,
@@ -26,6 +27,8 @@ export const getMostSimilarEmbeddedFiles = async (
   if (!embeddedBranch) {
     throw new Error("Embedded branch not found")
   }
+
+  const contextGroupFiles = await getContextGroupFiles(projectId)
 
   const embedding = await generateEmbedding(text)
 
@@ -53,8 +56,15 @@ export const getMostSimilarEmbeddedFiles = async (
     )
     .orderBy(t => desc(t.similarity))
 
-  const filteredFiles = mostSimilarEmbeddedFiles.reduce(
-    (acc: { files: typeof mostSimilarEmbeddedFiles; tokens: number }, file) => {
+  const prioritizedFiles = [
+    ...contextGroupFiles,
+    ...mostSimilarEmbeddedFiles.filter(
+      file => !contextGroupFiles.some(cgFile => cgFile.id === file.id)
+    )
+  ]
+
+  const filteredFiles = prioritizedFiles.reduce(
+    (acc: { files: typeof prioritizedFiles; tokens: number }, file) => {
       if (acc.tokens + file.tokenCount <= BUILDWARE_MAX_INPUT_TOKENS) {
         acc.files.push(file)
         acc.tokens += file.tokenCount

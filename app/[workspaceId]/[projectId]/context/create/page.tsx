@@ -1,5 +1,5 @@
 import { CRUDPage } from "@/components/dashboard/reusable/crud-page"
-import { getEmbeddedFilesByProjectId } from "@/db/queries/embedded-files-queries"
+import { getEmbeddedFilesAndFolders } from "@/db/queries/embedded-files-queries"
 import { CreateContextGroup } from "@/components/context-groups/create-context-group"
 
 export const revalidate = 0
@@ -9,7 +9,7 @@ export default async function CreateContextGroupPage({
 }: {
   params: { projectId: string; workspaceId: string }
 }) {
-  const embeddedFiles = await getEmbeddedFilesByProjectId(params.projectId)
+  const embeddedFiles = await getEmbeddedFilesAndFolders(params.projectId)
 
   return (
     <CRUDPage

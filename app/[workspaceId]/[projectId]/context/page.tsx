@@ -14,22 +14,22 @@ export default async function ContextPage({
   const contextGroups = await getContextGroupsByProjectId(params.projectId)
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Context Groups</h1>
-          <p className="text-muted-foreground mt-1">
+    <div className="container mx-auto max-w-3xl py-8">
+      <h1 className="mb-6 text-3xl font-bold">Context Groups</h1>
+      <div className="flex flex-col gap-6">
+        <div className="flex items-center justify-between">
+          <div className="text-muted-foreground">
             Manage your project's context groups
-          </p>
+          </div>
+          <Link href={`./context/create`}>
+            <Button>
+              <PlusIcon className="mr-2 size-4" />
+              Create Context
+            </Button>
+          </Link>
         </div>
-        <Link href={`./context/create`}>
-          <Button>
-            <PlusIcon className="mr-2 size-4" />
-            Create Context
-          </Button>
-        </Link>
+        <ContextGroupList contextGroups={contextGroups} />
       </div>
-      <ContextGroupList contextGroups={contextGroups} />
     </div>
   )
 }

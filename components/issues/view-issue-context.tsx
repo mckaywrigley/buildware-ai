@@ -1,4 +1,4 @@
-import { SelectInstruction } from "@/db/schema"
+import { SelectContextGroup, SelectInstruction } from "@/db/schema"
 import { Eye } from "lucide-react"
 import { useState } from "react"
 import { MessageMarkdown } from "../instructions/message-markdown"
@@ -17,12 +17,14 @@ interface ViewIssueContextProps {
   name: string
   content: string
   selectedInstructions: SelectInstruction[]
+  selectedContextGroups: SelectContextGroup[]
 }
 
 export const ViewIssueContext = ({
   name,
   content,
-  selectedInstructions
+  selectedInstructions,
+  selectedContextGroups
 }: ViewIssueContextProps) => {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -62,6 +64,21 @@ export const ViewIssueContext = ({
             ))
           ) : (
             <div>No instructions.</div>
+          )}
+        </div>
+
+        <div>
+          {selectedContextGroups.length > 0 ? (
+            <div className="mt-4">
+              <div className="text-xl font-bold">Attached Context Groups</div>
+              {selectedContextGroups.map(group => (
+                <div key={group.id} className="mt-2">
+                  <div className="text-lg font-semibold">{group.name}</div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="mt-4">No context groups attached.</div>
           )}
         </div>
       </DialogContent>

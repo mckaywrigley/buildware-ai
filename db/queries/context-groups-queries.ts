@@ -1,7 +1,7 @@
 "use server"
 
 import { getUserId } from "@/actions/auth/auth"
-import { and, eq } from "drizzle-orm"
+import { eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { db } from "../db"
 import {
@@ -60,10 +60,7 @@ export async function updateContextGroup(
   data: Partial<InsertContextGroup>
 ): Promise<void> {
   try {
-    await db
-      .update(contextGroups)
-      .set(data)
-      .where(and(eq(contextGroups.id, id)))
+    await db.update(contextGroups).set(data).where(eq(contextGroups.id, id))
     revalidatePath("/")
   } catch (error) {
     console.error(`Error updating context group ${id}:`, error)
@@ -73,7 +70,7 @@ export async function updateContextGroup(
 
 export async function deleteContextGroup(id: string): Promise<void> {
   try {
-    await db.delete(contextGroups).where(and(eq(contextGroups.id, id)))
+    await db.delete(contextGroups).where(eq(contextGroups.id, id))
     revalidatePath("/")
   } catch (error) {
     console.error(`Error deleting context group ${id}:`, error)

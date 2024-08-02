@@ -2,15 +2,15 @@
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { MultiSelect } from "@/components/ui/multi-select"
 import { createContextGroup } from "@/db/queries/context-groups-queries"
 import { addEmbeddedFileToContextGroup } from "@/db/queries/context-groups-to-embedded-files-queries"
-import { SelectEmbeddedFile } from "@/db/schema"
+import { getEmbeddedFilesAndFolders } from "@/db/queries/embedded-files-queries"
 import { useParams, useRouter } from "next/navigation"
 import { useState } from "react"
+import { ContextMultiSelect } from "./context-multi-select"
 
 interface CreateContextGroupProps {
-  embeddedFiles: SelectEmbeddedFile[]
+  embeddedFiles: Awaited<ReturnType<typeof getEmbeddedFilesAndFolders>>
 }
 
 export const CreateContextGroup = ({
@@ -32,8 +32,12 @@ export const CreateContextGroup = ({
     try {
       const contextGroup = await createContextGroup({ name, projectId })
 
-      for (const fileId of selectedFileIds) {
-        await addEmbeddedFileToContextGroup(contextGroup.id, fileId)
+      const selectedFiles = embeddedFiles.filter(
+        file => file.type === "file" && selectedFileIds.includes(file.id)
+      )
+
+      for (const file of selectedFiles) {
+        await addEmbeddedFileToContextGroup(contextGroup.id, file.id)
       }
 
       router.refresh()
@@ -52,11 +56,13 @@ export const CreateContextGroup = ({
         onChange={e => setName(e.target.value)}
       />
 
-      <MultiSelect
-        label="Embedded File"
-        data={embeddedFiles.map(file => ({
-          id: file.id,
-          name: file.path
+      <ContextMultiSelect
+        label="Embedded File or Folder"
+        data={embeddedFiles.map(item => ({
+          id: item.id,
+          name: item.path,
+          type: item.type,
+          path: item.path
         }))}
         selectedIds={selectedFileIds}
         onToggleSelect={setSelectedFileIds}

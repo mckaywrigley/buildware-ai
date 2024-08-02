@@ -1,7 +1,7 @@
 import { EditContextGroup } from "@/components/context-groups/edit-context-group"
 import { CRUDPage } from "@/components/dashboard/reusable/crud-page"
 import { NotFound } from "@/components/utility/not-found"
-import { getEmbeddedFilesByProjectId } from "@/db/queries"
+import { getEmbeddedFilesAndFolders } from "@/db/queries"
 import { getContextGroupById } from "@/db/queries/context-groups-queries"
 import { getEmbeddedFilesForContextGroup } from "@/db/queries/context-groups-to-embedded-files-queries"
 
@@ -19,7 +19,7 @@ export default async function EditContextGroupPage({
   }
 
   const embeddedFiles = await getEmbeddedFilesForContextGroup(params.id)
-  const allEmbeddedFilesInProject = await getEmbeddedFilesByProjectId(
+  const allEmbeddedFilesInProject = await getEmbeddedFilesAndFolders(
     params.projectId
   )
 

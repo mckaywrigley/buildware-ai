@@ -12,18 +12,21 @@ import { addInstructionToIssue } from "@/db/queries/issues-to-instructions-queri
 import { getInstructionsForTemplate } from "@/db/queries/templates-to-instructions-queries"
 import { SelectInstruction } from "@/db/schema"
 import { SelectTemplate } from "@/db/schema/templates-schema"
+import { SelectContextGroup } from "@/db/schema/context-groups-schema"
 import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { CRUDForm } from "../dashboard/reusable/crud-form"
 import { MultiSelect } from "../ui/multi-select"
 import { ImproveIssue } from "./improve-issue"
 import { ViewIssueContext } from "./view-issue-context"
+import { addContextGroupToIssue } from "@/db/queries/issue-to-context-groups-queries"
 
 interface CreateIssueProps {
   templates: SelectTemplate[]
+  contextGroups: SelectContextGroup[]
 }
 
-export const CreateIssue = ({ templates }: CreateIssueProps) => {
+export const CreateIssue = ({ templates, contextGroups }: CreateIssueProps) => {
   const params = useParams()
   const router = useRouter()
 
@@ -34,6 +37,9 @@ export const CreateIssue = ({ templates }: CreateIssueProps) => {
   const [content, setContent] = useState("")
   const [selectedInstructions, setSelectedInstructions] = useState<string[]>([])
   const [allInstructions, setAllInstructions] = useState<SelectInstruction[]>(
+    []
+  )
+  const [selectedContextGroups, setSelectedContextGroups] = useState<string[]>(
     []
   )
 
@@ -74,6 +80,10 @@ export const CreateIssue = ({ templates }: CreateIssueProps) => {
 
     for (const instructionId of selectedInstructions) {
       await addInstructionToIssue(issue.id, instructionId)
+    }
+
+    for (const contextGroupId of selectedContextGroups) {
+      await addContextGroupToIssue(issue.id, contextGroupId)
     }
 
     router.refresh()
@@ -126,12 +136,29 @@ export const CreateIssue = ({ templates }: CreateIssueProps) => {
         </div>
       )}
 
+      {contextGroups.length > 0 && (
+        <div className="mt-4">
+          <MultiSelect
+            label="Context Group"
+            data={contextGroups.map(group => ({
+              id: group.id,
+              name: group.name
+            }))}
+            selectedIds={selectedContextGroups}
+            onToggleSelect={setSelectedContextGroups}
+          />
+        </div>
+      )}
+
       <div className="mt-4 flex w-full justify-end gap-2">
         <ViewIssueContext
           name={name}
           content={content}
           selectedInstructions={allInstructions.filter(instruction =>
             selectedInstructions.includes(instruction.id)
+          )}
+          selectedContextGroups={contextGroups.filter(group =>
+            selectedContextGroups.includes(group.id)
           )}
         />
 
