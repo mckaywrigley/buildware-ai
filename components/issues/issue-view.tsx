@@ -16,6 +16,13 @@ import { useState } from "react"
 import { CRUDPage } from "../dashboard/reusable/crud-page"
 import { ViewIssueContext } from "./view-issue-context"
 import { ViewIssueInstruction } from "./view-issue-instruction"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog"
+import { File, Folder } from "lucide-react"
 
 interface IssueViewProps {
   item: SelectIssue
@@ -28,7 +35,13 @@ interface IssueViewProps {
   attachedContextGroups: {
     contextGroupId: string
     issueId: string
-    contextGroup: SelectContextGroup
+    contextGroup: SelectContextGroup & {
+      files: {
+        id: string
+        path: string
+        type: "file" | "folder"
+      }[]
+    }
   }[]
   workspaceId: string
 }
@@ -44,6 +57,10 @@ export const IssueView = async ({
 
   const [selectedInstruction, setSelectedInstruction] =
     useState<SelectInstruction | null>(null)
+
+  const [selectedContextGroup, setSelectedContextGroup] = useState<
+    (typeof attachedContextGroups)[0] | null
+  >(null)
 
   return (
     <CRUDPage
@@ -119,16 +136,14 @@ export const IssueView = async ({
                 Attached Context Groups
               </div>
               <div className="flex flex-wrap gap-2">
-                {attachedContextGroups.map(({ contextGroup }) => (
+                {attachedContextGroups.map(contextGroupData => (
                   <Button
-                    key={contextGroup.id}
+                    key={contextGroupData.contextGroup.id}
                     variant="outline"
                     size="sm"
-                    onClick={() => {
-                      /* Implement context group view logic */
-                    }}
+                    onClick={() => setSelectedContextGroup(contextGroupData)}
                   >
-                    {contextGroup.name}
+                    {contextGroupData.contextGroup.name}
                   </Button>
                 ))}
               </div>
@@ -149,6 +164,31 @@ export const IssueView = async ({
         selectedInstruction={selectedInstruction}
         onClose={() => setSelectedInstruction(null)}
       />
+
+      <Dialog
+        open={!!selectedContextGroup}
+        onOpenChange={() => setSelectedContextGroup(null)}
+      >
+        <DialogContent className="max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {selectedContextGroup?.contextGroup.name} - Attached Files
+            </DialogTitle>
+          </DialogHeader>
+          <div className="mt-4">
+            {selectedContextGroup?.contextGroup.files.map(file => (
+              <div key={file.id} className="flex items-center py-1">
+                {file.type === "file" ? (
+                  <File className="mr-2 size-4" />
+                ) : (
+                  <Folder className="mr-2 size-4" />
+                )}
+                <span>{file.path}</span>
+              </div>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </CRUDPage>
   )
 }

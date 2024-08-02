@@ -15,7 +15,7 @@ export default async function ContextPage({
 
   return (
     <div className="container mx-auto max-w-3xl py-8">
-      <h1 className="mb-6 text-3xl font-bold">Context Groups</h1>
+      <div className="mb-6 text-3xl font-bold">Context Groups</div>
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
           <div className="text-muted-foreground">
