@@ -1,7 +1,7 @@
 "use server"
 
 import { SelectEmbeddedFile } from "@/db/schema"
-import { BUILDWARE_THINK_LLM } from "@/lib/constants/buildware-config"
+import { BUILDWARE_SPECIFICATION_LLM } from "@/lib/constants/buildware-config"
 import { LinearWebhookComment } from "@/types/linear/linear"
 import { Comment, Issue, LinearClient } from "@linear/sdk"
 import endent from "endent"
@@ -98,7 +98,7 @@ export async function handleAtAIComment(
   const aiResponse = await generateCodegenAIMessage({
     messages: [{ role: "user", content: commentPrompt + strippedBody }],
     system: "",
-    model: BUILDWARE_THINK_LLM
+    model: BUILDWARE_SPECIFICATION_LLM
   })
 
   await createComment(

@@ -1,28 +1,40 @@
 "use client"
 
+import { updateIssue } from "@/db/queries"
 import { SelectInstruction, SelectIssue, SelectProject } from "@/db/schema"
 import {
-  AIClarificationItem,
-  AIFileInfo,
-  AIPlanStep,
-  AIThought
-} from "@/types/ai"
-import { RunStepStatuses, StepName, StepStatus } from "@/types/run"
-import { useState } from "react"
-import { parseCodegenActResponse } from "../ai/codegen-system/act/parse-codegen-act-response"
-import { runActStep } from "../runs/run-act-step"
+  ParsedImplementation,
+  ParsedPlan,
+  ParsedSpecification,
+  RunStepStatuses,
+  StepName,
+  StepStatus
+} from "@/types/run"
+import { useRef, useState } from "react"
 import { runCompletedStep } from "../runs/run-completed-step"
 import { runEmbeddingStep } from "../runs/run-embedding-step"
+import { runImplementationStep } from "../runs/run-implementation-step"
 import { runPlanStep } from "../runs/run-plan-step"
 import { runPRStep } from "../runs/run-pr-step"
 import { runRetrievalStep } from "../runs/run-retrieval-step"
+import { runSpecificationStep } from "../runs/run-specification-step"
 import { runStartStep } from "../runs/run-start-step"
-import { runThinkStep } from "../runs/run-think-step"
+
+export const stepOrder: StepName[] = [
+  "started",
+  "embedding",
+  "retrieval",
+  "specification",
+  "plan",
+  "implementation",
+  "pr",
+  "completed"
+]
 
 export const useRunIssue = (
   issue: SelectIssue,
   project: SelectProject,
-  attachedInstructions: {
+  instructions: {
     instructionId: string
     issueId: string
     instruction: SelectInstruction
@@ -30,43 +42,30 @@ export const useRunIssue = (
 ) => {
   const [isRunning, setIsRunning] = useState(false)
   const [currentStep, setCurrentStep] = useState<StepName | null>(null)
-  const [clarifications, setClarifications] = useState<AIClarificationItem[]>(
-    []
-  )
-  const [thoughts, setThoughts] = useState<AIThought[]>([])
-  const [planSteps, setPlanSteps] = useState<AIPlanStep[]>([])
-  const [generatedFiles, setGeneratedFiles] = useState<AIFileInfo[]>([])
-  const [waitingForConfirmation, setWaitingForConfirmation] = useState(false)
-  const [currentStepIndex, setCurrentStepIndex] = useState(0)
-  const [codebaseFiles, setCodebaseFiles] = useState<
-    { path: string; content: string }[]
-  >([])
-  const [instructionsContext, setInstructionsContext] = useState("")
-  const [aiResponses, setAIResponses] = useState<{
-    clarify: string | null
-    think: string | null
-    plan: string | null
-    act: string | null
-  }>({
-    clarify: null,
-    think: null,
-    plan: null,
-    act: null
-  })
-
   const [stepStatuses, setStepStatuses] = useState<RunStepStatuses>({
     started: "not_started",
     embedding: "not_started",
     retrieval: "not_started",
-    think: "not_started",
+    specification: "not_started",
     plan: "not_started",
-    act: "not_started",
+    implementation: "not_started",
     pr: "not_started",
-    completed: "not_started",
-    // unimplemented steps
-    clarify: "not_started",
-    verify: "not_started"
+    completed: "not_started"
   })
+  const [waitingForConfirmation, setWaitingForConfirmation] = useState(false)
+  const [prLink, setPrLink] = useState("")
+  const [specificationResponse, setSpecificationResponse] = useState("")
+  const [parsedSpecification, setParsedSpecification] =
+    useState<ParsedSpecification>({ steps: [] })
+  const [planResponse, setPlanResponse] = useState("")
+  const [parsedPlan, setParsedPlan] = useState<ParsedPlan>({ steps: [] })
+  const [implementationResponse, setImplementationResponse] = useState("")
+  const [parsedImplementation, setParsedImplementation] =
+    useState<ParsedImplementation>({
+      files: [],
+      prTitle: "",
+      prDescription: ""
+    })
 
   const updateStepStatus = (step: StepName, status: StepStatus) => {
     setStepStatuses(prevSteps => ({ ...prevSteps, [step]: status }))
@@ -76,72 +75,76 @@ export const useRunIssue = (
     runStartStep,
     runEmbeddingStep,
     runRetrievalStep,
-    runThinkStep,
+    runSpecificationStep,
     runPlanStep,
-    runActStep,
+    runImplementationStep,
     runPRStep,
     runCompletedStep
   ]
 
-  const stepNames: StepName[] = [
-    "started",
-    "embedding",
-    "retrieval",
-    "think",
-    "plan",
-    "act",
-    "pr",
-    "completed"
-  ]
+  const latestCodebaseFiles = useRef<{ path: string; content: string }[]>([])
+  const latestInstructionsContext = useRef("")
 
-  const runNextStep = async (stepIndex = currentStepIndex) => {
+  const runNextStep = async (step: StepName) => {
     await new Promise(resolve => setTimeout(resolve, 500)) // wait 0.5s for animation
+
+    const stepIndex = stepOrder.indexOf(step)
 
     if (stepIndex < stepFunctions.length) {
       const currentStepFunction = stepFunctions[stepIndex]
-      const stepName = stepNames[stepIndex]
+      const stepName = stepOrder[stepIndex]
 
       updateStepStatus(stepName, "in_progress")
 
       try {
-        await currentStepFunction({
+        const result = await currentStepFunction({
+          codebaseFiles: latestCodebaseFiles.current,
           issue,
+          instructions,
+          instructionsContext: latestInstructionsContext.current,
           project,
-          attachedInstructions,
-          setCurrentStep,
-          setClarifications,
-          setThoughts,
-          setPlanSteps,
-          setGeneratedFiles,
-          codebaseFiles,
-          instructionsContext,
-          clarifyAIResponse: aiResponses.clarify ?? "",
-          thinkAIResponse: aiResponses.think ?? "",
-          planAIResponse: aiResponses.plan ?? "",
-          actAIResponse: aiResponses.act ?? "",
-          parsedActResponse: aiResponses.act
-            ? parseCodegenActResponse(aiResponses.act)
-            : null,
+          parsedPlan,
+          planResponse,
+          specificationResponse,
+          parsedSpecification,
+          implementationResponse,
+          parsedImplementation,
           stepStatuses,
+          setParsedSpecification,
+          setSpecificationResponse,
+          setPlanResponse,
+          setParsedPlan,
+          setImplementationResponse,
+          setParsedImplementation,
           setStepStatuses,
-          setCodebaseFiles,
-          setInstructionsContext,
-          setAIResponses: (type: keyof typeof aiResponses, response: string) =>
-            setAIResponses(prev => ({ ...prev, [type]: response })),
-          updateStepStatus: (status: StepStatus) =>
-            updateStepStatus(stepName, status)
+          setPrLink
         })
 
-        // If the step is think or plan, we need to wait for confirmation
-        if (["think", "plan"].includes(stepName)) {
-          setWaitingForConfirmation(true)
-          setCurrentStepIndex(stepIndex)
-        } else {
-          updateStepStatus(stepName, "done")
-          const nextStepIndex = stepIndex + 1
-          setCurrentStepIndex(nextStepIndex)
-          runNextStep(nextStepIndex)
+        if (result) {
+          // Retrieval Step
+          if ("codebaseFiles" in result && result.codebaseFiles) {
+            latestCodebaseFiles.current = result.codebaseFiles.map(file => ({
+              path: file.path,
+              content: file.content!
+            }))
+          }
+          if ("instructionsContext" in result && result.instructionsContext) {
+            latestInstructionsContext.current = result.instructionsContext
+          }
         }
+
+        const isConfirmationStep = ["specification", "plan"].includes(stepName)
+        updateStepStatus(stepName, "done")
+        setCurrentStep(isConfirmationStep ? stepName : stepOrder[stepIndex + 1])
+
+        if (!isConfirmationStep) {
+          runNextStep(stepOrder[stepIndex + 1])
+        }
+
+        setWaitingForConfirmation(isConfirmationStep)
+        await updateIssue(issue.id, {
+          status: isConfirmationStep ? stepName : "retrieval"
+        })
       } catch (error) {
         console.error(`Error in step ${stepName}:`, error)
         updateStepStatus(stepName, "error")
@@ -160,33 +163,36 @@ export const useRunIssue = (
     }
 
     setIsRunning(true)
-    setCurrentStepIndex(0)
-    runNextStep(0)
+    setCurrentStep(stepOrder[0])
+    runNextStep(stepOrder[0])
   }
 
   const handleConfirmation = () => {
     setWaitingForConfirmation(false)
-    updateStepStatus(stepNames[currentStepIndex], "done")
-    const nextStepIndex = currentStepIndex + 1
-    setCurrentStepIndex(nextStepIndex)
-    runNextStep(nextStepIndex)
+    if (currentStep) {
+      updateStepStatus(currentStep, "done")
+      const nextStepIndex = stepOrder.indexOf(currentStep) + 1
+      const nextStep = stepOrder[nextStepIndex]
+      setCurrentStep(nextStep)
+      runNextStep(nextStep)
+    }
   }
 
   return {
-    isRunning,
+    codebaseFiles: latestCodebaseFiles.current,
     currentStep,
-    clarifications,
-    thoughts,
-    planSteps,
-    generatedFiles,
-    waitingForConfirmation,
-    handleRun,
-    setThoughts,
-    setClarifications,
-    setPlanSteps,
-    setGeneratedFiles,
     handleConfirmation,
+    handleRun,
+    instructionsContext: latestInstructionsContext.current,
+    isRunning,
+    prLink,
+    setPrLink,
     stepStatuses,
-    updateStepStatus
+    updateStepStatus,
+    waitingForConfirmation,
+    parsedPlan,
+    setParsedPlan,
+    parsedSpecification,
+    setParsedSpecification
   }
 }

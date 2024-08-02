@@ -21,9 +21,17 @@ const messages = [
     icon: <CirclePlus className="size-4" />,
     step: "retrieval"
   },
-  { text: "Think", icon: <List className="size-4" />, step: "think" },
+  {
+    text: "Specification",
+    icon: <List className="size-4" />,
+    step: "specification"
+  },
   { text: "Plan", icon: <ListChecks className="size-4" />, step: "plan" },
-  { text: "Act", icon: <ChevronsLeftRight className="size-4" />, step: "act" },
+  {
+    text: "Implementation",
+    icon: <ChevronsLeftRight className="size-4" />,
+    step: "implementation"
+  },
   { text: "PR", icon: <DiamondPlus className="size-4" />, step: "pr" },
   { text: "Completed", icon: <Check className="size-4" />, step: "completed" }
 ]

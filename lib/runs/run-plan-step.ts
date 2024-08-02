@@ -1,39 +1,41 @@
 import { generateCodegenAIMessage } from "@/actions/ai/generate-codegen-ai-message"
 import { saveCodegenEval } from "@/actions/evals/save-codegen-eval"
-import { updateIssue } from "@/db/queries"
-import { buildCodegenPlanPrompt } from "@/lib/ai/codegen-system/plan/build-codegen-plan-prompt"
-import { parseCodegenPlanResponse } from "@/lib/ai/codegen-system/plan/parse-codegen-plan-response"
 import { BUILDWARE_PLAN_LLM } from "@/lib/constants/buildware-config"
 import { RunStepParams } from "@/types/run"
+import { parsePlanResponse } from "../ai/run-system/plan/plan-parser"
+import {
+  buildPlanPrompt,
+  PLAN_PREFILL
+} from "../ai/run-system/plan/plan-prompt"
 
 export const runPlanStep = async ({
   issue,
   codebaseFiles,
   instructionsContext,
-  thinkAIResponse,
-  setCurrentStep,
-  setPlanSteps
+  specificationResponse,
+  setParsedPlan,
+  setPlanResponse
 }: RunStepParams) => {
   try {
-    setCurrentStep("plan")
-    await updateIssue(issue.id, { status: "plan" })
-
     const { systemPrompt: planSystemPrompt, userMessage: planUserMessage } =
-      await buildCodegenPlanPrompt({
+      await buildPlanPrompt({
         issue: { name: issue.name, description: issue.content },
         codebaseFiles,
         instructionsContext,
-        thinkPrompt: thinkAIResponse
+        specification: specificationResponse
       })
 
-    const planAIResponse = await generateCodegenAIMessage({
+    const planResponse = await generateCodegenAIMessage({
       system: planSystemPrompt,
       messages: [{ role: "user", content: planUserMessage }],
-      model: BUILDWARE_PLAN_LLM
+      model: BUILDWARE_PLAN_LLM,
+      prefill: PLAN_PREFILL
     })
 
-    const parsedPlanResponse = parseCodegenPlanResponse(planAIResponse)
-    setPlanSteps(parsedPlanResponse.steps)
+    const parsedPlan = parsePlanResponse(PLAN_PREFILL + planResponse)
+
+    setPlanResponse(planResponse)
+    setParsedPlan(parsedPlan)
 
     await saveCodegenEval(
       `${planSystemPrompt}\n\n${planUserMessage}`,
@@ -41,12 +43,9 @@ export const runPlanStep = async ({
       "plan",
       "prompt"
     )
-    await saveCodegenEval(planAIResponse, issue.name, "plan", "response")
-
-    return { planAIResponse }
+    await saveCodegenEval(planResponse, issue.name, "plan", "response")
   } catch (error) {
     console.error("Error running plan step:", error)
-    await updateIssue(issue.id, { status: "failed" })
     throw error
   }
 }

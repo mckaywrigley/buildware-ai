@@ -2,12 +2,12 @@
 
 import { getAuthenticatedOctokit } from "@/actions/github/auth"
 import { SelectProject } from "@/db/schema"
-import { AIParsedActResponse } from "@/types/ai"
+import { ParsedImplementation } from "@/types/run"
 
 export async function generatePR(
   branchName: string,
   project: SelectProject,
-  parsedResponse: AIParsedActResponse
+  parsedResponse: ParsedImplementation
 ): Promise<{ prLink: string | null; branchName: string }> {
   const octokit = await getAuthenticatedOctokit(project.githubInstallationId!)
   const [owner, repo] = project.githubRepoFullName!.split("/")

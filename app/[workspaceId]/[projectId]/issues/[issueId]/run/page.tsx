@@ -17,7 +17,7 @@ export default async function RunIssuePage({
 }) {
   const issue = await getIssueById(issueId)
   const project = await getProjectById(projectId)
-  const attachedInstructions = await getInstructionsByIssueId(issueId)
+  const instructions = await getInstructionsByIssueId(issueId)
 
   if (!issue) {
     return <NotFound message="Issue not found" />
@@ -28,10 +28,6 @@ export default async function RunIssuePage({
   }
 
   return (
-    <RunIssue
-      issue={issue}
-      project={project}
-      attachedInstructions={attachedInstructions}
-    />
+    <RunIssue issue={issue} project={project} instructions={instructions} />
   )
 }

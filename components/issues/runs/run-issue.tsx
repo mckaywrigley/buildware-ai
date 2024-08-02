@@ -16,7 +16,7 @@ import {
   TooltipTrigger
 } from "@/components/ui/tooltip"
 import { SelectInstruction, SelectIssue, SelectProject } from "@/db/schema"
-import { useRunIssue } from "@/lib/hooks/use-run-issue"
+import { stepOrder, useRunIssue } from "@/lib/hooks/use-run-issue"
 import { StepName } from "@/types/run"
 import { ArrowLeft, Info, Loader2, Play, RefreshCw } from "lucide-react"
 import { useRouter } from "next/navigation"
@@ -27,49 +27,32 @@ import { RunStepStatusList } from "./run-step-status-list"
 interface RunIssueProps {
   issue: SelectIssue
   project: SelectProject
-  attachedInstructions: {
+  instructions: {
     instructionId: string
     issueId: string
     instruction: SelectInstruction
   }[]
 }
 
-export const RunIssue = ({
-  issue,
-  project,
-  attachedInstructions
-}: RunIssueProps) => {
+export const RunIssue = ({ issue, project, instructions }: RunIssueProps) => {
   const router = useRouter()
   const [selectedStep, setSelectedStep] = useState<StepName | null>(null)
   const {
     isRunning,
     currentStep,
-    clarifications,
-    thoughts,
-    planSteps,
     handleRun,
-    setThoughts,
-    setClarifications,
-    setPlanSteps,
     handleConfirmation,
     waitingForConfirmation,
-    stepStatuses
-  } = useRunIssue(issue, project, attachedInstructions)
+    stepStatuses,
+    setParsedPlan,
+    setParsedSpecification,
+    parsedPlan,
+    parsedSpecification
+  } = useRunIssue(issue, project, instructions)
 
   useEffect(() => {
     setSelectedStep(null)
   }, [currentStep])
-
-  const stepOrder: StepName[] = [
-    "started",
-    "embedding",
-    "retrieval",
-    "think",
-    "plan",
-    "act",
-    "pr",
-    "completed"
-  ]
 
   const handleStepClick = (step: StepName) => {
     const currentStepIndex = currentStep ? stepOrder.indexOf(currentStep) : -1
@@ -172,13 +155,11 @@ export const RunIssue = ({
 
           <div className="col-span-8 overflow-y-auto p-6">
             <RunStepContent
-              step={selectedStep || currentStep}
-              clarifications={clarifications}
-              thoughts={thoughts}
-              planSteps={planSteps}
-              setPlanSteps={setPlanSteps}
-              setThoughts={setThoughts}
-              setClarifications={setClarifications}
+              stepName={selectedStep || currentStep}
+              parsedPlan={parsedPlan}
+              setParsedPlan={setParsedPlan}
+              parsedSpecification={parsedSpecification}
+              setParsedSpecification={setParsedSpecification}
             />
           </div>
         </div>

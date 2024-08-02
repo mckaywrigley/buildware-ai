@@ -2,8 +2,8 @@
 
 import { calculateLLMCost } from "@/lib/ai/calculate-llm-cost"
 import {
-  BUILDWARE_CLARIFY_LLM,
-  BUILDWARE_MAX_OUTPUT_TOKENS
+  BUILDWARE_MAX_OUTPUT_TOKENS,
+  BUILDWARE_SPECIFICATION_LLM
 } from "@/lib/constants/buildware-config"
 import Anthropic from "@anthropic-ai/sdk"
 import endent from "endent"
@@ -111,7 +111,7 @@ export async function generateImprovedIssue(
   try {
     const message = await anthropic.messages.create(
       {
-        model: BUILDWARE_CLARIFY_LLM,
+        model: BUILDWARE_SPECIFICATION_LLM,
         system: systemPrompt,
         messages,
         max_tokens: BUILDWARE_MAX_OUTPUT_TOKENS
@@ -124,7 +124,7 @@ export async function generateImprovedIssue(
     )
 
     const cost = calculateLLMCost({
-      llmId: BUILDWARE_CLARIFY_LLM,
+      llmId: BUILDWARE_SPECIFICATION_LLM,
       inputTokens: message.usage.input_tokens,
       outputTokens: message.usage.output_tokens
     })
