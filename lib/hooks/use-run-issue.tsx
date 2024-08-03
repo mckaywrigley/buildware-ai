@@ -83,7 +83,12 @@ export const useRunIssue = (
   ]
 
   const latestCodebaseFiles = useRef<{ path: string; content: string }[]>([])
-  const latestInstructionsContext = useRef("")
+  const instructionsContext = instructions
+    .map(
+      ({ instruction }) =>
+        `<instruction name="${instruction.name}">\n${instruction.content}\n</instruction>`
+    )
+    .join("\n\n")
 
   const runNextStep = async (step: StepName) => {
     await new Promise(resolve => setTimeout(resolve, 500)) // wait 0.5s for animation
@@ -101,7 +106,7 @@ export const useRunIssue = (
           codebaseFiles: latestCodebaseFiles.current,
           issue,
           instructions,
-          instructionsContext: latestInstructionsContext.current,
+          instructionsContext,
           project,
           parsedPlan,
           planResponse,
@@ -127,9 +132,6 @@ export const useRunIssue = (
               path: file.path,
               content: file.content!
             }))
-          }
-          if ("instructionsContext" in result && result.instructionsContext) {
-            latestInstructionsContext.current = result.instructionsContext
           }
         }
 
@@ -183,7 +185,7 @@ export const useRunIssue = (
     currentStep,
     handleConfirmation,
     handleRun,
-    instructionsContext: latestInstructionsContext.current,
+    instructionsContext,
     isRunning,
     prLink,
     setPrLink,

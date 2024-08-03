@@ -1,14 +1,15 @@
-import { saveCodegenEval } from "@/actions/evals/save-codegen-eval"
-import { estimateClaudeSonnet3_5TokenCount } from "@/lib/ai/estimate-claude-tokens"
+import { estimateClaudeTokens } from "@/lib/ai/estimate-claude-tokens"
 import { limitCodebaseTokens } from "@/lib/ai/limit-codebase-tokens"
+import { BUILDWARE_MAX_INPUT_TOKENS } from "@/lib/constants/buildware-config"
 import endent from "endent"
 
-export const SPECIFICATION_PREFILL = `<specification>`
+export const SPECIFICATION_PREFILL = "<specification>"
 
 export const buildSpecificationPrompt = async ({
   issue,
   codebaseFiles,
-  instructionsContext
+  instructionsContext,
+  partialResponse
 }: {
   issue: {
     name: string
@@ -19,6 +20,7 @@ export const buildSpecificationPrompt = async ({
     content: string
   }[]
   instructionsContext: string
+  partialResponse?: string
 }) => {
   const systemPrompt = endent`
     You are a world-class project manager and software engineer.
@@ -27,13 +29,13 @@ export const buildSpecificationPrompt = async ({
 
     Your goal is to use this information to build a specification for the task.`
 
-  const userMessage = endent`
+  const userMessageTemplate = endent`
     # Codebase
 
     The codebase to work with.
 
     <codebase>
-      ${limitCodebaseTokens("", codebaseFiles)}
+      {{CODEBASE_PLACEHOLDER}}
     </codebase>
 
     # Task
@@ -41,7 +43,7 @@ export const buildSpecificationPrompt = async ({
     The task to complete.
 
     <task>
-      <task_name>${issue.name || "No title provided."}</task_name>
+      <task_name>${issue.name || "No name provided."}</task_name>
       <task_details>
         ${issue.description || "No details provided."}
       </task_details>
@@ -92,81 +94,45 @@ export const buildSpecificationPrompt = async ({
       ...
     </specification>`
 
-  return {
-    systemPrompt,
-    userMessage
-  }
-}
+  const systemPromptTokens = estimateClaudeTokens(systemPrompt)
+  const userMessageTemplateTokens = estimateClaudeTokens(userMessageTemplate)
+  const usedTokens = systemPromptTokens + userMessageTemplateTokens
+  let availableCodebaseTokens = BUILDWARE_MAX_INPUT_TOKENS - usedTokens
 
-export const rebuildSpecificationPrompt = async ({
-  prevUserMessage,
-  partialResponse,
-  codebaseFiles,
-  issue,
-  instructionsContext
-}: {
-  prevUserMessage: string
-  partialResponse: string
-  codebaseFiles: { path: string; content: string }[]
-  issue: { name: string; description: string }
-  instructionsContext: string
-}) => {
-  // Extract partial specification
-  const partialSpecification =
-    partialResponse.match(/<specification>([\s\S]*)/)?.[1] || ""
-
-  // Calculate tokens to remove
-  const tokensToRemove = estimateClaudeSonnet3_5TokenCount(partialResponse)
-
-  // Limit codebase files based on the calculated tokens to remove
-  const updatedCodebaseFilesText = limitCodebaseTokens("", codebaseFiles)
-  const updatedCodebaseFiles = updatedCodebaseFilesText
-    .split("<file>")
-    .filter(Boolean)
-    .map(fileText => {
-      const path = fileText.match(/<file_path>(.*?)<\/file_path>/)?.[1] || ""
-      const content =
-        fileText.match(/<file_content>([\s\S]*?)<\/file_content>/)?.[1] || ""
-      return { path, content }
-    })
-
-  // Remove tokens from the end of the codebase context
-  let removedTokens = 0
-  while (removedTokens < tokensToRemove && updatedCodebaseFiles.length > 0) {
-    const lastFile = updatedCodebaseFiles[updatedCodebaseFiles.length - 1]
-    const lastFileTokens = estimateClaudeSonnet3_5TokenCount(
-      `<file><file_path>${lastFile.path}</file_path><file_content>${lastFile.content}</file_content></file>`
-    )
-
-    if (removedTokens + lastFileTokens <= tokensToRemove) {
-      updatedCodebaseFiles.pop()
-      removedTokens += lastFileTokens
-    } else {
-      break
-    }
+  if (partialResponse) {
+    const tokensToRemove = estimateClaudeTokens(partialResponse)
+    availableCodebaseTokens -= tokensToRemove
   }
 
-  const updatedPrompt = await buildSpecificationPrompt({
-    issue,
-    codebaseFiles: updatedCodebaseFiles,
-    instructionsContext
-  })
-
-  await saveCodegenEval(
-    `${prevUserMessage}\n\n${partialResponse}\n\n${updatedPrompt.userMessage}`,
-    issue.name,
-    "specification",
-    "prompt"
+  const codebaseContent = limitCodebaseTokens(
+    codebaseFiles,
+    usedTokens,
+    availableCodebaseTokens
+  )
+  const userMessage = userMessageTemplate.replace(
+    "{{CODEBASE_PLACEHOLDER}}",
+    (match, offset) =>
+      offset === userMessageTemplate.indexOf(match) ? codebaseContent : match
   )
 
-  const continuationInstructions = `
-    Continue from where you left off. Here is the specification you've generated so far:
-    
-    ${partialSpecification}
-  `
+  let finalUserMessage = userMessage
+
+  if (partialResponse) {
+    const partialSpecification =
+      partialResponse.match(/<specification>([\s\S]*)/)?.[1] || ""
+    const continuationInstructions = `
+      Continue from where you left off. Here is the specification you've generated so far:
+      
+      ${partialSpecification}
+    `
+    finalUserMessage += `\n\n${continuationInstructions}`
+  }
 
   return {
-    ...updatedPrompt,
-    userMessage: `${updatedPrompt.userMessage}\n\n${continuationInstructions}`
+    systemPrompt,
+    userMessage: finalUserMessage,
+    prefill: partialResponse
+      ? partialResponse.slice(-100)
+      : SPECIFICATION_PREFILL
   }
 }

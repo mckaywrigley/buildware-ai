@@ -6,22 +6,21 @@ import Anthropic from "@anthropic-ai/sdk"
 
 const anthropic = new Anthropic()
 
-export const generateCodegenAIMessage = async ({
+export const generateRunResponse = async ({
   system,
   messages,
   model,
-  prefill = null
+  prefill
 }: {
   system: string
   messages: Anthropic.Messages.MessageParam[]
   model: "claude-3-5-sonnet-20240620" | "claude-3-haiku-20240307"
-  prefill?: string | null
+  prefill: string
 }) => {
-  let finalMessages = messages
-
-  if (prefill) {
-    finalMessages = [...messages, { role: "assistant", content: prefill }]
-  }
+  const finalMessages = [
+    ...messages,
+    { role: "assistant", content: prefill }
+  ] as Anthropic.Messages.MessageParam[]
 
   const message = await anthropic.messages.create(
     {
@@ -42,6 +41,7 @@ export const generateCodegenAIMessage = async ({
     inputTokens: message.usage.input_tokens,
     outputTokens: message.usage.output_tokens
   })
+  console.warn("message", JSON.stringify(message, null, 2))
   console.warn("usage", message.usage)
   console.warn("cost", cost)
 

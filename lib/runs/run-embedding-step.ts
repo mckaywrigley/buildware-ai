@@ -1,4 +1,4 @@
-import { embedTargetBranch } from "@/actions/github/embed-target-branch"
+import { checkAndEmbedTargetBranch } from "@/actions/github/check-and-embed-target-branch"
 import { RunStepParams } from "@/types/run"
 
 export const runEmbeddingStep = async ({ project }: RunStepParams) => {
@@ -8,7 +8,7 @@ export const runEmbeddingStep = async ({ project }: RunStepParams) => {
   }
 
   try {
-    await embedTargetBranch({
+    await checkAndEmbedTargetBranch({
       projectId: project.id,
       githubRepoFullName: project.githubRepoFullName,
       branchName: project.githubTargetBranch,

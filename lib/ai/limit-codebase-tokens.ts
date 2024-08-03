@@ -1,16 +1,15 @@
 import endent from "endent"
-import { BUILDWARE_MAX_INPUT_TOKENS } from "../constants/buildware-config"
-import { estimateClaudeSonnet3_5TokenCount } from "./estimate-claude-tokens"
+import { estimateClaudeTokens } from "./estimate-claude-tokens"
 
 export function limitCodebaseTokens(
-  text: string,
-  files: { path: string; content: string }[]
-): string {
-  let totalTokens = estimateClaudeSonnet3_5TokenCount(text)
-  let codebaseFilesAsText = ""
+  files: { path: string; content: string }[],
+  usedTokens: number,
+  maxTokens: number
+) {
+  let injectedFiles = ""
 
   for (const file of files) {
-    const codebaseFileText = endent`
+    const injectedFile = endent`
     <file>
       <file_path>${file.path}</file_path>
       <file_content>
@@ -18,16 +17,15 @@ export function limitCodebaseTokens(
       </file_content>
     </file>
     `
-    const fileTokens = estimateClaudeSonnet3_5TokenCount(codebaseFileText)
+    const fileTokens = estimateClaudeTokens(injectedFile)
 
-    // Leave 10k tokens for additional prompt tokens
-    if (totalTokens + fileTokens > BUILDWARE_MAX_INPUT_TOKENS - 10000) {
+    if (usedTokens + fileTokens > maxTokens) {
       break
     }
 
-    codebaseFilesAsText += `${codebaseFileText}\n`
-    totalTokens += fileTokens
+    injectedFiles += `${injectedFile}\n`
+    usedTokens += fileTokens
   }
 
-  return codebaseFilesAsText
+  return injectedFiles
 }

@@ -1,8 +1,11 @@
-import { generateCodegenAIMessage } from "@/actions/ai/generate-codegen-ai-message"
+import { generateRunResponse } from "@/actions/ai/generate-run-response"
 import { saveCodegenEval } from "@/actions/evals/save-codegen-eval"
 import { BUILDWARE_IMPLEMENTATION_LLM } from "@/lib/constants/buildware-config"
 import { RunStepParams } from "@/types/run"
-import { parseImplementationResponse } from "../ai/run-system/implementation/implementation-parser"
+import {
+  isImplementationComplete,
+  parseImplementationResponse
+} from "../ai/run-system/implementation/implementation-parser"
 import {
   buildImplementationPrompt,
   IMPLEMENTATION_PREFILL
@@ -17,9 +20,10 @@ export const runImplementationStep = async ({
   setParsedImplementation
 }: RunStepParams) => {
   try {
-    const {
+    let {
       systemPrompt: implementationSystemPrompt,
-      userMessage: implementationUserMessage
+      userMessage: implementationUserMessage,
+      prefill
     } = await buildImplementationPrompt({
       issue: { name: issue.name, description: issue.content },
       codebaseFiles,
@@ -27,12 +31,34 @@ export const runImplementationStep = async ({
       plan: planResponse
     })
 
-    const implementationResponse = await generateCodegenAIMessage({
-      system: implementationSystemPrompt,
-      messages: [{ role: "user", content: implementationUserMessage }],
-      model: BUILDWARE_IMPLEMENTATION_LLM,
-      prefill: IMPLEMENTATION_PREFILL
-    })
+    let implementationResponse = ""
+    let isComplete = false
+
+    while (!isComplete) {
+      const partialResponse = await generateRunResponse({
+        system: implementationSystemPrompt,
+        messages: [{ role: "user", content: implementationUserMessage }],
+        model: BUILDWARE_IMPLEMENTATION_LLM,
+        prefill
+      })
+
+      implementationResponse += partialResponse
+      isComplete = isImplementationComplete(implementationResponse)
+
+      if (!isComplete) {
+        const updatedPrompt = await buildImplementationPrompt({
+          partialResponse: implementationResponse,
+          issue: { name: issue.name, description: issue.content },
+          codebaseFiles,
+          instructionsContext,
+          plan: planResponse
+        })
+
+        implementationSystemPrompt = updatedPrompt.systemPrompt
+        implementationUserMessage = updatedPrompt.userMessage
+        prefill = updatedPrompt.prefill
+      }
+    }
 
     const parsedImplementation = parseImplementationResponse(
       IMPLEMENTATION_PREFILL + implementationResponse

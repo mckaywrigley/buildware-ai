@@ -15,7 +15,7 @@ interface EmbedTargetBranchParams {
   installationId: number | null
 }
 
-export async function embedTargetBranch({
+export async function checkAndEmbedTargetBranch({
   projectId,
   githubRepoFullName,
   branchName,

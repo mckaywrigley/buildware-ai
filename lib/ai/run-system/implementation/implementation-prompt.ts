@@ -1,5 +1,7 @@
+import { estimateClaudeTokens } from "@/lib/ai/estimate-claude-tokens"
+import { limitCodebaseTokens } from "@/lib/ai/limit-codebase-tokens"
+import { BUILDWARE_MAX_INPUT_TOKENS } from "@/lib/constants/buildware-config"
 import endent from "endent"
-import { limitCodebaseTokens } from "../../limit-codebase-tokens"
 import { PLAN_PREFILL } from "../plan/plan-prompt"
 
 export const IMPLEMENTATION_PREFILL = `<pull_request>`
@@ -8,7 +10,8 @@ export const buildImplementationPrompt = async ({
   issue,
   codebaseFiles,
   instructionsContext,
-  plan
+  plan,
+  partialResponse
 }: {
   issue: {
     name: string
@@ -20,6 +23,7 @@ export const buildImplementationPrompt = async ({
   }[]
   instructionsContext: string
   plan: string
+  partialResponse?: string
 }) => {
   const systemPrompt = endent`
     You are a world-class software engineer.
@@ -28,13 +32,13 @@ export const buildImplementationPrompt = async ({
 
     Your goal is to use this information to write all the code needed to complete the given task.`
 
-  const userMessage = endent`
+  const userMessageTemplate = endent`
     # Codebase
 
     The codebase to work with.
 
     <codebase>
-      ${limitCodebaseTokens("", codebaseFiles)}
+      {{CODEBASE_PLACEHOLDER}}
     </codebase>
 
     # Task
@@ -127,5 +131,45 @@ export const buildImplementationPrompt = async ({
       </file_list>
     </pull_request>`
 
-  return { systemPrompt, userMessage }
+  const systemPromptTokens = estimateClaudeTokens(systemPrompt)
+  const userMessageTemplateTokens = estimateClaudeTokens(userMessageTemplate)
+  const usedTokens = systemPromptTokens + userMessageTemplateTokens
+  let availableCodebaseTokens = BUILDWARE_MAX_INPUT_TOKENS - usedTokens
+
+  if (partialResponse) {
+    const tokensToRemove = estimateClaudeTokens(partialResponse)
+    availableCodebaseTokens -= tokensToRemove
+  }
+
+  const codebaseContent = limitCodebaseTokens(
+    codebaseFiles,
+    usedTokens,
+    availableCodebaseTokens
+  )
+  const userMessage = userMessageTemplate.replace(
+    "{{CODEBASE_PLACEHOLDER}}",
+    (match, offset) =>
+      offset === userMessageTemplate.indexOf(match) ? codebaseContent : match
+  )
+
+  let finalUserMessage = userMessage
+
+  if (partialResponse) {
+    const partialImplementation =
+      partialResponse.match(/<pull_request>([\s\S]*)/)?.[1] || ""
+    const continuationInstructions = `
+      Continue from where you left off. Here is the implementation you've generated so far:
+      
+      ${partialImplementation}
+    `
+    finalUserMessage += `\n\n${continuationInstructions}`
+  }
+
+  return {
+    systemPrompt,
+    userMessage: finalUserMessage,
+    prefill: partialResponse
+      ? partialResponse.slice(-100)
+      : IMPLEMENTATION_PREFILL
+  }
 }

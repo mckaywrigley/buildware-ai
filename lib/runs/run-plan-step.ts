@@ -1,8 +1,11 @@
-import { generateCodegenAIMessage } from "@/actions/ai/generate-codegen-ai-message"
+import { generateRunResponse } from "@/actions/ai/generate-run-response"
 import { saveCodegenEval } from "@/actions/evals/save-codegen-eval"
 import { BUILDWARE_PLAN_LLM } from "@/lib/constants/buildware-config"
 import { RunStepParams } from "@/types/run"
-import { parsePlanResponse } from "../ai/run-system/plan/plan-parser"
+import {
+  isPlanComplete,
+  parsePlanResponse
+} from "../ai/run-system/plan/plan-parser"
 import {
   buildPlanPrompt,
   PLAN_PREFILL
@@ -17,20 +20,45 @@ export const runPlanStep = async ({
   setPlanResponse
 }: RunStepParams) => {
   try {
-    const { systemPrompt: planSystemPrompt, userMessage: planUserMessage } =
-      await buildPlanPrompt({
-        issue: { name: issue.name, description: issue.content },
-        codebaseFiles,
-        instructionsContext,
-        specification: specificationResponse
+    let {
+      systemPrompt: planSystemPrompt,
+      userMessage: planUserMessage,
+      prefill
+    } = await buildPlanPrompt({
+      issue: { name: issue.name, description: issue.content },
+      codebaseFiles,
+      instructionsContext,
+      specification: specificationResponse
+    })
+
+    let planResponse = ""
+    let isComplete = false
+
+    while (!isComplete) {
+      const partialResponse = await generateRunResponse({
+        system: planSystemPrompt,
+        messages: [{ role: "user", content: planUserMessage }],
+        model: BUILDWARE_PLAN_LLM,
+        prefill
       })
 
-    const planResponse = await generateCodegenAIMessage({
-      system: planSystemPrompt,
-      messages: [{ role: "user", content: planUserMessage }],
-      model: BUILDWARE_PLAN_LLM,
-      prefill: PLAN_PREFILL
-    })
+      planResponse += partialResponse
+      isComplete = isPlanComplete(planResponse)
+
+      if (!isComplete) {
+        const updatedPrompt = await buildPlanPrompt({
+          partialResponse: planResponse,
+          issue: { name: issue.name, description: issue.content },
+          codebaseFiles,
+          instructionsContext,
+          specification: specificationResponse
+        })
+
+        planSystemPrompt = updatedPrompt.systemPrompt
+        planUserMessage = updatedPrompt.userMessage
+        prefill = updatedPrompt.prefill
+      }
+    }
 
     const parsedPlan = parsePlanResponse(PLAN_PREFILL + planResponse)
 

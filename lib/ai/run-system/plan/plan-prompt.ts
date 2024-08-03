@@ -1,5 +1,7 @@
+import { estimateClaudeTokens } from "@/lib/ai/estimate-claude-tokens"
+import { limitCodebaseTokens } from "@/lib/ai/limit-codebase-tokens"
+import { BUILDWARE_MAX_INPUT_TOKENS } from "@/lib/constants/buildware-config"
 import endent from "endent"
-import { limitCodebaseTokens } from "../../limit-codebase-tokens"
 import { SPECIFICATION_PREFILL } from "../specification/specification-prompt"
 
 export const PLAN_PREFILL = `<plan>`
@@ -8,7 +10,8 @@ export const buildPlanPrompt = async ({
   issue,
   codebaseFiles,
   instructionsContext,
-  specification
+  specification,
+  partialResponse
 }: {
   issue: {
     name: string
@@ -20,6 +23,7 @@ export const buildPlanPrompt = async ({
   }[]
   instructionsContext: string
   specification: string
+  partialResponse?: string
 }) => {
   const systemPrompt = endent`
     You are a world-class project manager and software engineer.
@@ -28,13 +32,13 @@ export const buildPlanPrompt = async ({
 
     Your goal is to use this information to create a detailed implementation plan for the given task.`
 
-  const userMessage = endent`
+  const userMessageTemplate = endent`
     # Codebase
 
     The codebase to work with.
 
     <codebase>
-      ${limitCodebaseTokens("", codebaseFiles)}
+      {{CODEBASE_PLACEHOLDER}}
     </codebase>
 
     # Task
@@ -100,5 +104,42 @@ export const buildPlanPrompt = async ({
       ...
     </plan>`
 
-  return { systemPrompt, userMessage }
+  const systemPromptTokens = estimateClaudeTokens(systemPrompt)
+  const userMessageTemplateTokens = estimateClaudeTokens(userMessageTemplate)
+  const usedTokens = systemPromptTokens + userMessageTemplateTokens
+  let availableCodebaseTokens = BUILDWARE_MAX_INPUT_TOKENS - usedTokens
+
+  if (partialResponse) {
+    const tokensToRemove = estimateClaudeTokens(partialResponse)
+    availableCodebaseTokens -= tokensToRemove
+  }
+
+  const codebaseContent = limitCodebaseTokens(
+    codebaseFiles,
+    usedTokens,
+    availableCodebaseTokens
+  )
+  const userMessage = userMessageTemplate.replace(
+    "{{CODEBASE_PLACEHOLDER}}",
+    (match, offset) =>
+      offset === userMessageTemplate.indexOf(match) ? codebaseContent : match
+  )
+
+  let finalUserMessage = userMessage
+
+  if (partialResponse) {
+    const partialPlan = partialResponse.match(/<plan>([\s\S]*)/)?.[1] || ""
+    const continuationInstructions = `
+      Continue from where you left off. Here is the plan you've generated so far:
+      
+      ${partialPlan}
+    `
+    finalUserMessage += `\n\n${continuationInstructions}`
+  }
+
+  return {
+    systemPrompt,
+    userMessage: finalUserMessage,
+    prefill: partialResponse ? partialResponse.slice(-100) : PLAN_PREFILL
+  }
 }
