@@ -23,7 +23,8 @@ import {
   Menu,
   Pencil,
   Settings,
-  StickyNote
+  StickyNote,
+  Layers
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -64,6 +65,12 @@ const PROJECT_LINKS = [
     href: (workspaceId: string, projectId: string) =>
       `/${workspaceId}/${projectId}/instructions`,
     icon: Pencil
+  },
+  {
+    label: "Context Groups",
+    href: (workspaceId: string, projectId: string) =>
+      `/${workspaceId}/${projectId}/context-groups`,
+    icon: Layers
   },
   {
     label: "Settings",

@@ -38,7 +38,8 @@ export const useRunIssue = (
     instructionId: string
     issueId: string
     instruction: SelectInstruction
-  }[]
+  }[],
+  selectedContextGroupId: string | null
 ) => {
   const [isRunning, setIsRunning] = useState(false)
   const [currentStep, setCurrentStep] = useState<StepName | null>(null)
@@ -86,9 +87,13 @@ export const useRunIssue = (
   const instructionsContext = instructions
     .map(
       ({ instruction }) =>
-        `<instruction name="${instruction.name}">\n${instruction.content}\n</instruction>`
+        `<instruction name="${instruction.name}">
+${instruction.content}
+</instruction>`
     )
-    .join("\n\n")
+    .join("
+
+")
 
   const runNextStep = async (step: StepName) => {
     await new Promise(resolve => setTimeout(resolve, 500)) // wait 0.5s for animation
@@ -122,7 +127,8 @@ export const useRunIssue = (
           setImplementationResponse,
           setParsedImplementation,
           setStepStatuses,
-          setPrLink
+          setPrLink,
+          selectedContextGroupId
         })
 
         if (result) {
