@@ -38,6 +38,8 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { RunStepContent } from "./run-step-content"
 import { RunStepStatusList } from "./run-step-status-list"
+import { getContextGroups } from "@/actions/context-groups/get-context-groups"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export const stepOrder: StepName[] = [
   "started",
@@ -87,17 +89,33 @@ export const RunIssue = ({ issue, project, instructions }: RunIssueProps) => {
   const [latestCodebaseFiles, setLatestCodebaseFiles] = useState<
     { path: string; content: string }[]
   >([])
+  const [contextGroups, setContextGroups] = useState<{ id: string; name: string }[]>([])
+  const [selectedContextGroupIds, setSelectedContextGroupIds] = useState<string[]>([])
 
   const instructionsContext = instructions
     .map(
       instruction =>
-        `<instruction name="${instruction.name}">\n${instruction.content}\n</instruction>`
+        `<instruction name="${instruction.name}">
+${instruction.content}
+</instruction>`
     )
     .join("\n\n")
 
   useEffect(() => {
     setSelectedStep(null)
   }, [currentStep])
+
+  useEffect(() => {
+    const fetchContextGroups = async () => {
+      try {
+        const groups = await getContextGroups(project.id)
+        setContextGroups(groups)
+      } catch (error) {
+        console.error("Error fetching context groups:", error)
+      }
+    }
+    fetchContextGroups()
+  }, [project.id])
 
   const updateStepStatus = (step: StepName, status: StepStatus) => {
     setStepStatuses(prevSteps => ({ ...prevSteps, [step]: status }))
@@ -119,7 +137,8 @@ export const RunIssue = ({ issue, project, instructions }: RunIssueProps) => {
           case "retrieval":
             const retrievalStepResponse = await runRetrievalStep({
               issue,
-              project
+              project,
+              selectedContextGroupIds
             })
             setLatestCodebaseFiles(
               retrievalStepResponse.codebaseFiles.map(file => ({
@@ -266,40 +285,59 @@ export const RunIssue = ({ issue, project, instructions }: RunIssueProps) => {
             <div className="truncate font-bold">{issue.name}</div>
           </div>
 
-          {waitingForConfirmation ? (
-            <Button
-              variant="create"
-              onClick={handleConfirmation}
-              className="ml-4"
+          <div className="flex items-center space-x-2">
+            <Select
+              value={selectedContextGroupIds.join(",")}
+              onValueChange={(value) => setSelectedContextGroupIds(value.split(","))}
             >
-              <Play className="mr-2 size-4" />
-              Confirm and Continue
-            </Button>
-          ) : (
-            <Button
-              variant="create"
-              onClick={handleRun}
-              disabled={isRunning}
-              className="ml-4"
-            >
-              {isRunning ? (
-                <>
-                  <Loader2 className="mr-2 size-4 animate-spin" />
-                  Running
-                </>
-              ) : issue.status === "completed" ? (
-                <>
-                  <RefreshCw className="mr-2 size-4" />
-                  Redo Run
-                </>
-              ) : (
-                <>
-                  <Play className="mr-2 size-4" />
-                  Begin Run
-                </>
-              )}
-            </Button>
-          )}
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Select context groups" />
+              </SelectTrigger>
+              <SelectContent>
+                {contextGroups.map((group) => (
+                  
+                  <SelectItem key={group.id} value={group.id}>
+                    {group.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {waitingForConfirmation ? (
+              <Button
+                variant="create"
+                onClick={handleConfirmation}
+                className="ml-4"
+              >
+                <Play className="mr-2 size-4" />
+                Confirm and Continue
+              </Button>
+            ) : (
+              <Button
+                variant="create"
+                onClick={handleRun}
+                disabled={isRunning}
+                className="ml-4"
+              >
+                {isRunning ? (
+                  <>
+                    <Loader2 className="mr-2 size-4 animate-spin" />
+                    Running
+                  </>
+                ) : issue.status === "completed" ? (
+                  <>
+                    <RefreshCw className="mr-2 size-4" />
+                    Redo Run
+                  </>
+                ) : (
+                  <>
+                    <Play className="mr-2 size-4" />
+                    Begin Run
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 

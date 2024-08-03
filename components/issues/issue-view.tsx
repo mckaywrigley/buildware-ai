@@ -11,6 +11,8 @@ import { useState } from "react"
 import { CRUDPage } from "../dashboard/reusable/crud-page"
 import { ViewIssueContext } from "./view-issue-context"
 import { ViewIssueInstruction } from "./view-issue-instruction"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { getContextGroups } from "@/actions/context-groups/get-context-groups"
 
 interface IssueViewProps {
   item: SelectIssue
@@ -33,6 +35,20 @@ export const IssueView = ({
 
   const [selectedInstruction, setSelectedInstruction] =
     useState<SelectInstruction | null>(null)
+  const [contextGroups, setContextGroups] = useState<{ id: string; name: string }[]>([])
+  const [selectedContextGroupIds, setSelectedContextGroupIds] = useState<string[]>([])
+
+  useState(() => {
+    const fetchContextGroups = async () => {
+      try {
+        const groups = await getContextGroups(project.id)
+        setContextGroups(groups)
+      } catch (error) {
+        console.error("Error fetching context groups:", error)
+      }
+    }
+    fetchContextGroups()
+  }, [project.id])
 
   return (
     <CRUDPage
@@ -98,6 +114,25 @@ export const IssueView = ({
               </div>
             </div>
           )}
+
+          <div className="mb-4">
+            <div className="mb-2 text-lg font-semibold">Context Groups</div>
+            <Select
+              value={selectedContextGroupIds.join(",")}
+              onValueChange={(value) => setSelectedContextGroupIds(value.split(","))}
+            >
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Select context groups" />
+              </SelectTrigger>
+              <SelectContent>
+                {contextGroups.map((group) => (
+                  <SelectItem key={group.id} value={group.id}>
+                    {group.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
           <Card className="bg-secondary/50 flex flex-col gap-2 p-4">
             <CardTitle>{item.name}</CardTitle>
