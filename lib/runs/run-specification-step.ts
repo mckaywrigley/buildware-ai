@@ -2,10 +2,7 @@ import { generateRunResponse } from "@/actions/ai/generate-run-response"
 import { saveCodegenEval } from "@/actions/evals/save-codegen-eval"
 import { BUILDWARE_SPECIFICATION_LLM } from "@/lib/constants/buildware-config"
 import { RunStepParams } from "@/types/run"
-import {
-  isSpecificationComplete,
-  parseSpecificationResponse
-} from "../ai/run-system/specification/specification-parser"
+import { parseSpecificationResponse } from "../ai/run-system/specification/specification-parser"
 import {
   buildSpecificationPrompt,
   SPECIFICATION_PREFILL
@@ -29,19 +26,20 @@ export const runSpecificationStep = async ({
       instructionsContext
     })
 
-    let specificationResponse = ""
+    let specificationResponse = SPECIFICATION_PREFILL
     let isComplete = false
 
     while (!isComplete) {
-      const partialResponse = await generateRunResponse({
-        system: specificationSystemPrompt,
-        messages: [{ role: "user", content: specificationUserMessage }],
-        model: BUILDWARE_SPECIFICATION_LLM,
-        prefill
-      })
+      const { content: partialResponse, isComplete: partialIsComplete } =
+        await generateRunResponse({
+          system: specificationSystemPrompt,
+          messages: [{ role: "user", content: specificationUserMessage }],
+          model: BUILDWARE_SPECIFICATION_LLM,
+          prefill
+        })
 
       specificationResponse += partialResponse
-      isComplete = isSpecificationComplete(specificationResponse)
+      isComplete = partialIsComplete
 
       if (!isComplete) {
         const updatedPrompt = await buildSpecificationPrompt({
@@ -58,7 +56,7 @@ export const runSpecificationStep = async ({
     }
 
     const parsedSpecification = parseSpecificationResponse(
-      SPECIFICATION_PREFILL + specificationResponse
+      specificationResponse
     )
 
     setSpecificationResponse(specificationResponse)

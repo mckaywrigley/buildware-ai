@@ -114,7 +114,14 @@ export const RunStepStatusList = ({
                     )}
                   </div>
 
-                  <div className={cn(isCurrentStep && "animate-pulse")}>
+                  <div
+                    className={cn(
+                      isCurrentStep && "font-extrabold",
+                      isCurrentStep &&
+                        !waitingForConfirmation &&
+                        "animate-pulse"
+                    )}
+                  >
                     {text}
                   </div>
                 </div>

@@ -115,46 +115,66 @@ export const useRunIssue = (
           implementationResponse,
           parsedImplementation,
           stepStatuses,
-          setParsedSpecification,
+          setParsedSpecification: newParsedSpecification => {
+            setParsedSpecification(newParsedSpecification)
+            if (stepName === "specification") {
+              handleStepCompletion(stepName, stepIndex)
+            }
+          },
           setSpecificationResponse,
           setPlanResponse,
-          setParsedPlan,
+          setParsedPlan: newParsedPlan => {
+            setParsedPlan(newParsedPlan)
+            if (stepName === "plan") {
+              handleStepCompletion(stepName, stepIndex)
+            }
+          },
           setImplementationResponse,
-          setParsedImplementation,
+          setParsedImplementation: newParsedImplementation => {
+            setParsedImplementation(newParsedImplementation)
+            if (stepName === "implementation") {
+              handleStepCompletion(stepName, stepIndex)
+            }
+          },
           setStepStatuses,
           setPrLink
         })
 
-        if (result) {
-          // Retrieval Step
-          if ("codebaseFiles" in result && result.codebaseFiles) {
-            latestCodebaseFiles.current = result.codebaseFiles.map(file => ({
-              path: file.path,
-              content: file.content!
-            }))
-          }
+        if (result && "codebaseFiles" in result && result.codebaseFiles) {
+          latestCodebaseFiles.current = result.codebaseFiles.map(file => ({
+            path: file.path,
+            content: file.content!
+          }))
         }
 
-        const isConfirmationStep = ["specification", "plan"].includes(stepName)
-        updateStepStatus(stepName, "done")
-        setCurrentStep(isConfirmationStep ? stepName : stepOrder[stepIndex + 1])
-
-        if (!isConfirmationStep) {
-          runNextStep(stepOrder[stepIndex + 1])
+        if (!["specification", "plan", "implementation"].includes(stepName)) {
+          handleStepCompletion(stepName, stepIndex)
         }
-
-        setWaitingForConfirmation(isConfirmationStep)
-        await updateIssue(issue.id, {
-          status: isConfirmationStep ? stepName : "retrieval"
-        })
       } catch (error) {
         console.error(`Error in step ${stepName}:`, error)
         updateStepStatus(stepName, "error")
         setIsRunning(false)
-        return
       }
     } else {
       setIsRunning(false)
+    }
+  }
+
+  const handleStepCompletion = (stepName: StepName, stepIndex: number) => {
+    updateStepStatus(stepName, "done")
+    const isConfirmationStep = [
+      "specification",
+      "plan",
+      "implementation"
+    ].includes(stepName)
+    const nextStep = stepOrder[stepIndex + 1]
+    setCurrentStep(isConfirmationStep ? stepName : nextStep)
+    setWaitingForConfirmation(isConfirmationStep)
+    updateIssue(issue.id, {
+      status: isConfirmationStep ? stepName : "retrieval"
+    })
+    if (!isConfirmationStep) {
+      runNextStep(nextStep)
     }
   }
 

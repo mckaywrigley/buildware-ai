@@ -2,10 +2,7 @@ import { generateRunResponse } from "@/actions/ai/generate-run-response"
 import { saveCodegenEval } from "@/actions/evals/save-codegen-eval"
 import { BUILDWARE_IMPLEMENTATION_LLM } from "@/lib/constants/buildware-config"
 import { RunStepParams } from "@/types/run"
-import {
-  isImplementationComplete,
-  parseImplementationResponse
-} from "../ai/run-system/implementation/implementation-parser"
+import { parseImplementationResponse } from "../ai/run-system/implementation/implementation-parser"
 import {
   buildImplementationPrompt,
   IMPLEMENTATION_PREFILL
@@ -31,19 +28,20 @@ export const runImplementationStep = async ({
       plan: planResponse
     })
 
-    let implementationResponse = ""
+    let implementationResponse = IMPLEMENTATION_PREFILL
     let isComplete = false
 
     while (!isComplete) {
-      const partialResponse = await generateRunResponse({
-        system: implementationSystemPrompt,
-        messages: [{ role: "user", content: implementationUserMessage }],
-        model: BUILDWARE_IMPLEMENTATION_LLM,
-        prefill
-      })
+      const { content: partialResponse, isComplete: partialIsComplete } =
+        await generateRunResponse({
+          system: implementationSystemPrompt,
+          messages: [{ role: "user", content: implementationUserMessage }],
+          model: BUILDWARE_IMPLEMENTATION_LLM,
+          prefill
+        })
 
       implementationResponse += partialResponse
-      isComplete = isImplementationComplete(implementationResponse)
+      isComplete = partialIsComplete
 
       if (!isComplete) {
         const updatedPrompt = await buildImplementationPrompt({
@@ -61,7 +59,7 @@ export const runImplementationStep = async ({
     }
 
     const parsedImplementation = parseImplementationResponse(
-      IMPLEMENTATION_PREFILL + implementationResponse
+      implementationResponse
     )
 
     setImplementationResponse(implementationResponse)

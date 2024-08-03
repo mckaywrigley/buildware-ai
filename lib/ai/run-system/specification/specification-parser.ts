@@ -24,8 +24,3 @@ export function parseSpecificationResponse(response: string) {
 
   return parsedSpecification
 }
-
-export const isSpecificationComplete = (response: string): boolean => {
-  const trimmedResponse = response.trim()
-  return trimmedResponse.endsWith("</specification>")
-}

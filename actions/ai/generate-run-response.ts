@@ -19,7 +19,7 @@ export const generateRunResponse = async ({
 }) => {
   const finalMessages = [
     ...messages,
-    { role: "assistant", content: prefill }
+    { role: "assistant", content: prefill.trimEnd() }
   ] as Anthropic.Messages.MessageParam[]
 
   const message = await anthropic.messages.create(
@@ -27,7 +27,9 @@ export const generateRunResponse = async ({
       model,
       system,
       messages: finalMessages,
-      max_tokens: BUILDWARE_MAX_OUTPUT_TOKENS
+      max_tokens: model.includes("haiku")
+        ? Math.min(BUILDWARE_MAX_OUTPUT_TOKENS, 4096)
+        : BUILDWARE_MAX_OUTPUT_TOKENS
     },
     {
       headers: {
@@ -36,14 +38,18 @@ export const generateRunResponse = async ({
     }
   )
 
+  const isComplete = message.stop_reason !== "max_tokens"
+
   const cost = calculateLLMCost({
     llmId: model,
     inputTokens: message.usage.input_tokens,
     outputTokens: message.usage.output_tokens
   })
-  console.warn("message", JSON.stringify(message, null, 2))
   console.warn("usage", message.usage)
   console.warn("cost", cost)
 
-  return message.content[0].type === "text" ? message.content[0].text : ""
+  return {
+    content: message.content[0].type === "text" ? message.content[0].text : "",
+    isComplete
+  }
 }

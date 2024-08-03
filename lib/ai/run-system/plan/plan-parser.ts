@@ -20,8 +20,3 @@ export function parsePlanResponse(response: string) {
 
   return parsedPlan
 }
-
-export const isPlanComplete = (response: string): boolean => {
-  const trimmedResponse = response.trim()
-  return trimmedResponse.endsWith("</plan>")
-}

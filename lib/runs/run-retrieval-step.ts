@@ -4,7 +4,6 @@ import { RunStepParams } from "@/types/run"
 export const runRetrievalStep = async ({ issue, project }: RunStepParams) => {
   try {
     const embeddingsQueryText = `${issue.name} ${issue.content}`
-    console.log("embeddingsQueryText", embeddingsQueryText)
     const codebaseFiles = await getMostSimilarEmbeddedFiles(
       embeddingsQueryText,
       project.id

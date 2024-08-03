@@ -11,7 +11,9 @@ import OpenAI from "openai"
 
 const openai = new OpenAI()
 
-export async function embedFiles(filesContent: GitHubFileContent[]) {
+export async function embedFiles(
+  filesContent: (GitHubFileContent & { status?: string })[]
+) {
   let embeddings: number[][] = []
 
   try {
@@ -31,14 +33,15 @@ export async function embedFiles(filesContent: GitHubFileContent[]) {
     console.error("Error calling OpenAI API:", error)
   }
 
-  const preparedFiles: Omit<
+  const preparedFiles: (Omit<
     InsertEmbeddedFile,
     "userId" | "projectId" | "embeddedBranchId" | "githubRepoFullName"
-  >[] = filesContent.map((file, index) => ({
+  > & { status?: string })[] = filesContent.map((file, index) => ({
     path: file.path,
     content: file.content,
     tokenCount: encode(file.content).length,
-    embedding: embeddings[index]
+    embedding: embeddings[index],
+    status: file.status
   }))
 
   return preparedFiles

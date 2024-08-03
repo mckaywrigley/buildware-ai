@@ -98,12 +98,13 @@ export async function handleAtAIComment(
   const aiResponse = await generateRunResponse({
     messages: [{ role: "user", content: commentPrompt + strippedBody }],
     system: "",
-    model: BUILDWARE_SPECIFICATION_LLM
+    model: BUILDWARE_SPECIFICATION_LLM,
+    prefill: ""
   })
 
   await createComment(
     linearClient,
-    aiResponse,
+    aiResponse.content,
     issue.id,
     comment.parentId || comment.id
   )

@@ -2,10 +2,7 @@ import { generateRunResponse } from "@/actions/ai/generate-run-response"
 import { saveCodegenEval } from "@/actions/evals/save-codegen-eval"
 import { BUILDWARE_PLAN_LLM } from "@/lib/constants/buildware-config"
 import { RunStepParams } from "@/types/run"
-import {
-  isPlanComplete,
-  parsePlanResponse
-} from "../ai/run-system/plan/plan-parser"
+import { parsePlanResponse } from "../ai/run-system/plan/plan-parser"
 import {
   buildPlanPrompt,
   PLAN_PREFILL
@@ -31,19 +28,20 @@ export const runPlanStep = async ({
       specification: specificationResponse
     })
 
-    let planResponse = ""
+    let planResponse = PLAN_PREFILL
     let isComplete = false
 
     while (!isComplete) {
-      const partialResponse = await generateRunResponse({
-        system: planSystemPrompt,
-        messages: [{ role: "user", content: planUserMessage }],
-        model: BUILDWARE_PLAN_LLM,
-        prefill
-      })
+      const { content: partialResponse, isComplete: partialIsComplete } =
+        await generateRunResponse({
+          system: planSystemPrompt,
+          messages: [{ role: "user", content: planUserMessage }],
+          model: BUILDWARE_PLAN_LLM,
+          prefill
+        })
 
       planResponse += partialResponse
-      isComplete = isPlanComplete(planResponse)
+      isComplete = partialIsComplete
 
       if (!isComplete) {
         const updatedPrompt = await buildPlanPrompt({
@@ -60,7 +58,7 @@ export const runPlanStep = async ({
       }
     }
 
-    const parsedPlan = parsePlanResponse(PLAN_PREFILL + planResponse)
+    const parsedPlan = parsePlanResponse(planResponse)
 
     setPlanResponse(planResponse)
     setParsedPlan(parsedPlan)
