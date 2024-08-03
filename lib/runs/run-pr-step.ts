@@ -1,12 +1,16 @@
 import { generatePR } from "@/actions/github/generate-pr"
-import { RunStepParams } from "@/types/run"
+import { SelectIssue, SelectProject } from "@/db/schema"
+import { ParsedImplementation } from "@/types/run"
 
 export const runPRStep = async ({
   issue,
   project,
-  parsedImplementation,
-  setPrLink
-}: RunStepParams) => {
+  parsedImplementation
+}: {
+  issue: SelectIssue
+  project: SelectProject
+  parsedImplementation: ParsedImplementation
+}) => {
   try {
     const { prLink } = await generatePR(
       issue.name,
@@ -14,7 +18,9 @@ export const runPRStep = async ({
       parsedImplementation
     )
 
-    setPrLink(prLink || "")
+    return {
+      prLink: prLink || ""
+    }
   } catch (error) {
     console.error("Error running PR step:", error)
     throw error

@@ -1,7 +1,11 @@
 import { checkAndEmbedTargetBranch } from "@/actions/github/check-and-embed-target-branch"
-import { RunStepParams } from "@/types/run"
+import { SelectProject } from "@/db/schema"
 
-export const runEmbeddingStep = async ({ project }: RunStepParams) => {
+export const runEmbeddingStep = async ({
+  project
+}: {
+  project: SelectProject
+}) => {
   if (!project.githubRepoFullName || !project.githubTargetBranch) {
     alert("Project has no target branch configured.")
     return

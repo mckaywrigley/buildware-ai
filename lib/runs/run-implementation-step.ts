@@ -1,7 +1,7 @@
 import { generateRunResponse } from "@/actions/ai/generate-run-response"
 import { saveCodegenEval } from "@/actions/evals/save-codegen-eval"
+import { SelectIssue } from "@/db/schema"
 import { BUILDWARE_IMPLEMENTATION_LLM } from "@/lib/constants/buildware-config"
-import { RunStepParams } from "@/types/run"
 import { parseImplementationResponse } from "../ai/run-system/implementation/implementation-parser"
 import {
   buildImplementationPrompt,
@@ -12,10 +12,13 @@ export const runImplementationStep = async ({
   issue,
   codebaseFiles,
   instructionsContext,
-  planResponse,
-  setImplementationResponse,
-  setParsedImplementation
-}: RunStepParams) => {
+  planResponse
+}: {
+  issue: SelectIssue
+  codebaseFiles: { path: string; content: string }[]
+  instructionsContext: string
+  planResponse: string
+}) => {
   try {
     let {
       systemPrompt: implementationSystemPrompt,
@@ -62,9 +65,6 @@ export const runImplementationStep = async ({
       implementationResponse
     )
 
-    setImplementationResponse(implementationResponse)
-    setParsedImplementation(parsedImplementation)
-
     await saveCodegenEval(
       `${implementationSystemPrompt}\n\n${implementationUserMessage}`,
       issue.name,
@@ -77,6 +77,11 @@ export const runImplementationStep = async ({
       "implementation",
       "response"
     )
+
+    return {
+      implementationResponse,
+      parsedImplementation
+    }
   } catch (error) {
     console.error("Error running implementation step:", error)
     throw error

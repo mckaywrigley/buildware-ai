@@ -1,4 +1,9 @@
-import { ParsedPlan, ParsedSpecification, StepName } from "@/types/run"
+import {
+  ParsedImplementation,
+  ParsedPlan,
+  ParsedSpecification,
+  StepName
+} from "@/types/run"
 import { CompletedStep } from "./steps/completed-step"
 import { EmbeddingStep } from "./steps/embedding-step"
 import { ImplementationStep } from "./steps/implementation-step"
@@ -14,6 +19,9 @@ interface RunStepContentProps {
   setParsedSpecification: (specification: ParsedSpecification) => void
   parsedPlan: ParsedPlan
   setParsedPlan: (plan: ParsedPlan) => void
+  prLink: string
+  parsedImplementation: ParsedImplementation
+  setParsedImplementation: (implementation: ParsedImplementation) => void
 }
 
 export const RunStepContent = ({
@@ -21,7 +29,10 @@ export const RunStepContent = ({
   parsedSpecification,
   setParsedSpecification,
   parsedPlan,
-  setParsedPlan
+  setParsedPlan,
+  prLink,
+  parsedImplementation,
+  setParsedImplementation
 }: RunStepContentProps) => {
   switch (stepName) {
     case "started":
@@ -42,11 +53,16 @@ export const RunStepContent = ({
         <PlanStep parsedPlan={parsedPlan} onUpdateParsedPlan={setParsedPlan} />
       )
     case "implementation":
-      return <ImplementationStep />
+      return (
+        <ImplementationStep
+          parsedImplementation={parsedImplementation}
+          onUpdateParsedImplementation={setParsedImplementation}
+        />
+      )
     case "pr":
       return <PRStep />
     case "completed":
-      return <CompletedStep />
+      return <CompletedStep prLink={prLink} />
     default:
       return null
   }

@@ -1,7 +1,13 @@
 import { getMostSimilarEmbeddedFiles } from "@/actions/retrieval/get-similar-files"
-import { RunStepParams } from "@/types/run"
+import { SelectIssue, SelectProject } from "@/db/schema"
 
-export const runRetrievalStep = async ({ issue, project }: RunStepParams) => {
+export const runRetrievalStep = async ({
+  issue,
+  project
+}: {
+  issue: SelectIssue
+  project: SelectProject
+}) => {
   try {
     const embeddingsQueryText = `${issue.name} ${issue.content}`
     const codebaseFiles = await getMostSimilarEmbeddedFiles(

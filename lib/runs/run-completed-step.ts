@@ -1,6 +1,4 @@
-import { RunStepParams } from "@/types/run"
-
-export const runCompletedStep = async ({}: RunStepParams) => {
+export const runCompletedStep = async () => {
   try {
   } catch (error) {
     console.error("Error running completed step:", error)

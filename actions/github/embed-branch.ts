@@ -27,18 +27,19 @@ export async function embedBranch(data: {
   } = data
 
   try {
-    // Fetch only changed files
+    const deletedFiles = changedFiles.filter(file => file.status === "removed")
     const filesToUpdate = await fetchFiles(
       installationId,
-      changedFiles.map(file => ({
-        path: file.filename,
-        owner: githubRepoFullName.split("/")[0],
-        repo: githubRepoFullName.split("/")[1],
-        ref: branchName
-      }))
+      changedFiles
+        .filter(file => file.status !== "removed")
+        .map(file => ({
+          path: file.filename,
+          owner: githubRepoFullName.split("/")[0],
+          repo: githubRepoFullName.split("/")[1],
+          ref: branchName
+        }))
     )
 
-    // Tokenize files
     const tokenizedFiles = await tokenizeFiles(
       filesToUpdate.map(file => ({
         ...file,
@@ -47,14 +48,16 @@ export async function embedBranch(data: {
       }))
     )
 
-    // Embed files
     const embeddedFiles = await embedFiles(tokenizedFiles)
 
-    // Update database only if embedding was successful
+    // Handle deleted files
+    for (const file of deletedFiles) {
+      await deleteEmbeddedFile(embeddedBranchId, file.filename)
+    }
+
+    // Update database for non-deleted files
     for (const file of embeddedFiles) {
-      if (file.status === "removed") {
-        await deleteEmbeddedFile(embeddedBranchId, file.path)
-      } else if (file.status === "added" || !file.status) {
+      if (file.status === "added" || !file.status) {
         await createEmbeddedFile({
           ...file,
           projectId,
@@ -72,7 +75,6 @@ export async function embedBranch(data: {
     }
   } catch (error) {
     console.error("Error in embedBranch:", error)
-    // Don't update anything if there's an error
     throw error
   }
 }

@@ -129,7 +129,7 @@ export async function checkAndEmbedTargetBranch({
         branchName,
         embeddedBranchId: embeddedBranch.id,
         installationId,
-        changedFiles: changedFiles
+        changedFiles
       })
 
       await updateEmbeddedBranchById(embeddedBranch.id, {

@@ -1,7 +1,7 @@
 import { generateRunResponse } from "@/actions/ai/generate-run-response"
 import { saveCodegenEval } from "@/actions/evals/save-codegen-eval"
+import { SelectIssue } from "@/db/schema"
 import { BUILDWARE_PLAN_LLM } from "@/lib/constants/buildware-config"
-import { RunStepParams } from "@/types/run"
 import { parsePlanResponse } from "../ai/run-system/plan/plan-parser"
 import {
   buildPlanPrompt,
@@ -12,10 +12,13 @@ export const runPlanStep = async ({
   issue,
   codebaseFiles,
   instructionsContext,
-  specificationResponse,
-  setParsedPlan,
-  setPlanResponse
-}: RunStepParams) => {
+  specificationResponse
+}: {
+  issue: SelectIssue
+  codebaseFiles: { path: string; content: string }[]
+  instructionsContext: string
+  specificationResponse: string
+}) => {
   try {
     let {
       systemPrompt: planSystemPrompt,
@@ -60,9 +63,6 @@ export const runPlanStep = async ({
 
     const parsedPlan = parsePlanResponse(planResponse)
 
-    setPlanResponse(planResponse)
-    setParsedPlan(parsedPlan)
-
     await saveCodegenEval(
       `${planSystemPrompt}\n\n${planUserMessage}`,
       issue.name,
@@ -70,6 +70,11 @@ export const runPlanStep = async ({
       "prompt"
     )
     await saveCodegenEval(planResponse, issue.name, "plan", "response")
+
+    return {
+      planResponse,
+      parsedPlan
+    }
   } catch (error) {
     console.error("Error running plan step:", error)
     throw error

@@ -18,10 +18,10 @@ export const BUILDWARE_MAX_INPUT_TOKENS = 200000
 
 // claude-3-5-sonnet-20240620 or claude-3-haiku-20240307
 // DEV: claude-3-haiku-20240307
-// export const BUILDWARE_SPECIFICATION_LLM = "claude-3-haiku-20240307"
-// export const BUILDWARE_PLAN_LLM = "claude-3-haiku-20240307"
-// export const BUILDWARE_IMPLEMENTATION_LLM = "claude-3-haiku-20240307"
+export const BUILDWARE_SPECIFICATION_LLM = "claude-3-haiku-20240307"
+export const BUILDWARE_PLAN_LLM = "claude-3-haiku-20240307"
+export const BUILDWARE_IMPLEMENTATION_LLM = "claude-3-haiku-20240307"
 // PROD: claude-3-5-sonnet-20240620
-export const BUILDWARE_SPECIFICATION_LLM = "claude-3-5-sonnet-20240620"
-export const BUILDWARE_PLAN_LLM = "claude-3-5-sonnet-20240620"
-export const BUILDWARE_IMPLEMENTATION_LLM = "claude-3-5-sonnet-20240620"
+// export const BUILDWARE_SPECIFICATION_LLM = "claude-3-5-sonnet-20240620"
+// export const BUILDWARE_PLAN_LLM = "claude-3-5-sonnet-20240620"
+// export const BUILDWARE_IMPLEMENTATION_LLM = "claude-3-5-sonnet-20240620"

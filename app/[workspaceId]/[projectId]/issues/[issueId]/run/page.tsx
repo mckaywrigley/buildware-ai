@@ -17,7 +17,8 @@ export default async function RunIssuePage({
 }) {
   const issue = await getIssueById(issueId)
   const project = await getProjectById(projectId)
-  const instructions = await getInstructionsByIssueId(issueId)
+  const instructionsData = await getInstructionsByIssueId(issueId)
+  const instructions = instructionsData.map(item => item.instruction)
 
   if (!issue) {
     return <NotFound message="Issue not found" />

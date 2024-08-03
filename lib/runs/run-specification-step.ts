@@ -1,7 +1,7 @@
 import { generateRunResponse } from "@/actions/ai/generate-run-response"
 import { saveCodegenEval } from "@/actions/evals/save-codegen-eval"
+import { SelectIssue } from "@/db/schema"
 import { BUILDWARE_SPECIFICATION_LLM } from "@/lib/constants/buildware-config"
-import { RunStepParams } from "@/types/run"
 import { parseSpecificationResponse } from "../ai/run-system/specification/specification-parser"
 import {
   buildSpecificationPrompt,
@@ -11,10 +11,12 @@ import {
 export const runSpecificationStep = async ({
   issue,
   codebaseFiles,
-  instructionsContext,
-  setSpecificationResponse,
-  setParsedSpecification
-}: RunStepParams) => {
+  instructionsContext
+}: {
+  issue: SelectIssue
+  codebaseFiles: { path: string; content: string }[]
+  instructionsContext: string
+}) => {
   try {
     let {
       systemPrompt: specificationSystemPrompt,
@@ -59,9 +61,6 @@ export const runSpecificationStep = async ({
       specificationResponse
     )
 
-    setSpecificationResponse(specificationResponse)
-    setParsedSpecification(parsedSpecification)
-
     await saveCodegenEval(
       `${specificationSystemPrompt}\n\n${specificationUserMessage}`,
       issue.name,
@@ -74,6 +73,11 @@ export const runSpecificationStep = async ({
       "specification",
       "response"
     )
+
+    return {
+      specificationResponse,
+      parsedSpecification
+    }
   } catch (error) {
     console.error("Error running specification step:", error)
     throw error
