@@ -16,13 +16,17 @@ export async function createProfile(
 ): Promise<SelectProfile> {
   const userId = await getUserId()
 
-  const [profile] = await db
-    .insert(profilesTable)
-    .values({ ...data, userId })
-    .returning()
-
-  revalidatePath("/")
-  return profile
+  try {
+    const [profile] = await db
+      .insert(profilesTable)
+      .values({ ...data, userId })
+      .returning()
+    revalidatePath("/")
+    return profile
+  } catch (error) {
+    console.error("Error creating profile:", error)
+    throw new Error("Failed to create profile")
+  }
 }
 
 export async function getProfileByUserId(): Promise<SelectProfile | undefined> {
@@ -34,7 +38,8 @@ export async function getProfileByUserId(): Promise<SelectProfile | undefined> {
     })
     return profile
   } catch (error) {
-    console.error(error)
+    console.error("Error fetching profile:", error)
+    throw new Error("Failed to fetch profile")
   }
 }
 
@@ -43,11 +48,16 @@ export async function updateProfile(
 ): Promise<SelectProfile> {
   const userId = await getUserId()
 
-  const [updatedProfile] = await db
-    .update(profilesTable)
-    .set(data)
-    .where(eq(profilesTable.userId, userId))
-    .returning()
-  revalidatePath("/")
-  return updatedProfile
+  try {
+    const [updatedProfile] = await db
+      .update(profilesTable)
+      .set(data)
+      .where(eq(profilesTable.userId, userId))
+      .returning()
+    revalidatePath("/")
+    return updatedProfile
+  } catch (error) {
+    console.error("Error updating profile:", error)
+    throw new Error("Failed to update profile")
+  }
 }
