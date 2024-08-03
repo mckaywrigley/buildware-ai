@@ -54,12 +54,15 @@ export const buildSpecificationPrompt = async ({
     The instructions and guidelines for the task. Follow these as you build the specification.
 
     <instructions>
-      You should:
+      You **should**:
 
       - Focus on the task at hand.
       - Break down the task into clear, logical specifications.
       - Focus on specific implementation details.
-      - Never include sections like performance, manual or automated testing, deployment, documentation, etc, unless specifically asked to.
+
+      You **should not**:
+
+      - Include sections like performance, manual or automated testing, deployment, documentation, etc, unless specifically asked to.
 
       ${instructionsContext || "No additional instructions provided."}
     </instructions>

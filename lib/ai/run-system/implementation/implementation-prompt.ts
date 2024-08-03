@@ -2,7 +2,6 @@ import { estimateClaudeTokens } from "@/lib/ai/estimate-claude-tokens"
 import { limitCodebaseTokens } from "@/lib/ai/limit-codebase-tokens"
 import { BUILDWARE_MAX_INPUT_TOKENS } from "@/lib/constants/buildware-config"
 import endent from "endent"
-import { PLAN_PREFILL } from "../plan/plan-prompt"
 
 export const IMPLEMENTATION_PREFILL = `<pull_request>`
 
@@ -57,14 +56,6 @@ export const buildImplementationPrompt = async ({
     The instructions and guidelines for the task. Follow these as you build the specification.
 
     <instructions>
-      You should:
-
-      - Stick to the task at hand.
-      - Break down the task into clear, logical steps.
-      - Focus on implementation details.
-      - Always use pseudocode instead of actual code.
-      - Never include sections like performance, manual or automated testing, deployment, documentation, etc, unless specifically asked to.
-
       ${instructionsContext || "No additional instructions provided."}
     </instructions>
 
@@ -72,7 +63,7 @@ export const buildImplementationPrompt = async ({
 
     A plan to help complete the task.
 
-    ${PLAN_PREFILL + plan}
+    ${plan}
     
     ## Response Information
 

@@ -35,7 +35,7 @@ import {
 } from "@/types/run"
 import { ArrowLeft, Info, Loader2, Play, RefreshCw } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { RunStepContent } from "./run-step-content"
 import { RunStepStatusList } from "./run-step-status-list"
 
@@ -84,8 +84,10 @@ export const RunIssue = ({ issue, project, instructions }: RunIssueProps) => {
       prTitle: "",
       prDescription: ""
     })
+  const [latestCodebaseFiles, setLatestCodebaseFiles] = useState<
+    { path: string; content: string }[]
+  >([])
 
-  const latestCodebaseFiles = useRef<{ path: string; content: string }[]>([])
   const instructionsContext = instructions
     .map(
       instruction =>
@@ -115,12 +117,22 @@ export const RunIssue = ({ issue, project, instructions }: RunIssueProps) => {
             await runEmbeddingStep({ project })
             break
           case "retrieval":
-            await runRetrievalStep({ issue, project })
-            break
+            const retrievalStepResponse = await runRetrievalStep({
+              issue,
+              project
+            })
+            setLatestCodebaseFiles(
+              retrievalStepResponse.codebaseFiles.map(file => ({
+                path: file.path,
+                content: file.content || ""
+              }))
+            )
+            setWaitingForConfirmation(true)
+            return // Exit function here
           case "specification":
             const specificationStepResponse = await runSpecificationStep({
               issue,
-              codebaseFiles: latestCodebaseFiles.current,
+              codebaseFiles: latestCodebaseFiles,
               instructionsContext
             })
             setSpecificationResponse(
@@ -134,7 +146,7 @@ export const RunIssue = ({ issue, project, instructions }: RunIssueProps) => {
           case "plan":
             const planStepResponse = await runPlanStep({
               issue,
-              codebaseFiles: latestCodebaseFiles.current,
+              codebaseFiles: latestCodebaseFiles,
               instructionsContext,
               specificationResponse
             })
@@ -145,7 +157,7 @@ export const RunIssue = ({ issue, project, instructions }: RunIssueProps) => {
           case "implementation":
             const implementationStepResponse = await runImplementationStep({
               issue,
-              codebaseFiles: latestCodebaseFiles.current,
+              codebaseFiles: latestCodebaseFiles,
               instructionsContext,
               planResponse
             })
