@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Context Manager</h1>
+
+  <form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="create">
+    <label for="name">Context Name:</label>
+    <input type="text" id="name" name="name" required>
+    <label for="file_paths">File Paths:</label>
+    <textarea id="file_paths" name="file_paths" required></textarea>
+    <button type="submit">Create Context</button>
+  </form>
+
+  <h2>Existing Contexts</h2>
+  {% for context in contexts %}
+    <h3>{{ context.name }}</h3>
+    <p>File Paths: {{ context.file_paths }}</p>
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="add">
+      <input type="hidden" name="name" value="{{ context.name }}">
+      <label for="file_paths_{{ context.id }}">Add File Paths:</label>
+      <textarea id="file_paths_{{ context.id }}" name="file_paths"></textarea>
+      <button type="submit">Add Files</button>
+    </form>
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="remove">
+      <input type="hidden" name="name" value="{{ context.name }}">
+      <label for="file_paths_{{ context.id }}">Remove File Paths:</label>
+      <textarea id="file_paths_{{ context.id }}" name="file_paths"></textarea>
+      <button type="submit">Remove Files</button>
+    </form>
+  {% endfor %}
+{% endblock %}
