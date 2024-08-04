@@ -45,46 +45,57 @@ export function MultiSelect({
   }
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="w-full justify-between"
-        >
-          {selectedIds.length > 0
-            ? `${selectedIds.length} selected`
-            : `Select ${label}...`}
-          <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-full p-0">
-        <Command>
-          <CommandInput placeholder={`Search ${label}...`} />
-          <CommandList>
-            <CommandEmpty>No {label} found.</CommandEmpty>
-            <CommandGroup>
-              {data.map(item => (
-                <CommandItem
-                  key={item.id}
-                  onSelect={() => handleToggleSelect(item.id)}
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 size-4",
-                      selectedIds.includes(item.id)
-                        ? "opacity-100"
-                        : "opacity-0"
-                    )}
-                  />
-                  {item.name}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
+    <div>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            className="w-full justify-between"
+          >
+            {selectedIds.length > 0
+              ? data
+                  .filter(item => selectedIds.includes(item.id))
+                  .map(item => item.name)
+                  .join(", ")
+              : `Select ${label}s...`}
+            <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-full p-0">
+          <Command>
+            <CommandInput placeholder={`Search ${label}s...`} />
+            <CommandList>
+              <CommandEmpty>No {label} found.</CommandEmpty>
+              <CommandGroup>
+                {data.length > 0 ? (
+                  data.map(item => {
+                    return (
+                      <CommandItem
+                        key={item.id}
+                        onSelect={() => handleToggleSelect(item.id)}
+                      >
+                        <Check
+                          className={cn(
+                            "mr-2 size-4",
+                            selectedIds.includes(item.id)
+                              ? "opacity-100"
+                              : "opacity-0"
+                          )}
+                        />
+                        {item.name}
+                      </CommandItem>
+                    )
+                  })
+                ) : (
+                  <CommandItem>No {label}s available</CommandItem>
+                )}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+    </div>
   )
 }
