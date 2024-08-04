@@ -2,6 +2,7 @@
 
 import { MessageMarkdown } from "@/components/instructions/message-markdown"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardTitle } from "@/components/ui/card"
 import {
   Dialog,
   DialogContent,
@@ -17,6 +18,7 @@ import {
 } from "@/components/ui/tooltip"
 import { updateIssue } from "@/db/queries"
 import { SelectInstruction, SelectIssue, SelectProject } from "@/db/schema"
+import { createRun, createRunStep, getRun, updateRun, updateRunStep } from "@/db/queries/runs-queries"
 import { runCompletedStep } from "@/lib/runs/run-completed-step"
 import { runEmbeddingStep } from "@/lib/runs/run-embedding-step"
 import { runImplementationStep } from "@/lib/runs/run-implementation-step"
@@ -92,17 +94,47 @@ export const RunDashboard = ({
   const [latestCodebaseFiles, setLatestCodebaseFiles] = useState<
     { path: string; content: string }[]
   >([])
+  const [runId, setRunId] = useState<string | null>(null)
+  const [totalCost, setTotalCost] = useState(0)
 
   const instructionsContext = instructions
     .map(
       instruction =>
-        `<instruction name="${instruction.name}">\n${instruction.content}\n</instruction>`
+        `<instruction name="${instruction.name}">
+${instruction.content}
+</instruction>`
     )
     .join("\n\n")
 
   useEffect(() => {
     setSelectedStep(null)
   }, [currentStep])
+
+  useEffect(() => {
+    const loadExistingRun = async () => {
+      const existingRun = await getRun(issue.id)
+      if (existingRun && existingRun.status !== "completed") {
+        setRunId(existingRun.id)
+        setTotalCost(Number(existingRun.totalCost))
+        const lastCompletedStepIndex = existingRun.steps
+          .filter(step => step.status === "done")
+          .reduce((maxIndex, step) => {
+            const index = stepOrder.indexOf(step.stepName as StepName)
+            return index > maxIndex ? index : maxIndex
+          }, -1)
+        const nextStepIndex = lastCompletedStepIndex + 1
+        if (nextStepIndex < stepOrder.length) {
+          setCurrentStep(stepOrder[nextStepIndex])
+          const updatedStepStatuses = { ...stepStatuses }
+          for (let i = 0; i <= lastCompletedStepIndex; i++) {
+            updatedStepStatuses[stepOrder[i]] = "done"
+          }
+          setStepStatuses(updatedStepStatuses)
+        }
+      }
+    }
+    loadExistingRun()
+  }, [issue.id])
 
   const updateStepStatus = (step: StepName, status: StepStatus) => {
     setStepStatuses(prevSteps => ({ ...prevSteps, [step]: status }))
@@ -114,6 +146,7 @@ export const RunDashboard = ({
     if (stepStatus === "not_started") {
       updateStepStatus(step, "in_progress")
       try {
+        let stepCost = 0
         switch (step) {
           case "started":
             await runStartStep()
@@ -146,8 +179,9 @@ export const RunDashboard = ({
             setParsedSpecification(
               specificationStepResponse.parsedSpecification
             )
+            stepCost = specificationStepResponse.cost
             setWaitingForConfirmation(true)
-            return
+            break
           case "plan":
             const planStepResponse = await runPlanStep({
               issue,
@@ -157,8 +191,9 @@ export const RunDashboard = ({
             })
             setPlanResponse(planStepResponse.planResponse)
             setParsedPlan(planStepResponse.parsedPlan)
+            stepCost = planStepResponse.cost
             setWaitingForConfirmation(true)
-            return
+            break
           case "implementation":
             const implementationStepResponse = await runImplementationStep({
               issue,
@@ -169,8 +204,9 @@ export const RunDashboard = ({
             setParsedImplementation(
               implementationStepResponse.parsedImplementation
             )
+            stepCost = implementationStepResponse.cost
             setWaitingForConfirmation(true)
-            return
+            break
           case "pr":
             const prStepResponse = await runPRStep({
               issue,
@@ -184,6 +220,19 @@ export const RunDashboard = ({
             updateIssue(issue.id, { status: "completed" })
             break
         }
+
+        setTotalCost(prevCost => prevCost + stepCost)
+        await updateRun(runId!, { totalCost: totalCost + stepCost })
+        await updateRunStep(runId!, step, {
+          status: "done",
+          cost: stepCost,
+          response: JSON.stringify({
+            specificationResponse,
+            planResponse,
+            implementationResponse,
+            prLink
+          })
+        })
 
         handleStepCompletion(step, stepOrder.indexOf(step))
       } catch (error) {
@@ -207,6 +256,7 @@ export const RunDashboard = ({
 
     if (isLastStep) {
       setIsRunning(false)
+      updateRun(runId!, { status: "completed" })
     } else {
       setCurrentStep(nextStep)
       runNextStep(nextStep)
@@ -216,6 +266,16 @@ export const RunDashboard = ({
   const handleRun = async () => {
     setIsRunning(true)
     setWaitingForConfirmation(false)
+    if (!runId) {
+      const newRun = await createRun({
+        projectId: project.id,
+        issueId: issue.id,
+        status: "in_progress"
+      })
+      setRunId(newRun.id)
+    } else {
+      await updateRun(runId, { status: "in_progress" })
+    }
     setCurrentStep("started")
     runNextStep("started")
   }
@@ -264,119 +324,4 @@ ${updatedImplementation.files
     file => `  <file>
     <file_status>${file.status}</file_status>
     <file_path>${file.path}</file_path>
-    <file_content>${file.content}</file_content>
-  </file>`
-  )
-  .join("\n")}
-</pull_request>`
-
-    setImplementationResponse(xmlImplementation)
-  }
-
-  return (
-    <>
-      <div className="w-full border-b">
-        <div className="flex h-14 items-center justify-between px-4 lg:h-[59px]">
-          <div className="flex items-center">
-            <Button
-              variant="ghost"
-              onClick={() => router.push(`.`)}
-              className="mr-2"
-            >
-              <ArrowLeft className="mr-2 size-4" />
-              Back
-            </Button>
-
-            <TooltipProvider>
-              <Tooltip>
-                <Dialog>
-                  <TooltipTrigger asChild>
-                    <DialogTrigger asChild>
-                      <Button variant="ghost" size="icon" className="mr-2">
-                        <Info className="size-4" />
-                      </Button>
-                    </DialogTrigger>
-                  </TooltipTrigger>
-
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>{issue.name}</DialogTitle>
-                    </DialogHeader>
-                    <MessageMarkdown content={issue.content} />
-                  </DialogContent>
-                </Dialog>
-
-                <TooltipContent>
-                  <div>View your issue</div>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-
-            <div className="truncate font-bold">{issue.name}</div>
-          </div>
-
-          {waitingForConfirmation ? (
-            <Button
-              variant="create"
-              onClick={handleConfirmation}
-              className="ml-4"
-            >
-              <Play className="mr-2 size-4" />
-              Confirm and Continue
-            </Button>
-          ) : (
-            <Button
-              variant="create"
-              onClick={handleRun}
-              disabled={isRunning}
-              className="ml-4"
-            >
-              {isRunning ? (
-                <>
-                  <Loader2 className="mr-2 size-4 animate-spin" />
-                  Running
-                </>
-              ) : issue.status === "completed" ? (
-                <>
-                  <RefreshCw className="mr-2 size-4" />
-                  Redo Run
-                </>
-              ) : (
-                <>
-                  <Play className="mr-2 size-4" />
-                  Begin Run
-                </>
-              )}
-            </Button>
-          )}
-        </div>
-      </div>
-
-      <div className="flex flex-1 overflow-hidden">
-        <div className="grid size-full grid-cols-12">
-          <div className="col-span-4 overflow-y-auto border-r p-4">
-            <RunStepStatusList
-              currentStep={currentStep}
-              waitingForConfirmation={waitingForConfirmation}
-              onStepClick={handleStepClick}
-              stepStatuses={stepStatuses}
-            />
-          </div>
-
-          <div className="col-span-8 overflow-y-auto p-6">
-            <RunStepContent
-              stepName={selectedStep || currentStep}
-              prLink={prLink}
-              specification={parsedSpecification}
-              plan={parsedPlan}
-              implementation={parsedImplementation}
-              onUpdateSpecification={updateParsedSpecification}
-              onUpdatePlan={updateParsedPlan}
-              onUpdateImplementation={updateParsedImplementation}
-            />
-          </div>
-        </div>
-      </div>
-    </>
-  )
-}
+    <file_content>${file.content}
