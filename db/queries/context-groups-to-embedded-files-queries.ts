@@ -6,17 +6,20 @@ import { db } from "../db"
 import { embeddedFilesTable } from "../schema"
 import { contextGroupsToEmbeddedFiles } from "../schema/context-groups-to-embedded-files-schema"
 
-export async function addEmbeddedFileToContextGroup(
+export async function addEmbeddedFilesToContextGroup(
   contextGroupId: string,
-  embeddedFileId: string
+  embeddedFileIds: string[]
 ) {
   try {
-    await db
-      .insert(contextGroupsToEmbeddedFiles)
-      .values({ contextGroupId, embeddedFileId })
+    await db.insert(contextGroupsToEmbeddedFiles).values(
+      embeddedFileIds.map(embeddedFileId => ({
+        contextGroupId,
+        embeddedFileId
+      }))
+    )
     revalidatePath("/")
   } catch (error) {
-    console.error("Error adding embedded file to context group:", error)
+    console.error("Error adding embedded files to context group:", error)
     throw error
   }
 }

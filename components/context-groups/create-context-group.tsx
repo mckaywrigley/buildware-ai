@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { createContextGroup } from "@/db/queries/context-groups-queries"
-import { addEmbeddedFileToContextGroup } from "@/db/queries/context-groups-to-embedded-files-queries"
+import { addEmbeddedFilesToContextGroup } from "@/db/queries/context-groups-to-embedded-files-queries"
 import { useParams, useRouter } from "next/navigation"
 import { useState } from "react"
 import { ContextMultiSelect } from "./context-multi-select"
@@ -40,9 +40,10 @@ export const CreateContextGroup = ({
         file => file.type === "file" && selectedFileIds.includes(file.id)
       )
 
-      for (const file of selectedFiles) {
-        await addEmbeddedFileToContextGroup(contextGroup.id, file.id)
-      }
+      await addEmbeddedFilesToContextGroup(
+        contextGroup.id,
+        selectedFiles.map(file => file.id)
+      )
 
       router.refresh()
       router.push(`../context`)
