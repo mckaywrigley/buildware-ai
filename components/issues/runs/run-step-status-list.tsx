@@ -95,7 +95,7 @@ export const RunStepStatusList = ({
                   }
                 >
                   <div
-                    className={`relative z-10 mr-4 rounded-full p-1 ${
+                    className={`relative z-10 mr-4 rounded-full p-1 text-white ${
                       status === "in_progress"
                         ? "bg-yellow-600"
                         : status === "done"
