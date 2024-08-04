@@ -6,7 +6,7 @@ import { createContextGroup } from "@/db/queries/context-groups-queries"
 import { addEmbeddedFilesToContextGroup } from "@/db/queries/context-groups-to-embedded-files-queries"
 import { useParams, useRouter } from "next/navigation"
 import { useState } from "react"
-import { ContextMultiSelect } from "./context-multi-select"
+import { ContextMultiSelect } from "./context-groups-multi-select"
 
 interface CreateContextGroupProps {
   embeddedFiles: {

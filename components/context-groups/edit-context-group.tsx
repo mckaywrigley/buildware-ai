@@ -18,7 +18,7 @@ import { SelectEmbeddedFile } from "@/db/schema/embedded-files-schema"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { DeleteDialog } from "../dashboard/reusable/delete-dialog"
-import { ContextMultiSelect } from "./context-multi-select"
+import { ContextMultiSelect } from "./context-groups-multi-select"
 
 interface EditContextGroupProps {
   contextGroup: SelectContextGroup
