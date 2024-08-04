@@ -51,6 +51,7 @@ The following values are required for config for the simple version:
 App Mode (keep default value):
 
 - `NEXT_PUBLIC_APP_MODE=simple`
+- `NEXT_PUBLIC_CONFIG_MODE=prod`
 
 LLMs:
 
