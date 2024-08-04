@@ -1,5 +1,9 @@
 "use client"
 
+import {
+  addContextGroupToIssue,
+  removeContextGroupFromIssue
+} from "@/db/queries/issue-to-context-groups-queries"
 import { deleteIssue, updateIssue } from "@/db/queries/issues-queries"
 import {
   addInstructionToIssue,
@@ -13,10 +17,6 @@ import { CRUDPage } from "../dashboard/reusable/crud-page"
 import { MultiSelect } from "../ui/multi-select"
 import { ImproveIssue } from "./improve-issue"
 import { ViewIssueContext } from "./view-issue-context"
-import {
-  addContextGroupToIssue,
-  removeContextGroupFromIssue
-} from "@/db/queries/issue-to-context-groups-queries"
 
 interface EditIssueProps {
   issue: SelectIssue
@@ -35,6 +35,7 @@ export const EditIssue = ({
 }: EditIssueProps) => {
   const router = useRouter()
   const params = useParams()
+
   const [name, setName] = useState(issue.name)
   const [content, setContent] = useState(issue.content)
   const [selectedInstructions, setSelectedInstructions] = useState<string[]>(
@@ -106,6 +107,7 @@ export const EditIssue = ({
             selectedContextGroups.includes(group.id)
           )}
         />
+
         <ImproveIssue
           startingIssue={{ name, content }}
           onUpdateIssue={({ name, content }) => {
@@ -117,7 +119,7 @@ export const EditIssue = ({
 
       <div className="mt-4">
         <MultiSelect
-          label="Instructions"
+          label="Instruction"
           data={allInstructions.map(instruction => ({
             id: instruction.id,
             name: instruction.name
@@ -129,7 +131,7 @@ export const EditIssue = ({
 
       <div className="my-4">
         <MultiSelect
-          label="Context Groups"
+          label="Context Group"
           data={allContextGroups.map(group => ({
             id: group.id,
             name: group.name

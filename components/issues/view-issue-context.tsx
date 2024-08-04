@@ -40,6 +40,7 @@ export const ViewIssueContext = ({
       <DialogContent className="max-h-[90vh] max-w-[800px] overflow-y-auto pb-20">
         <DialogHeader className="border-primary/50 border-b pb-4">
           <DialogTitle>Issue Context</DialogTitle>
+
           <DialogDescription>
             View the issue and instructions that will be passed into the system.
           </DialogDescription>
@@ -47,6 +48,7 @@ export const ViewIssueContext = ({
 
         <div className="mt-4 flex flex-col gap-4">
           <div className="text-xl font-bold">{name || "No issue name"}</div>
+
           <MessageMarkdown content={content || "No issue content"} />
         </div>
 
@@ -57,6 +59,7 @@ export const ViewIssueContext = ({
             selectedInstructions.map(instruction => (
               <div key={instruction.id} className="mt-2 flex flex-col gap-2">
                 <div className="text-xl font-bold">{instruction.name}</div>
+
                 {instruction.content && (
                   <MessageMarkdown content={instruction.content} />
                 )}
@@ -71,6 +74,7 @@ export const ViewIssueContext = ({
           {selectedContextGroups.length > 0 ? (
             <div className="mt-4">
               <div className="text-xl font-bold">Attached Context Groups</div>
+
               {selectedContextGroups.map(group => (
                 <div key={group.id} className="mt-2">
                   <div className="text-lg font-semibold">{group.name}</div>

@@ -4,25 +4,24 @@ import { MessageMarkdown } from "@/components/instructions/message-markdown"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardTitle } from "@/components/ui/card"
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog"
+import {
   SelectContextGroup,
   SelectInstruction,
   SelectIssue,
   SelectProject
 } from "@/db/schema"
-import { Pencil, Play } from "lucide-react"
+import { File, Folder, Pencil, Play } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { CRUDPage } from "../dashboard/reusable/crud-page"
 import { ViewIssueContext } from "./view-issue-context"
 import { ViewIssueInstruction } from "./view-issue-instruction"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle
-} from "@/components/ui/dialog"
-import { File, Folder } from "lucide-react"
 
 interface IssueViewProps {
   item: SelectIssue
@@ -46,7 +45,7 @@ interface IssueViewProps {
   workspaceId: string
 }
 
-export const IssueView = async ({
+export const IssueView = ({
   item,
   project,
   attachedInstructions,

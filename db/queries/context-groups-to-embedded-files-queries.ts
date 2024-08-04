@@ -3,8 +3,8 @@
 import { and, eq, inArray } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { db } from "../db"
-import { contextGroupsToEmbeddedFiles } from "../schema/context-groups-to-embedded-files-schema"
 import { embeddedFilesTable } from "../schema"
+import { contextGroupsToEmbeddedFiles } from "../schema/context-groups-to-embedded-files-schema"
 
 export async function addEmbeddedFileToContextGroup(
   contextGroupId: string,
@@ -57,6 +57,10 @@ export async function getEmbeddedFilesForContextGroup(contextGroupId: string) {
 
 export async function getFilesByContextGroupIds(contextGroupIds: string[]) {
   try {
+    if (contextGroupIds.length === 0) {
+      return []
+    }
+
     return db
       .select({
         id: embeddedFilesTable.id,
