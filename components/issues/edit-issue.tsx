@@ -16,7 +16,6 @@ import { CRUDForm } from "../dashboard/reusable/crud-form"
 import { CRUDPage } from "../dashboard/reusable/crud-page"
 import { MultiSelect } from "../ui/multi-select"
 import { ImproveIssue } from "./improve-issue"
-import { ViewIssueContext } from "./view-issue-context"
 
 interface EditIssueProps {
   issue: SelectIssue
@@ -97,17 +96,6 @@ export const EditIssue = ({
       backLink={`/${params.workspaceId}/${params.projectId}/issues`}
     >
       <div className="flex w-full justify-end gap-2">
-        <ViewIssueContext
-          name={name}
-          content={content}
-          selectedInstructions={allInstructions.filter(instruction =>
-            selectedInstructions.includes(instruction.id)
-          )}
-          selectedContextGroups={allContextGroups.filter(group =>
-            selectedContextGroups.includes(group.id)
-          )}
-        />
-
         <ImproveIssue
           startingIssue={{ name, content }}
           onUpdateIssue={({ name, content }) => {
@@ -126,6 +114,8 @@ export const EditIssue = ({
           }))}
           selectedIds={selectedInstructions}
           onToggleSelect={setSelectedInstructions}
+          showSelectAll
+          showDeselectAll
         />
       </div>
 
@@ -138,6 +128,8 @@ export const EditIssue = ({
           }))}
           selectedIds={selectedContextGroups}
           onToggleSelect={setSelectedContextGroups}
+          showSelectAll
+          showDeselectAll
         />
       </div>
 

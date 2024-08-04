@@ -19,7 +19,6 @@ import { useEffect, useState } from "react"
 import { CRUDForm } from "../dashboard/reusable/crud-form"
 import { MultiSelect } from "../ui/multi-select"
 import { ImproveIssue } from "./improve-issue"
-import { ViewIssueContext } from "./view-issue-context"
 
 interface CreateIssueProps {
   templates: SelectTemplate[]
@@ -145,17 +144,6 @@ export const CreateIssue = ({
       )}
 
       <div className="mt-4 flex w-full justify-end gap-2">
-        <ViewIssueContext
-          name={name}
-          content={content}
-          selectedInstructions={allInstructions.filter(instruction =>
-            selectedInstructions.includes(instruction.id)
-          )}
-          selectedContextGroups={contextGroups.filter(group =>
-            selectedContextGroups.includes(group.id)
-          )}
-        />
-
         <ImproveIssue
           startingIssue={{ name, content }}
           onUpdateIssue={({ name, content }) => {
