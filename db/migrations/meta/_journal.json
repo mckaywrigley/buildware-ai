@@ -26,22 +26,8 @@
     {
       "idx": 3,
       "version": "7",
-      "when": 1722540375924,
-      "tag": "0003_free_nico_minoru",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1722540578014,
-      "tag": "0004_striped_microchip",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1722627743382,
-      "tag": "0005_overjoyed_outlaw_kid",
+      "when": 1722751331588,
+      "tag": "0003_loose_thena",
       "breakpoints": true
     }
   ]
