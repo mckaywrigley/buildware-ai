@@ -7,12 +7,16 @@ import {
   buildSpecificationPrompt,
   SPECIFICATION_PREFILL
 } from "../ai/run-system/specification/specification-prompt"
+import { updateRunStep } from "@/actions/runs/manage-runs"
+import { calculateAndStoreCost } from "@/actions/ai/calculate-llm-cost"
 
 export const runSpecificationStep = async ({
+  runId,
   issue,
   codebaseFiles,
   instructionsContext
 }: {
+  runId: string,
   issue: SelectIssue
   codebaseFiles: { path: string; content: string }[]
   instructionsContext: string
@@ -62,7 +66,9 @@ export const runSpecificationStep = async ({
     )
 
     await saveCodegenEval(
-      `${specificationSystemPrompt}\n\n${specificationUserMessage}`,
+      `${specificationSystemPrompt}
+
+${specificationUserMessage}`,
       issue.name,
       "specification",
       "prompt"
@@ -73,6 +79,16 @@ export const runSpecificationStep = async ({
       "specification",
       "response"
     )
+
+    const cost = await calculateAndStoreCost(
+      runId,
+      "specification",
+      BUILDWARE_SPECIFICATION_LLM,
+      specificationSystemPrompt.length + specificationUserMessage.length,
+      specificationResponse.length
+    )
+
+    await updateRunStep(runId, "specification", "completed", cost.toString(), JSON.stringify(parsedSpecification))
 
     return {
       specificationResponse,

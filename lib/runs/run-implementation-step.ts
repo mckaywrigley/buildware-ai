@@ -7,13 +7,17 @@ import {
   buildImplementationPrompt,
   IMPLEMENTATION_PREFILL
 } from "../ai/run-system/implementation/implementation-prompt"
+import { updateRunStep } from "@/actions/runs/manage-runs"
+import { calculateAndStoreCost } from "@/actions/ai/calculate-llm-cost"
 
 export const runImplementationStep = async ({
+  runId,
   issue,
   codebaseFiles,
   instructionsContext,
   plan
 }: {
+  runId: string,
   issue: SelectIssue
   codebaseFiles: { path: string; content: string }[]
   instructionsContext: string
@@ -66,7 +70,9 @@ export const runImplementationStep = async ({
     )
 
     await saveCodegenEval(
-      `${implementationSystemPrompt}\n\n${implementationUserMessage}`,
+      `${implementationSystemPrompt}
+
+${implementationUserMessage}`,
       issue.name,
       "implementation",
       "prompt"
@@ -77,6 +83,16 @@ export const runImplementationStep = async ({
       "implementation",
       "response"
     )
+
+    const cost = await calculateAndStoreCost(
+      runId,
+      "implementation",
+      BUILDWARE_IMPLEMENTATION_LLM,
+      implementationSystemPrompt.length + implementationUserMessage.length,
+      implementationResponse.length
+    )
+
+    await updateRunStep(runId, "implementation", "completed", cost.toString(), JSON.stringify(parsedImplementation))
 
     return {
       implementationResponse,

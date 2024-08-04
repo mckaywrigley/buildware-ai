@@ -38,6 +38,7 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { RunStepContent } from "./run-step-content"
 import { RunStepStatusList } from "./run-step-status-list"
+import { startNewRun, updateRunStatus, getRunWithSteps } from "@/actions/runs/manage-runs"
 
 export const stepOrder: StepName[] = [
   "started",
@@ -91,11 +92,14 @@ export const RunDashboard = ({
   const [latestCodebaseFiles, setLatestCodebaseFiles] = useState<
     { path: string; content: string }[]
   >([])
+  const [currentRunId, setCurrentRunId] = useState<string | null>(null)
 
   const instructionsContext = instructions
     .map(
       instruction =>
-        `<instruction name="${instruction.name}">\n${instruction.content}\n</instruction>`
+        `<instruction name="${instruction.name}">
+${instruction.content}
+</instruction>`
     )
     .join("\n\n")
 
@@ -115,7 +119,7 @@ export const RunDashboard = ({
       try {
         switch (step) {
           case "started":
-            await runStartStep()
+            await runStartStep(currentRunId!)
             break
           case "embedding":
             await runEmbeddingStep({ project })
@@ -206,6 +210,7 @@ export const RunDashboard = ({
 
     if (isLastStep) {
       setIsRunning(false)
+      updateRunStatus(currentRunId!, "completed", calculateTotalCost())
     } else {
       setCurrentStep(nextStep)
       runNextStep(nextStep)
@@ -215,6 +220,8 @@ export const RunDashboard = ({
   const handleRun = async () => {
     setIsRunning(true)
     setWaitingForConfirmation(false)
+    const run = await startNewRun(issue.id)
+    setCurrentRunId(run.id)
     setCurrentStep("started")
     runNextStep("started")
   }
@@ -254,6 +261,13 @@ ${updatedPlan.steps.map(step => `  <step>${step.text}</step>`).join("\n")}
     updatedImplementation: ParsedImplementation
   ) => {
     setParsedImplementation(updatedImplementation)
+  }
+
+  const calculateTotalCost = (): string => {
+    // Implement the logic to calculate the total cost of the run
+    // This should sum up the costs of all completed steps
+    // For now, we'll return a placeholder value
+    return "0.00"
   }
 
   return (
