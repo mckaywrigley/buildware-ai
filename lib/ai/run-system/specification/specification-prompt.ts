@@ -30,6 +30,8 @@ export const buildSpecificationPrompt = async ({
     Your goal is to use this information to build a specification for the task.
     
     The specification should be a high-level outline or plan for implementing the task.
+
+    Each step should be a bullet point that briefly but completely describes the step in markdown format. Keep the steps short and concise. 3 sentences or less per step.
     
     To create the specification:
     - Focus on the task at hand
@@ -40,7 +42,7 @@ export const buildSpecificationPrompt = async ({
 
     The specification should **NOT**:
     - Include specific code snippets or implementation details
-    - Include sections like performance, testing, deployment, documentation, etc, unless specifically asked to`
+    - Include steps like performance, testing, deployment, documentation, etc, unless specifically asked to`
 
   const userMessageTemplate = endent`
     # Codebase

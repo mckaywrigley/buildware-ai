@@ -31,6 +31,10 @@ export const buildPlanPrompt = async ({
 
     Your goal is to use this information to create a detailed implementation plan for the given task.
 
+    Each step should be a bullet point that includes the file path, the file status (created, modified, deleted), and a list of todos for the file.
+
+    Together, the steps should form a complete implementation plan for the given task.
+
     Your implementation plan should:
     - Be focused solely on the task at hand 
     - Provide clear, actionable steps for implementation
@@ -45,8 +49,7 @@ export const buildPlanPrompt = async ({
     5. Ensure your plan addresses all aspects of the task specification.
 
     The plan should **NOT**:
-    - Include full code snippets. Remember to use pseudocode instead.
-    - Include sections like performance, testing, deployment, documentation, etc, unless specifically asked to`
+    - Include steps like performance, testing, deployment, documentation, etc, unless specifically asked to`
 
   const userMessageTemplate = endent`
     # Codebase
