@@ -83,8 +83,13 @@ export function ContextMultiSelect({
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
-  const files = filteredData.filter(item => item.type === "file")
-  const folders = filteredData.filter(item => item.type === "folder")
+  const sortedItems = [
+    ...filteredData.filter(item => selectedIds.includes(item.id)),
+    ...filteredData.filter(item => !selectedIds.includes(item.id))
+  ]
+
+  const files = sortedItems.filter(item => item.type === "file")
+  const folders = sortedItems.filter(item => item.type === "folder")
 
   return (
     <div>
@@ -147,7 +152,7 @@ export function ContextMultiSelect({
                 }
               >
                 {(selectedSection === null
-                  ? filteredData
+                  ? sortedItems
                   : selectedSection === "files"
                     ? files
                     : folders
@@ -165,10 +170,7 @@ export function ContextMultiSelect({
                       <Check
                         className={cn(
                           "mr-2 size-4",
-                          (item.type === "file" &&
-                            selectedIds.includes(item.id)) ||
-                            (item.type === "folder" &&
-                              isFolderSelected(item.id))
+                          selectedIds.includes(item.id)
                             ? "opacity-100"
                             : "opacity-0"
                         )}
@@ -180,38 +182,6 @@ export function ContextMultiSelect({
               </CommandGroup>
             </CommandList>
           </Command>
-
-          {selectedIds.length > 0 && (
-            <div className="mt-2 max-h-[200px] overflow-y-auto p-2">
-              {selectedIds.map(id => {
-                const item = data.find(item => item.id === id)
-
-                if (!item) return null
-
-                const Icon = item.type === "file" ? File : Folder
-
-                return (
-                  <div
-                    key={id}
-                    className="flex items-center justify-between py-1"
-                  >
-                    <span className="flex items-center">
-                      <Icon className="mr-2 size-4" />
-                      {item.name}
-                    </span>
-
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleToggleSelect(id)}
-                    >
-                      Remove
-                    </Button>
-                  </div>
-                )
-              })}
-            </div>
-          )}
         </PopoverContent>
       </Popover>
     </div>
