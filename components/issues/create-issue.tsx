@@ -7,26 +7,31 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
-import { createIssue, getInstructionsByProjectId } from "@/db/queries"
+import { createIssue } from "@/db/queries"
+import { addContextGroupToIssue } from "@/db/queries/issue-to-context-groups-queries"
 import { addInstructionToIssue } from "@/db/queries/issues-to-instructions-queries"
 import { getInstructionsForTemplate } from "@/db/queries/templates-to-instructions-queries"
 import { SelectInstruction } from "@/db/schema"
-import { SelectTemplate } from "@/db/schema/templates-schema"
 import { SelectContextGroup } from "@/db/schema/context-groups-schema"
+import { SelectTemplate } from "@/db/schema/templates-schema"
 import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { CRUDForm } from "../dashboard/reusable/crud-form"
 import { MultiSelect } from "../ui/multi-select"
 import { ImproveIssue } from "./improve-issue"
 import { ViewIssueContext } from "./view-issue-context"
-import { addContextGroupToIssue } from "@/db/queries/issue-to-context-groups-queries"
 
 interface CreateIssueProps {
   templates: SelectTemplate[]
   contextGroups: SelectContextGroup[]
+  instructions: SelectInstruction[]
 }
 
-export const CreateIssue = ({ templates, contextGroups }: CreateIssueProps) => {
+export const CreateIssue = ({
+  templates,
+  contextGroups,
+  instructions
+}: CreateIssueProps) => {
   const params = useParams()
   const router = useRouter()
 
@@ -36,9 +41,7 @@ export const CreateIssue = ({ templates, contextGroups }: CreateIssueProps) => {
   const [name, setName] = useState("")
   const [content, setContent] = useState("")
   const [selectedInstructions, setSelectedInstructions] = useState<string[]>([])
-  const [allInstructions, setAllInstructions] = useState<SelectInstruction[]>(
-    []
-  )
+  const [allInstructions] = useState<SelectInstruction[]>(instructions)
   const [selectedContextGroups, setSelectedContextGroups] = useState<string[]>(
     []
   )
@@ -59,15 +62,6 @@ export const CreateIssue = ({ templates, contextGroups }: CreateIssueProps) => {
       setSelectedInstructions([])
     }
   }, [selectedTemplateId])
-
-  useEffect(() => {
-    fetchAllInstructions()
-  }, [])
-
-  const fetchAllInstructions = async () => {
-    const allInstructionsData = await getInstructionsByProjectId(projectId)
-    setAllInstructions(allInstructionsData)
-  }
 
   const handleCreateIssueAndRelation = async () => {
     const newIssue = {
