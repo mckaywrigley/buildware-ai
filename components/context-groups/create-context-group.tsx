@@ -4,13 +4,16 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { createContextGroup } from "@/db/queries/context-groups-queries"
 import { addEmbeddedFileToContextGroup } from "@/db/queries/context-groups-to-embedded-files-queries"
-import { getEmbeddedFilesAndFolders } from "@/db/queries/embedded-files-queries"
 import { useParams, useRouter } from "next/navigation"
 import { useState } from "react"
 import { ContextMultiSelect } from "./context-multi-select"
 
 interface CreateContextGroupProps {
-  embeddedFiles: Awaited<ReturnType<typeof getEmbeddedFilesAndFolders>>
+  embeddedFiles: {
+    id: string
+    path: string
+    type: "folder" | "file"
+  }[]
 }
 
 export const CreateContextGroup = ({
@@ -18,6 +21,7 @@ export const CreateContextGroup = ({
 }: CreateContextGroupProps) => {
   const params = useParams()
   const router = useRouter()
+
   const [name, setName] = useState("")
   const [selectedFileIds, setSelectedFileIds] = useState<string[]>([])
 
@@ -72,6 +76,7 @@ export const CreateContextGroup = ({
         <Button variant="outline" onClick={() => router.back()}>
           Cancel
         </Button>
+
         <Button onClick={handleCreateContextGroup}>Create</Button>
       </div>
     </div>

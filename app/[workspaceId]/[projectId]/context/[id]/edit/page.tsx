@@ -25,9 +25,9 @@ export default async function EditContextGroupPage({
 
   return (
     <CRUDPage
-      pageTitle="Edit Context Group"
-      backText="Back to Context Groups"
-      backLink={`/${params.workspaceId}/${params.projectId}/context`}
+      pageTitle="Edit context group"
+      backText="Back to context groups"
+      backLink=".."
     >
       <EditContextGroup
         contextGroup={contextGroup}

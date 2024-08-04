@@ -26,7 +26,7 @@ export const DataList = ({
   children
 }: DataListProps) => {
   return (
-    <div className="text-primary mx-auto w-full max-w-[800px] p-6">
+    <div className="text-primary mx-auto w-full max-w-[800px] px-6 py-20">
       <div className="mb-2 text-2xl font-bold">{title}</div>
 
       <div className="text-muted-foreground mb-4 text-sm">{subtitle}</div>

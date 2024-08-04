@@ -97,11 +97,14 @@ export function ContextMultiSelect({
             <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-full p-0">
+
+        <PopoverContent className="w-[--radix-popover-trigger-width] min-w-[300px] p-0">
           <Command>
             <CommandInput placeholder={`Search ${label}...`} />
+
             <CommandList>
               <CommandEmpty>No {label} found.</CommandEmpty>
+
               {selectedSection === null && (
                 <CommandGroup>
                   <CommandItem onSelect={() => setSelectedSection("files")}>
@@ -112,6 +115,7 @@ export function ContextMultiSelect({
                   </CommandItem>
                 </CommandGroup>
               )}
+
               {selectedSection !== null && (
                 <CommandGroup>
                   <CommandItem onSelect={() => setSelectedSection(null)}>
@@ -119,6 +123,7 @@ export function ContextMultiSelect({
                   </CommandItem>
                 </CommandGroup>
               )}
+
               {selectedSection === "files" && (
                 <CommandGroup>
                   {files.map(item => (
@@ -128,6 +133,7 @@ export function ContextMultiSelect({
                     >
                       <div className="flex items-center">
                         <File className="mr-2 size-4" />
+
                         <Check
                           className={cn(
                             "mr-2 size-4",
@@ -142,6 +148,7 @@ export function ContextMultiSelect({
                   ))}
                 </CommandGroup>
               )}
+
               {selectedSection === "folders" && (
                 <CommandGroup>
                   {folders.map(item => (
@@ -151,6 +158,7 @@ export function ContextMultiSelect({
                     >
                       <div className="flex items-center">
                         <Folder className="mr-2 size-4" />
+
                         <Check
                           className={cn(
                             "mr-2 size-4",
@@ -159,6 +167,7 @@ export function ContextMultiSelect({
                               : "opacity-0"
                           )}
                         />
+
                         {item.name}
                       </div>
                     </CommandItem>
@@ -167,12 +176,16 @@ export function ContextMultiSelect({
               )}
             </CommandList>
           </Command>
+
           {selectedIds.length > 0 && (
             <div className="mt-2 max-h-[200px] overflow-y-auto p-2">
               {selectedIds.map(id => {
                 const item = data.find(item => item.id === id)
+
                 if (!item) return null
+
                 const Icon = item.type === "file" ? File : Folder
+
                 return (
                   <div
                     key={id}
@@ -182,6 +195,7 @@ export function ContextMultiSelect({
                       <Icon className="mr-2 size-4" />
                       {item.name}
                     </span>
+
                     <Button
                       variant="ghost"
                       size="sm"

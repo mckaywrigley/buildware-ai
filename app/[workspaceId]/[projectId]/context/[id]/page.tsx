@@ -25,14 +25,14 @@ export default async function ContextGroupPage({
   return (
     <CRUDPage
       pageTitle={contextGroup.name}
-      backText="Back to Context Groups"
+      backText="Back to context groups"
       backLink="../context"
     >
       <div className="mb-6 flex justify-end">
         <Link href={`./${params.id}/edit`}>
           <Button variant="outline" size="sm">
             <Pencil className="mr-2 size-4" />
-            Edit Context Group
+            Edit context group
           </Button>
         </Link>
       </div>
@@ -41,16 +41,16 @@ export default async function ContextGroupPage({
         <CardContent className="pt-6">
           <div className="mb-4 text-xl font-semibold">Attached Files</div>
           {embeddedFiles.length > 0 ? (
-            <ul className="space-y-2">
+            <div className="space-y-2">
               {embeddedFiles.map(file => (
-                <li
+                <div
                   key={file.embeddedFileId}
                   className="bg-secondary/50 rounded p-2"
                 >
                   {file.embeddedFile.path}
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
           ) : (
             <div className="text-muted-foreground">No files attached</div>
           )}
