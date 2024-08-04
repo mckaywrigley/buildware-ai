@@ -12,9 +12,25 @@ export const BUILDWARE_MAX_OUTPUT_TOKENS = isDev ? 4096 : 8192
 // Max: 200000
 export const BUILDWARE_MAX_INPUT_TOKENS = isDev ? 20000 : 200000
 
-// claude-3-5-sonnet-20240620 or claude-3-haiku-20240307
-const devLLM = "claude-3-haiku-20240307"
-const prodLLM = "claude-3-5-sonnet-20240620"
-export const BUILDWARE_SPECIFICATION_LLM = isDev ? devLLM : prodLLM
-export const BUILDWARE_PLAN_LLM = isDev ? devLLM : prodLLM
-export const BUILDWARE_IMPLEMENTATION_LLM = isDev ? devLLM : prodLLM
+const LLM_MODELS = {
+  dev: {
+    specification: "claude-3-haiku-20240307",
+    plan: "claude-3-haiku-20240307",
+    implementation: "claude-3-haiku-20240307"
+  },
+  prod: {
+    specification: "claude-3-haiku-20240307",
+    plan: "claude-3-5-sonnet-20240620",
+    implementation: "claude-3-5-sonnet-20240620"
+  }
+}
+
+export const BUILDWARE_SPECIFICATION_LLM = isDev
+  ? LLM_MODELS.dev.specification
+  : LLM_MODELS.prod.specification
+export const BUILDWARE_PLAN_LLM = isDev
+  ? LLM_MODELS.dev.plan
+  : LLM_MODELS.prod.plan
+export const BUILDWARE_IMPLEMENTATION_LLM = isDev
+  ? LLM_MODELS.dev.implementation
+  : LLM_MODELS.prod.implementation

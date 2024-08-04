@@ -81,7 +81,6 @@ export const RunDashboard = ({
   const [parsedSpecification, setParsedSpecification] =
     useState<ParsedSpecification>({ steps: [] })
   const [planResponse, setPlanResponse] = useState("")
-  const [implementationResponse, setImplementationResponse] = useState("")
   const [parsedPlan, setParsedPlan] = useState<ParsedPlan>({ steps: [] })
   const [parsedImplementation, setParsedImplementation] =
     useState<ParsedImplementation>({
@@ -255,22 +254,6 @@ ${updatedPlan.steps.map(step => `  <step>${step.text}</step>`).join("\n")}
     updatedImplementation: ParsedImplementation
   ) => {
     setParsedImplementation(updatedImplementation)
-
-    const xmlImplementation = `<pull_request>
-  <pr_title>${updatedImplementation.prTitle}</pr_title>
-  <pr_description>${updatedImplementation.prDescription}</pr_description>
-${updatedImplementation.files
-  .map(
-    file => `  <file>
-    <file_status>${file.status}</file_status>
-    <file_path>${file.path}</file_path>
-    <file_content>${file.content}</file_content>
-  </file>`
-  )
-  .join("\n")}
-</pull_request>`
-
-    setImplementationResponse(xmlImplementation)
   }
 
   return (

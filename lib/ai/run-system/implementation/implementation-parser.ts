@@ -47,10 +47,10 @@ function extractBalancedContent(
 
 function extractFiles(content: string): GeneratedFile[] {
   const files: GeneratedFile[] = []
-  const fileContents = extractBalancedContent(content, "file_list")
+  const fileListContent = extractBalancedContent(content, "file_list")
 
-  if (fileContents) {
-    const fileMatches = fileContents.matchAll(/<file>([\s\S]*?)<\/file>/g)
+  if (fileListContent) {
+    const fileMatches = fileListContent.matchAll(/<file>([\s\S]*?)<\/file>/g)
     for (const match of fileMatches) {
       const fileContent = match[1]
       const status = extractBalancedContent(fileContent, "file_status") || ""
