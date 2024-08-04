@@ -6,22 +6,20 @@ import { useEffect, useState } from "react"
 import ReactTextareaAutosize from "react-textarea-autosize"
 
 interface ImplementationStepProps {
-  parsedImplementation: ParsedImplementation
-  onUpdateParsedImplementation: (
-    updatedParsedImplementation: ParsedImplementation
-  ) => void
+  implementation: ParsedImplementation
+  onUpdateImplementation: (updatedImplementation: ParsedImplementation) => void
 }
 
 export const ImplementationStep = ({
-  parsedImplementation,
-  onUpdateParsedImplementation
+  implementation,
+  onUpdateImplementation
 }: ImplementationStepProps) => {
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
-  const [localFiles, setLocalFiles] = useState(parsedImplementation.files)
+  const [localFiles, setLocalFiles] = useState(implementation.files)
 
   useEffect(() => {
-    setLocalFiles(parsedImplementation.files)
-  }, [parsedImplementation.files])
+    setLocalFiles(implementation.files)
+  }, [implementation.files])
 
   const handleEditFile = (index: number) => {
     setEditingIndex(index)
@@ -29,7 +27,7 @@ export const ImplementationStep = ({
 
   const handleSaveFile = () => {
     setEditingIndex(null)
-    onUpdateParsedImplementation({ ...parsedImplementation, files: localFiles })
+    onUpdateImplementation({ ...implementation, files: localFiles })
   }
 
   const handleContentChange = (index: number, newContent: string) => {

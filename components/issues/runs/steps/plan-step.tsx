@@ -4,18 +4,18 @@ import { ParsedPlan, PlanStep as PlanStepType } from "@/types/run"
 import { EditableStep } from "./editable-step"
 
 interface PlanStepProps {
-  parsedPlan: ParsedPlan
-  onUpdateParsedPlan: (updatedParsedPlan: ParsedPlan) => void
+  plan: ParsedPlan
+  onUpdatePlan: (updatedPlan: ParsedPlan) => void
 }
 
-export const PlanStep = ({ parsedPlan, onUpdateParsedPlan }: PlanStepProps) => {
+export const PlanStep = ({ plan, onUpdatePlan }: PlanStepProps) => {
   const handleUpdateItems = (updatedItems: PlanStepType[]) => {
-    onUpdateParsedPlan({ ...parsedPlan, steps: updatedItems })
+    onUpdatePlan({ ...plan, steps: updatedItems })
   }
 
   return (
     <EditableStep
-      items={parsedPlan.steps}
+      items={plan.steps}
       onUpdateItems={handleUpdateItems}
       title="Plan"
       description="Edit the AI's plans if needed."

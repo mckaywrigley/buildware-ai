@@ -60,12 +60,8 @@ export const EditableStep = ({
   const handleRemoveItem = (index: number) => {
     if (localItems.length === 1) return // Prevent removing the only item
     const updatedItems = localItems.filter((_, i) => i !== index)
-    const renumberedItems = updatedItems.map((item, i) => ({
-      ...item,
-      number: i + 1
-    }))
-    setLocalItems(renumberedItems)
-    onUpdateItems(renumberedItems)
+    setLocalItems(updatedItems)
+    onUpdateItems(updatedItems)
   }
 
   const handleEditItem = (index: number) => {
@@ -90,9 +86,6 @@ export const EditableStep = ({
 
       {localItems.map((item, index) => (
         <div key={index} className="relative pt-6">
-          <div className="text-muted-foreground absolute left-1 top-0 text-sm font-medium">
-            Step {index + 1}
-          </div>
           <div className="absolute -top-2 right-0">
             <Popover>
               <PopoverTrigger asChild>

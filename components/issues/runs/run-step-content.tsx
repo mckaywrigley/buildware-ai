@@ -15,24 +15,24 @@ import { StartedStep } from "./steps/started-step"
 
 interface RunStepContentProps {
   stepName: StepName | null
-  parsedSpecification: ParsedSpecification
-  setParsedSpecification: (specification: ParsedSpecification) => void
-  parsedPlan: ParsedPlan
-  setParsedPlan: (plan: ParsedPlan) => void
   prLink: string
-  parsedImplementation: ParsedImplementation
-  setParsedImplementation: (implementation: ParsedImplementation) => void
+  specification: ParsedSpecification
+  plan: ParsedPlan
+  implementation: ParsedImplementation
+  onUpdateSpecification: (specification: ParsedSpecification) => void
+  onUpdatePlan: (plan: ParsedPlan) => void
+  onUpdateImplementation: (implementation: ParsedImplementation) => void
 }
 
 export const RunStepContent = ({
   stepName,
-  parsedSpecification,
-  setParsedSpecification,
-  parsedPlan,
-  setParsedPlan,
   prLink,
-  parsedImplementation,
-  setParsedImplementation
+  specification,
+  plan,
+  implementation,
+  onUpdateSpecification,
+  onUpdatePlan,
+  onUpdateImplementation
 }: RunStepContentProps) => {
   switch (stepName) {
     case "started":
@@ -44,19 +44,17 @@ export const RunStepContent = ({
     case "specification":
       return (
         <SpecificationStep
-          parsedSpecification={parsedSpecification}
-          onUpdateParsedSpecification={setParsedSpecification}
+          specification={specification}
+          onUpdateSpecification={onUpdateSpecification}
         />
       )
     case "plan":
-      return (
-        <PlanStep parsedPlan={parsedPlan} onUpdateParsedPlan={setParsedPlan} />
-      )
+      return <PlanStep plan={plan} onUpdatePlan={onUpdatePlan} />
     case "implementation":
       return (
         <ImplementationStep
-          parsedImplementation={parsedImplementation}
-          onUpdateParsedImplementation={setParsedImplementation}
+          implementation={implementation}
+          onUpdateImplementation={onUpdateImplementation}
         />
       )
     case "pr":

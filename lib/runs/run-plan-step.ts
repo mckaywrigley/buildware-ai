@@ -12,12 +12,12 @@ export const runPlanStep = async ({
   issue,
   codebaseFiles,
   instructionsContext,
-  specificationResponse
+  specification
 }: {
   issue: SelectIssue
   codebaseFiles: { path: string; content: string }[]
   instructionsContext: string
-  specificationResponse: string
+  specification: string
 }) => {
   try {
     let {
@@ -28,7 +28,7 @@ export const runPlanStep = async ({
       issue: { name: issue.name, description: issue.content },
       codebaseFiles,
       instructionsContext,
-      specification: specificationResponse
+      specification
     })
 
     let planResponse = PLAN_PREFILL
@@ -52,7 +52,7 @@ export const runPlanStep = async ({
           issue: { name: issue.name, description: issue.content },
           codebaseFiles,
           instructionsContext,
-          specification: specificationResponse
+          specification
         })
 
         planSystemPrompt = updatedPrompt.systemPrompt

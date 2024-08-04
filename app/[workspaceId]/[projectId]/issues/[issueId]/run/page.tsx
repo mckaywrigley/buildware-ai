@@ -1,4 +1,4 @@
-import { RunIssue } from "@/components/issues/runs/run-issue"
+import { RunDashboard } from "@/components/issues/runs/run-dashboard"
 import { NotFound } from "@/components/utility/not-found"
 import {
   getInstructionsByIssueId,
@@ -29,6 +29,6 @@ export default async function RunIssuePage({
   }
 
   return (
-    <RunIssue issue={issue} project={project} instructions={instructions} />
+    <RunDashboard issue={issue} project={project} instructions={instructions} />
   )
 }

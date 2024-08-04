@@ -12,12 +12,12 @@ export const runImplementationStep = async ({
   issue,
   codebaseFiles,
   instructionsContext,
-  planResponse
+  plan
 }: {
   issue: SelectIssue
   codebaseFiles: { path: string; content: string }[]
   instructionsContext: string
-  planResponse: string
+  plan: string
 }) => {
   try {
     let {
@@ -28,7 +28,7 @@ export const runImplementationStep = async ({
       issue: { name: issue.name, description: issue.content },
       codebaseFiles,
       instructionsContext,
-      plan: planResponse
+      plan
     })
 
     let implementationResponse = IMPLEMENTATION_PREFILL
@@ -52,7 +52,7 @@ export const runImplementationStep = async ({
           issue: { name: issue.name, description: issue.content },
           codebaseFiles,
           instructionsContext,
-          plan: planResponse
+          plan
         })
 
         implementationSystemPrompt = updatedPrompt.systemPrompt

@@ -7,23 +7,21 @@ import {
 import { EditableStep } from "./editable-step"
 
 interface SpecificationStepProps {
-  parsedSpecification: ParsedSpecification
-  onUpdateParsedSpecification: (
-    updatedParsedSpecification: ParsedSpecification
-  ) => void
+  specification: ParsedSpecification
+  onUpdateSpecification: (updatedSpecification: ParsedSpecification) => void
 }
 
 export const SpecificationStep = ({
-  parsedSpecification,
-  onUpdateParsedSpecification
+  specification,
+  onUpdateSpecification
 }: SpecificationStepProps) => {
   const handleUpdateItems = (updatedItems: SpecificationStepType[]) => {
-    onUpdateParsedSpecification({ ...parsedSpecification, steps: updatedItems })
+    onUpdateSpecification({ ...specification, steps: updatedItems })
   }
 
   return (
     <EditableStep
-      items={parsedSpecification.steps}
+      items={specification.steps}
       onUpdateItems={handleUpdateItems}
       title="Specification"
       description="Edit, remove, or add new steps as needed."

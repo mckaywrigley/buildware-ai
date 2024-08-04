@@ -50,13 +50,17 @@ export const stepOrder: StepName[] = [
   "completed"
 ]
 
-interface RunIssueProps {
+interface RunDashboardProps {
   issue: SelectIssue
   project: SelectProject
   instructions: SelectInstruction[]
 }
 
-export const RunIssue = ({ issue, project, instructions }: RunIssueProps) => {
+export const RunDashboard = ({
+  issue,
+  project,
+  instructions
+}: RunDashboardProps) => {
   const router = useRouter()
   const [selectedStep, setSelectedStep] = useState<StepName | null>(null)
   const [isRunning, setIsRunning] = useState(false)
@@ -77,6 +81,7 @@ export const RunIssue = ({ issue, project, instructions }: RunIssueProps) => {
   const [parsedSpecification, setParsedSpecification] =
     useState<ParsedSpecification>({ steps: [] })
   const [planResponse, setPlanResponse] = useState("")
+  const [implementationResponse, setImplementationResponse] = useState("")
   const [parsedPlan, setParsedPlan] = useState<ParsedPlan>({ steps: [] })
   const [parsedImplementation, setParsedImplementation] =
     useState<ParsedImplementation>({
@@ -128,7 +133,7 @@ export const RunIssue = ({ issue, project, instructions }: RunIssueProps) => {
               }))
             )
             setWaitingForConfirmation(true)
-            return // Exit function here
+            return
           case "specification":
             const specificationStepResponse = await runSpecificationStep({
               issue,
@@ -142,30 +147,30 @@ export const RunIssue = ({ issue, project, instructions }: RunIssueProps) => {
               specificationStepResponse.parsedSpecification
             )
             setWaitingForConfirmation(true)
-            return // Exit function here
+            return
           case "plan":
             const planStepResponse = await runPlanStep({
               issue,
               codebaseFiles: latestCodebaseFiles,
               instructionsContext,
-              specificationResponse
+              specification: specificationResponse
             })
             setPlanResponse(planStepResponse.planResponse)
             setParsedPlan(planStepResponse.parsedPlan)
             setWaitingForConfirmation(true)
-            return // Exit function here
+            return
           case "implementation":
             const implementationStepResponse = await runImplementationStep({
               issue,
               codebaseFiles: latestCodebaseFiles,
               instructionsContext,
-              planResponse
+              plan: planResponse
             })
             setParsedImplementation(
               implementationStepResponse.parsedImplementation
             )
             setWaitingForConfirmation(true)
-            return // Exit function here
+            return
           case "pr":
             const prStepResponse = await runPRStep({
               issue,
@@ -222,6 +227,50 @@ export const RunIssue = ({ issue, project, instructions }: RunIssueProps) => {
     if (clickedStepIndex <= currentStepIndex) {
       setSelectedStep(step)
     }
+  }
+
+  const updateParsedSpecification = (
+    updatedSpecification: ParsedSpecification
+  ) => {
+    setParsedSpecification(updatedSpecification)
+
+    const xmlSpecification = `<specification>
+${updatedSpecification.steps.map(step => `  <step>${step.text}</step>`).join("\n")}
+</specification>`
+
+    setSpecificationResponse(xmlSpecification)
+  }
+
+  const updateParsedPlan = (updatedPlan: ParsedPlan) => {
+    setParsedPlan(updatedPlan)
+
+    const xmlPlan = `<plan>
+${updatedPlan.steps.map(step => `  <step>${step.text}</step>`).join("\n")}
+</plan>`
+
+    setPlanResponse(xmlPlan)
+  }
+
+  const updateParsedImplementation = (
+    updatedImplementation: ParsedImplementation
+  ) => {
+    setParsedImplementation(updatedImplementation)
+
+    const xmlImplementation = `<pull_request>
+  <pr_title>${updatedImplementation.prTitle}</pr_title>
+  <pr_description>${updatedImplementation.prDescription}</pr_description>
+${updatedImplementation.files
+  .map(
+    file => `  <file>
+    <file_status>${file.status}</file_status>
+    <file_path>${file.path}</file_path>
+    <file_content>${file.content}</file_content>
+  </file>`
+  )
+  .join("\n")}
+</pull_request>`
+
+    setImplementationResponse(xmlImplementation)
   }
 
   return (
@@ -317,13 +366,13 @@ export const RunIssue = ({ issue, project, instructions }: RunIssueProps) => {
           <div className="col-span-8 overflow-y-auto p-6">
             <RunStepContent
               stepName={selectedStep || currentStep}
-              parsedPlan={parsedPlan}
-              setParsedPlan={setParsedPlan}
-              parsedSpecification={parsedSpecification}
-              setParsedSpecification={setParsedSpecification}
-              parsedImplementation={parsedImplementation}
-              setParsedImplementation={setParsedImplementation}
               prLink={prLink}
+              specification={parsedSpecification}
+              plan={parsedPlan}
+              implementation={parsedImplementation}
+              onUpdateSpecification={updateParsedSpecification}
+              onUpdatePlan={updateParsedPlan}
+              onUpdateImplementation={updateParsedImplementation}
             />
           </div>
         </div>
