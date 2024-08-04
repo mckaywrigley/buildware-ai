@@ -40,6 +40,7 @@ export function ContextMultiSelect({
   const [selectedSection, setSelectedSection] = useState<
     "files" | "folders" | null
   >(null)
+  const [searchQuery, setSearchQuery] = useState("")
 
   const handleToggleSelect = (id: string) => {
     const item = data.find(item => item.id === id)
@@ -78,8 +79,12 @@ export function ContextMultiSelect({
     return affectedItems.every(item => selectedIds.includes(item.id))
   }
 
-  const files = data.filter(item => item.type === "file")
-  const folders = data.filter(item => item.type === "folder")
+  const filteredData = data.filter(item =>
+    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
+  const files = filteredData.filter(item => item.type === "file")
+  const folders = filteredData.filter(item => item.type === "folder")
 
   return (
     <div>
@@ -100,80 +105,79 @@ export function ContextMultiSelect({
 
         <PopoverContent className="w-[--radix-popover-trigger-width] min-w-[300px] p-0">
           <Command>
-            <CommandInput placeholder={`Search ${label}...`} />
+            <CommandInput
+              placeholder={`Search ${label}...`}
+              onValueChange={setSearchQuery}
+            />
 
             <CommandList>
               <CommandEmpty>No {label} found.</CommandEmpty>
 
-              {selectedSection === null && (
-                <CommandGroup>
-                  <CommandItem onSelect={() => setSelectedSection("files")}>
-                    Files
-                  </CommandItem>
-                  <CommandItem onSelect={() => setSelectedSection("folders")}>
-                    Folders
-                  </CommandItem>
-                </CommandGroup>
-              )}
+              <CommandGroup>
+                <CommandItem
+                  className="cursor-pointer"
+                  onSelect={() =>
+                    setSelectedSection(
+                      selectedSection === "files" ? null : "files"
+                    )
+                  }
+                >
+                  {selectedSection === "files" ? "View All" : "View Files"}
+                </CommandItem>
 
-              {selectedSection !== null && (
-                <CommandGroup>
-                  <CommandItem onSelect={() => setSelectedSection(null)}>
-                    Back
-                  </CommandItem>
-                </CommandGroup>
-              )}
+                <CommandItem
+                  className="cursor-pointer"
+                  onSelect={() =>
+                    setSelectedSection(
+                      selectedSection === "folders" ? null : "folders"
+                    )
+                  }
+                >
+                  {selectedSection === "folders" ? "View All" : "View Folders"}
+                </CommandItem>
+              </CommandGroup>
 
-              {selectedSection === "files" && (
-                <CommandGroup>
-                  {files.map(item => (
-                    <CommandItem
-                      key={item.id}
-                      onSelect={() => handleToggleSelect(item.id)}
-                    >
-                      <div className="flex items-center">
+              <CommandGroup
+                heading={
+                  selectedSection
+                    ? selectedSection === "files"
+                      ? "Files"
+                      : "Folders"
+                    : "All"
+                }
+              >
+                {(selectedSection === null
+                  ? filteredData
+                  : selectedSection === "files"
+                    ? files
+                    : folders
+                ).map(item => (
+                  <CommandItem
+                    key={item.id}
+                    onSelect={() => handleToggleSelect(item.id)}
+                  >
+                    <div className="flex items-center">
+                      {item.type === "file" ? (
                         <File className="mr-2 size-4" />
-
-                        <Check
-                          className={cn(
-                            "mr-2 size-4",
-                            selectedIds.includes(item.id)
-                              ? "opacity-100"
-                              : "opacity-0"
-                          )}
-                        />
-                        {item.name}
-                      </div>
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              )}
-
-              {selectedSection === "folders" && (
-                <CommandGroup>
-                  {folders.map(item => (
-                    <CommandItem
-                      key={item.id}
-                      onSelect={() => handleToggleSelect(item.id)}
-                    >
-                      <div className="flex items-center">
-                        <Folder className="mr-2 size-4" />
-
-                        <Check
-                          className={cn(
-                            "mr-2 size-4",
-                            isFolderSelected(item.id)
-                              ? "opacity-100"
-                              : "opacity-0"
-                          )}
-                        />
-
-                        {item.name}
-                      </div>
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              )}
+                      ) : (
+                        <Folder className="mr-2 size-4 fill-black dark:fill-white" />
+                      )}
+                      <Check
+                        className={cn(
+                          "mr-2 size-4",
+                          (item.type === "file" &&
+                            selectedIds.includes(item.id)) ||
+                            (item.type === "folder" &&
+                              isFolderSelected(item.id))
+                            ? "opacity-100"
+                            : "opacity-0"
+                        )}
+                      />
+                      {item.name}
+                    </div>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
             </CommandList>
           </Command>
 
