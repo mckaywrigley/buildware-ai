@@ -113,23 +113,39 @@ export async function createEmbeddedFile(
 }
 
 export async function updateEmbeddedFile(
-  data: Omit<InsertEmbeddedFile, "userId">
+  data: Omit<InsertEmbeddedFile, "userId">,
+  oldPath?: string
 ) {
   try {
-    await db
-      .update(embeddedFilesTable)
-      .set({
-        content: data.content,
-        tokenCount: data.tokenCount,
-        embedding: data.embedding,
-        updatedAt: new Date()
-      })
-      .where(
-        and(
-          eq(embeddedFilesTable.embeddedBranchId, data.embeddedBranchId),
-          eq(embeddedFilesTable.path, data.path)
+    if (oldPath && oldPath !== data.path) {
+      // Handle renamed file
+      await db
+        .update(embeddedFilesTable)
+        .set({
+          ...data,
+          path: data.path,
+          content: data.content,
+          tokenCount: data.tokenCount,
+          embedding: data.embedding
+        })
+        .where(
+          and(
+            eq(embeddedFilesTable.embeddedBranchId, data.embeddedBranchId),
+            eq(embeddedFilesTable.path, oldPath)
+          )
         )
-      )
+    } else {
+      // Handle regular update
+      await db
+        .update(embeddedFilesTable)
+        .set(data)
+        .where(
+          and(
+            eq(embeddedFilesTable.embeddedBranchId, data.embeddedBranchId),
+            eq(embeddedFilesTable.path, data.path)
+          )
+        )
+    }
     revalidatePath("/")
   } catch (error) {
     console.error("Error updating embedded file:", error)

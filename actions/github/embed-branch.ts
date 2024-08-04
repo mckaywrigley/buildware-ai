@@ -36,7 +36,7 @@ export async function embedBranch(data: {
     const filesToUpdate = await fetchFiles(
       installationId,
       changedFiles
-        .filter(file => file.status !== "removed" && file.status !== "renamed")
+        .filter(file => file.status !== "removed")
         .map(file => ({
           path: file.filename,
           owner: githubRepoFullName.split("/")[0],
@@ -62,13 +62,20 @@ export async function embedBranch(data: {
 
     // Handle renamed files
     for (const file of renamedFiles) {
-      await deleteEmbeddedFile(embeddedBranchId, file.previous_filename!)
-      await createEmbeddedFile({
-        ...file,
-        projectId,
-        embeddedBranchId,
-        githubRepoFullName
-      })
+      if (file.previous_filename && file.filename) {
+        const embeddedFile = embeddedFiles.find(f => f.path === file.filename)
+        if (embeddedFile) {
+          await updateEmbeddedFile(
+            {
+              ...embeddedFile,
+              projectId,
+              embeddedBranchId,
+              githubRepoFullName
+            },
+            file.previous_filename
+          )
+        }
+      }
     }
 
     // Update database for non-deleted and non-renamed files
