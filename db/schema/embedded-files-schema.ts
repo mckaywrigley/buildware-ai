@@ -11,6 +11,7 @@ import {
 } from "drizzle-orm/pg-core"
 import { embeddedBranchesTable } from "./embedded-branches-schema"
 import { projectsTable } from "./projects-schema"
+import { contextGroupsToEmbeddedFiles } from "./context-groups-to-embedded-files-schema"
 
 export const embeddedFilesTable = pgTable(
   "embedded_files",
@@ -46,11 +47,12 @@ export const embeddedFilesTable = pgTable(
 
 export const embeddedFilesRelations = relations(
   embeddedFilesTable,
-  ({ one }) => ({
+  ({ one, many }) => ({
     project: one(projectsTable, {
       fields: [embeddedFilesTable.projectId],
       references: [projectsTable.id]
-    })
+    }),
+    contextGroupsToEmbeddedFiles: many(contextGroupsToEmbeddedFiles)
   })
 )
 

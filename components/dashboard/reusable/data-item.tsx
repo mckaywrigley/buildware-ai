@@ -11,7 +11,7 @@ interface DataItemProps {
     id: string
     name: string
   }
-  type: "instructions" | "templates" | "issues"
+  type: "instructions" | "templates" | "issues" | "context"
   onDelete: (id: string) => Promise<void>
 }
 

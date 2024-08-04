@@ -7,23 +7,30 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
-import { createIssue, getInstructionsByProjectId } from "@/db/queries"
-import { addInstructionToIssue } from "@/db/queries/issues-to-instructions-queries"
+import { createIssue } from "@/db/queries"
+import { addContextGroupsToIssueBatch } from "@/db/queries/context-groups-queries"
+import { addInstructionsToIssueBatch } from "@/db/queries/instructions-queries"
 import { getInstructionsForTemplate } from "@/db/queries/templates-to-instructions-queries"
 import { SelectInstruction } from "@/db/schema"
+import { SelectContextGroup } from "@/db/schema/context-groups-schema"
 import { SelectTemplate } from "@/db/schema/templates-schema"
 import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { CRUDForm } from "../dashboard/reusable/crud-form"
 import { MultiSelect } from "../ui/multi-select"
 import { ImproveIssue } from "./improve-issue"
-import { ViewIssueContext } from "./view-issue-context"
 
 interface CreateIssueProps {
   templates: SelectTemplate[]
+  contextGroups: SelectContextGroup[]
+  instructions: SelectInstruction[]
 }
 
-export const CreateIssue = ({ templates }: CreateIssueProps) => {
+export const CreateIssue = ({
+  templates,
+  contextGroups,
+  instructions
+}: CreateIssueProps) => {
   const params = useParams()
   const router = useRouter()
 
@@ -33,7 +40,8 @@ export const CreateIssue = ({ templates }: CreateIssueProps) => {
   const [name, setName] = useState("")
   const [content, setContent] = useState("")
   const [selectedInstructions, setSelectedInstructions] = useState<string[]>([])
-  const [allInstructions, setAllInstructions] = useState<SelectInstruction[]>(
+  const [allInstructions] = useState<SelectInstruction[]>(instructions)
+  const [selectedContextGroups, setSelectedContextGroups] = useState<string[]>(
     []
   )
 
@@ -54,15 +62,6 @@ export const CreateIssue = ({ templates }: CreateIssueProps) => {
     }
   }, [selectedTemplateId])
 
-  useEffect(() => {
-    fetchAllInstructions()
-  }, [])
-
-  const fetchAllInstructions = async () => {
-    const allInstructionsData = await getInstructionsByProjectId(projectId)
-    setAllInstructions(allInstructionsData)
-  }
-
   const handleCreateIssueAndRelation = async () => {
     const newIssue = {
       name,
@@ -72,8 +71,12 @@ export const CreateIssue = ({ templates }: CreateIssueProps) => {
     }
     const issue = await createIssue(newIssue)
 
-    for (const instructionId of selectedInstructions) {
-      await addInstructionToIssue(issue.id, instructionId)
+    if (selectedInstructions.length > 0) {
+      await addInstructionsToIssueBatch(issue.id, selectedInstructions)
+    }
+
+    if (selectedContextGroups.length > 0) {
+      await addContextGroupsToIssueBatch(issue.id, selectedContextGroups)
     }
 
     router.refresh()
@@ -126,15 +129,21 @@ export const CreateIssue = ({ templates }: CreateIssueProps) => {
         </div>
       )}
 
-      <div className="mt-4 flex w-full justify-end gap-2">
-        <ViewIssueContext
-          name={name}
-          content={content}
-          selectedInstructions={allInstructions.filter(instruction =>
-            selectedInstructions.includes(instruction.id)
-          )}
-        />
+      {contextGroups.length > 0 && (
+        <div className="mt-4">
+          <MultiSelect
+            label="Context Group"
+            data={contextGroups.map(group => ({
+              id: group.id,
+              name: group.name
+            }))}
+            selectedIds={selectedContextGroups}
+            onToggleSelect={setSelectedContextGroups}
+          />
+        </div>
+      )}
 
+      <div className="mt-4 flex w-full justify-end gap-2">
         <ImproveIssue
           startingIssue={{ name, content }}
           onUpdateIssue={({ name, content }) => {

@@ -4,6 +4,7 @@ import { getUserId } from "@/actions/auth/auth"
 import { eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { db } from "../db"
+import { issuesToInstructionsTable } from "../schema"
 import {
   InsertInstruction,
   SelectInstruction,
@@ -72,6 +73,24 @@ export async function deleteInstruction(id: string): Promise<void> {
     revalidatePath("/")
   } catch (error) {
     console.error(`Error deleting instruction ${id}:`, error)
+    throw error
+  }
+}
+
+export async function addInstructionsToIssueBatch(
+  issueId: string,
+  instructionIds: string[]
+): Promise<void> {
+  try {
+    await db.insert(issuesToInstructionsTable).values(
+      instructionIds.map(instructionId => ({
+        issueId,
+        instructionId
+      }))
+    )
+    revalidatePath("/")
+  } catch (error) {
+    console.error("Error adding instructions to issue in batch:", error)
     throw error
   }
 }
