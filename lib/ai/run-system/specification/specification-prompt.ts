@@ -27,12 +27,25 @@ export const buildSpecificationPrompt = async ({
 
     You will be given a codebase to work with, a task to complete, general instructions & guidelines for the task, and response instructions.
 
-    Your goal is to use this information to build a specification for the task.`
+    Your goal is to use this information to build a specification for the task.
+    
+    The specification should be a high-level outline or plan for implementing the task.
+    
+    To create the specification:
+    - Focus on the task at hand
+    - Break down the task into clear, logical steps
+    - Provide an overview of what needs to be done without diving into code-level details
+    - Focus on the "what" rather than the "how"
+    - Serve as a roadmap for developers to follow when implementing the task
+
+    The specification should **NOT**:
+    - Include specific code snippets or implementation details
+    - Include sections like performance, testing, deployment, documentation, etc, unless specifically asked to`
 
   const userMessageTemplate = endent`
     # Codebase
 
-    The codebase to work with.
+    First, review the codebase you'll be working with:
 
     <codebase>
       {{CODEBASE_PLACEHOLDER}}
@@ -40,7 +53,7 @@ export const buildSpecificationPrompt = async ({
 
     # Task
 
-    The task to complete.
+    Now, here's the task you need to complete:
 
     <task>
       <task_name>${issue.name || "No name provided."}</task_name>
@@ -51,25 +64,15 @@ export const buildSpecificationPrompt = async ({
 
     # Instructions and Guidelines
 
-    The instructions and guidelines for the task. Follow these as you build the specification.
+    Keep in mind these general instructions and guidelines while working on the task:
 
     <instructions>
-      You **should**:
-
-      - Focus on the task at hand.
-      - Break down the task into clear, logical specifications.
-      - Focus on specific implementation details.
-
-      You **should not**:
-
-      - Include sections like performance, manual or automated testing, deployment, documentation, etc, unless specifically asked to.
-
       ${instructionsContext || "No additional instructions provided."}
     </instructions>
 
     # Response Instructions
 
-    The instructions for how you should respond.
+    When writing your response, follow these instructions:
 
     ## Response Information
 

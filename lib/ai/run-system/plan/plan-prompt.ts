@@ -29,20 +29,39 @@ export const buildPlanPrompt = async ({
 
     You will be given a codebase to work with, a task to complete, general instructions & guidelines for the task, a specification for the task, and response instructions.
 
-    Your goal is to use this information to create a detailed implementation plan for the given task.`
+    Your goal is to use this information to create a detailed implementation plan for the given task.
+
+    Your implementation plan should:
+    - Be focused solely on the task at hand 
+    - Provide clear, actionable steps for implementation
+    - Include detailed pseudocode where appropriate
+    - Address all requirements specified in the task and specification
+    
+    To create the plan:
+    1. Carefully analyze the codebase, task description, general instructions, and specification.
+    2. Break down the task into clear, logical steps.
+    3. Focus on implementation details, providing a step-by-step guide on how to complete the task.
+    4. Use pseudocode instead of actual code when describing implementation details.
+    5. Ensure your plan addresses all aspects of the task specification.
+
+    The plan should **NOT**:
+    - Include full code snippets. Remember to use pseudocode instead.
+    - Include sections like performance, testing, deployment, documentation, etc, unless specifically asked to`
 
   const userMessageTemplate = endent`
     # Codebase
 
-    The codebase to work with.
+    First, review the codebase you'll be working with:
 
     <codebase>
       {{CODEBASE_PLACEHOLDER}}
     </codebase>
 
+    ---
+
     # Task
 
-    The task to complete.
+    Now, here's the task you need to complete:
 
     <task>
       <task_name>${issue.name || "No title provided."}</task_name>
@@ -51,34 +70,29 @@ export const buildPlanPrompt = async ({
       </task_details>
     </task>
 
+    ---
+
     # Instructions and Guidelines
 
-    The instructions and guidelines for the task. Follow these as you build the specification.
+    Keep in mind these general instructions and guidelines while working on the task:
 
     <instructions>
-      You **should**:
-
-      - Stick to the task at hand.
-      - Break down the task into clear, logical steps.
-      - Focus on implementation details.
-      - Always use pseudocode instead of actual code.
-
-      You **should not**:
-
-      - Include sections like performance, manual or automated testing, deployment, documentation, etc, unless specifically asked to.
-
       ${instructionsContext || "No additional instructions provided."}
     </instructions>
 
+    ---
+
     # Specification
 
-    The specification for the task.
+    To help you complete the task, here's a specification to follow:
     
     ${specification}
 
+    ---
+
     # Response Instructions
 
-    The instructions for how you should respond.
+    When writing your response, follow these instructions:
     
     ## Response Information
 

@@ -29,20 +29,33 @@ export const buildImplementationPrompt = async ({
 
     You will be given a codebase to work with, a task to complete, general instructions & guidelines for the task, a plan for the task, and response instructions.
 
-    Your goal is to use this information to write all the code needed to complete the given task.`
+    Your goal is to use this information to write all of the code needed to complete the given task.
+
+    Ensure your code is of the highest quality, follows best practices, and fully & effectively completes the given task.
+        
+    Follow these guidelines:
+    1. Carefully analyze the existing codebase and understand its structure.
+    2. Identify which files need to be created, modified, or deleted to accomplish the task.
+    3. Write clean, efficient, and well-commented code that adheres to best practices and the general instructions provided.
+    4. Ensure your code integrates seamlessly with the existing codebase.
+    5. If you need to create new files, provide the full file path and full file content.
+    6. For modified files, provide the full file path and full updated file content.
+    7. For deleted files, only provide the full file path.`
 
   const userMessageTemplate = endent`
     # Codebase
 
-    The codebase to work with.
+    First, review the codebase you'll be working with:
 
     <codebase>
       {{CODEBASE_PLACEHOLDER}}
     </codebase>
 
+    ---
+
     # Task
 
-    The task to complete.
+    Now, here's the task you need to complete:
 
     <task>
       <task_name>${issue.name || "No title provided."}</task_name>
@@ -51,19 +64,29 @@ export const buildImplementationPrompt = async ({
       </task_details>
     </task>
 
+    ---
+
     # Instructions and Guidelines
 
-    The instructions and guidelines for the task. Follow these as you build the specification.
+    Keep in mind these general instructions and guidelines while working on the task:
 
     <instructions>
       ${instructionsContext || "No additional instructions provided."}
     </instructions>
 
+    ---
+
     # Plan
 
-    A plan to help complete the task.
+    To help you complete the task, here's a plan to follow:
 
     ${plan}
+
+    ---
+
+    # Response Instructions
+
+    When writing your response, follow these instructions:
     
     ## Response Information
 
@@ -79,8 +102,6 @@ export const buildImplementationPrompt = async ({
           - FILE_CONTENT: The complete file content, including all necessary imports, function definitions, and exports.
           
     ## Response Format
-
-    For new or modified files, generate the full content for the file. For deleted files, only provide the full path.
   
     Respond in the following format:
 
@@ -98,10 +119,6 @@ export const buildImplementationPrompt = async ({
       ...
       </file_list>
     </pull_request>
-
-    # Response Instructions
-
-    The instructions for how you should respond.
   
     ## Response Example
 

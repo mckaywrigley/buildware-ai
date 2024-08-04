@@ -78,7 +78,11 @@ export async function checkAndEmbedTargetBranch({
       })
     }
 
-    let changedFiles: { filename: string; status: string }[] = []
+    let changedFiles: {
+      filename: string
+      status: string
+      previous_filename?: string
+    }[] = []
 
     if (embeddedBranch.lastEmbeddedCommitHash) {
       try {
@@ -93,7 +97,8 @@ export async function checkAndEmbedTargetBranch({
         changedFiles =
           compareData.files?.map(file => ({
             filename: file.filename,
-            status: file.status
+            status: file.status,
+            previous_filename: file.previous_filename
           })) || []
       } catch (error) {
         console.warn("Error comparing commits:", error)
@@ -118,7 +123,8 @@ export async function checkAndEmbedTargetBranch({
     // Normalize changedFiles structure
     changedFiles = changedFiles.map(file => ({
       filename: file.filename,
-      status: file.status || "added"
+      status: file.status || "added",
+      previous_filename: file.previous_filename
     }))
 
     if (embeddedBranch.lastEmbeddedCommitHash !== latestCommitHash) {
