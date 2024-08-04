@@ -15,7 +15,7 @@ import {
   SelectIssue,
   SelectProject
 } from "@/db/schema"
-import { File, Folder, Pencil, Play } from "lucide-react"
+import { Eye, File, Folder, Pencil, Play } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
@@ -61,6 +61,10 @@ export const IssueView = ({
     (typeof attachedContextGroups)[0] | null
   >(null)
 
+  const [showAllFiles, setShowAllFiles] = useState(false)
+
+  const allFiles = attachedContextGroups.flatMap(cg => cg.contextGroup.files)
+
   return (
     <CRUDPage
       pageTitle={`View issue`}
@@ -68,7 +72,7 @@ export const IssueView = ({
       backLink={`../issues`}
     >
       <div className="flex w-full justify-between">
-        <div className="flex flex-col gap-4">
+        <div className="flex w-full flex-col gap-4">
           <div className="flex justify-between">
             <div className="flex gap-2">
               <Link
@@ -87,9 +91,7 @@ export const IssueView = ({
                 selectedInstructions={attachedInstructions.map(
                   ai => ai.instruction
                 )}
-                selectedContextGroups={attachedContextGroups.map(
-                  cg => cg.contextGroup
-                )}
+                attachedContextGroups={attachedContextGroups}
               />
             </div>
 
@@ -131,9 +133,21 @@ export const IssueView = ({
 
           {attachedContextGroups.length > 0 && (
             <div className="my-6">
-              <div className="mb-2 text-lg font-semibold">
-                Attached Context Groups
+              <div className="mb-2 flex items-center justify-between">
+                <span className="text-lg font-semibold">
+                  Attached Context Groups
+                </span>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowAllFiles(true)}
+                >
+                  <Eye className="mr-2 size-4" />
+                  View All Files
+                </Button>
               </div>
+
               <div className="flex flex-wrap gap-2">
                 {attachedContextGroups.map(contextGroupData => (
                   <Button
@@ -182,6 +196,29 @@ export const IssueView = ({
                 ) : (
                   <Folder className="mr-2 size-4" />
                 )}
+
+                <span>{file.path}</span>
+              </div>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showAllFiles} onOpenChange={setShowAllFiles}>
+        <DialogContent className="max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>All Attached Files</DialogTitle>
+          </DialogHeader>
+
+          <div className="mt-4">
+            {allFiles.map(file => (
+              <div key={file.id} className="flex items-center py-1">
+                {file.type === "file" ? (
+                  <File className="mr-2 size-4" />
+                ) : (
+                  <Folder className="mr-2 size-4" />
+                )}
+
                 <span>{file.path}</span>
               </div>
             ))}

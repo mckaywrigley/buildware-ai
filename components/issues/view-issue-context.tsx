@@ -1,5 +1,5 @@
 import { SelectContextGroup, SelectInstruction } from "@/db/schema"
-import { Eye } from "lucide-react"
+import { ChevronDown, ChevronRight, Eye, File, Folder } from "lucide-react"
 import { useState } from "react"
 import { MessageMarkdown } from "../instructions/message-markdown"
 import { Button } from "../ui/button"
@@ -17,16 +17,35 @@ interface ViewIssueContextProps {
   name: string
   content: string
   selectedInstructions: SelectInstruction[]
-  selectedContextGroups: SelectContextGroup[]
+  attachedContextGroups: {
+    contextGroupId: string
+    issueId: string
+    contextGroup: SelectContextGroup & {
+      files: {
+        id: string
+        path: string
+        type: "file" | "folder"
+      }[]
+    }
+  }[]
 }
 
 export const ViewIssueContext = ({
   name,
   content,
   selectedInstructions,
-  selectedContextGroups
+  attachedContextGroups
 }: ViewIssueContextProps) => {
   const [isOpen, setIsOpen] = useState(false)
+  const [expandedGroups, setExpandedGroups] = useState<string[]>([])
+
+  const toggleGroup = (groupId: string) => {
+    setExpandedGroups(prev =>
+      prev.includes(groupId)
+        ? prev.filter(id => id !== groupId)
+        : [...prev, groupId]
+    )
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -70,19 +89,45 @@ export const ViewIssueContext = ({
           )}
         </div>
 
-        <div>
-          {selectedContextGroups.length > 0 ? (
-            <div className="mt-4">
-              <div className="text-xl font-bold">Attached Context Groups</div>
+        <div className="mt-4">
+          <div className="text-xl font-bold">Attached Context Groups</div>
 
-              {selectedContextGroups.map(group => (
-                <div key={group.id} className="mt-2">
-                  <div className="text-lg font-semibold">{group.name}</div>
-                </div>
-              ))}
-            </div>
+          {attachedContextGroups.length > 0 ? (
+            attachedContextGroups.map(group => (
+              <div key={group.contextGroupId} className="mt-2">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start p-2 text-left"
+                  onClick={() => toggleGroup(group.contextGroupId)}
+                >
+                  {expandedGroups.includes(group.contextGroupId) ? (
+                    <ChevronDown className="mr-2 size-4" />
+                  ) : (
+                    <ChevronRight className="mr-2 size-4" />
+                  )}
+                  <span className="text-lg font-semibold">
+                    {group.contextGroup.name}
+                  </span>
+                </Button>
+
+                {expandedGroups.includes(group.contextGroupId) && (
+                  <div className="ml-6 mt-2">
+                    {group.contextGroup.files?.map(file => (
+                      <div key={file.id} className="flex items-center py-1">
+                        {file.type === "file" ? (
+                          <File className="mr-2 size-4" />
+                        ) : (
+                          <Folder className="mr-2 size-4" />
+                        )}
+                        <span>{file.path}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))
           ) : (
-            <div className="mt-4">No context groups attached.</div>
+            <div className="mt-2">No context groups attached.</div>
           )}
         </div>
       </DialogContent>
