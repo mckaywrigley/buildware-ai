@@ -8,8 +8,8 @@ import {
   SelectValue
 } from "@/components/ui/select"
 import { createIssue } from "@/db/queries"
-import { addContextGroupToIssue } from "@/db/queries/issue-to-context-groups-queries"
-import { addInstructionToIssue } from "@/db/queries/issues-to-instructions-queries"
+import { addContextGroupsToIssueBatch } from "@/db/queries/context-groups-queries"
+import { addInstructionsToIssueBatch } from "@/db/queries/instructions-queries"
 import { getInstructionsForTemplate } from "@/db/queries/templates-to-instructions-queries"
 import { SelectInstruction } from "@/db/schema"
 import { SelectContextGroup } from "@/db/schema/context-groups-schema"
@@ -71,12 +71,12 @@ export const CreateIssue = ({
     }
     const issue = await createIssue(newIssue)
 
-    for (const instructionId of selectedInstructions) {
-      await addInstructionToIssue(issue.id, instructionId)
+    if (selectedInstructions.length > 0) {
+      await addInstructionsToIssueBatch(issue.id, selectedInstructions)
     }
 
-    for (const contextGroupId of selectedContextGroups) {
-      await addContextGroupToIssue(issue.id, contextGroupId)
+    if (selectedContextGroups.length > 0) {
+      await addContextGroupsToIssueBatch(issue.id, selectedContextGroups)
     }
 
     router.refresh()

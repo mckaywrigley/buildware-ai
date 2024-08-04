@@ -11,6 +11,7 @@ export async function addEmbeddedFilesToContextGroup(
   embeddedFileIds: string[]
 ) {
   try {
+    if (embeddedFileIds.length === 0) return
     await db.insert(contextGroupsToEmbeddedFiles).values(
       embeddedFileIds.map(embeddedFileId => ({
         contextGroupId,
@@ -24,22 +25,23 @@ export async function addEmbeddedFilesToContextGroup(
   }
 }
 
-export async function removeEmbeddedFileFromContextGroup(
+export async function removeEmbeddedFilesFromContextGroup(
   contextGroupId: string,
-  embeddedFileId: string
+  embeddedFileIds: string[]
 ) {
   try {
+    if (embeddedFileIds.length === 0) return
     await db
       .delete(contextGroupsToEmbeddedFiles)
       .where(
         and(
           eq(contextGroupsToEmbeddedFiles.contextGroupId, contextGroupId),
-          eq(contextGroupsToEmbeddedFiles.embeddedFileId, embeddedFileId)
+          inArray(contextGroupsToEmbeddedFiles.embeddedFileId, embeddedFileIds)
         )
       )
     revalidatePath("/")
   } catch (error) {
-    console.error("Error removing embedded file from context group:", error)
+    console.error("Error removing embedded files from context group:", error)
     throw error
   }
 }

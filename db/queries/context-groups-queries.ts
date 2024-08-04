@@ -4,6 +4,7 @@ import { getUserId } from "@/actions/auth/auth"
 import { eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { db } from "../db"
+import { issuesToContextGroups } from "../schema"
 import {
   InsertContextGroup,
   SelectContextGroup,
@@ -74,6 +75,24 @@ export async function deleteContextGroup(id: string): Promise<void> {
     revalidatePath("/")
   } catch (error) {
     console.error(`Error deleting context group ${id}:`, error)
+    throw error
+  }
+}
+
+export async function addContextGroupsToIssueBatch(
+  issueId: string,
+  contextGroupIds: string[]
+): Promise<void> {
+  try {
+    await db.insert(issuesToContextGroups).values(
+      contextGroupIds.map(contextGroupId => ({
+        issueId,
+        contextGroupId
+      }))
+    )
+    revalidatePath("/")
+  } catch (error) {
+    console.error("Error adding context groups to issue in batch:", error)
     throw error
   }
 }

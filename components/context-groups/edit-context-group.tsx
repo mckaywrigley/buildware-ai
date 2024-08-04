@@ -2,20 +2,22 @@
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { updateContextGroup } from "@/db/queries/context-groups-queries"
 import {
-  addEmbeddedFileToContextGroup,
+  deleteContextGroup,
+  updateContextGroup
+} from "@/db/queries/context-groups-queries"
+import {
+  addEmbeddedFilesToContextGroup,
   getEmbeddedFilesForContextGroup,
-  removeEmbeddedFileFromContextGroup
+  removeEmbeddedFilesFromContextGroup
 } from "@/db/queries/context-groups-to-embedded-files-queries"
+import { getEmbeddedFilesAndFolders } from "@/db/queries/embedded-files-queries"
 import { SelectContextGroup } from "@/db/schema/context-groups-schema"
 import { SelectContextGroupToEmbeddedFile } from "@/db/schema/context-groups-to-embedded-files-schema"
 import { SelectEmbeddedFile } from "@/db/schema/embedded-files-schema"
-import { getEmbeddedFilesAndFolders } from "@/db/queries/embedded-files-queries"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { DeleteDialog } from "../dashboard/reusable/delete-dialog"
-import { deleteContextGroup } from "@/db/queries/context-groups-queries"
 import { ContextMultiSelect } from "./context-multi-select"
 
 interface EditContextGroupProps {
@@ -61,17 +63,24 @@ export const EditContextGroup = ({
       const selectedFiles = allEmbeddedFilesInProject.filter(
         file => file.type === "file" && selectedFileIds.includes(file.id)
       )
+      const newSelectedFileIds = selectedFiles.map(file => file.id)
 
-      for (const file of selectedFiles) {
-        if (!currentFileIds.includes(file.id)) {
-          await addEmbeddedFileToContextGroup(contextGroup.id, file.id)
-        }
+      const filesToAdd = newSelectedFileIds.filter(
+        id => !currentFileIds.includes(id)
+      )
+      const filesToRemove = currentFileIds.filter(
+        id => !newSelectedFileIds.includes(id)
+      )
+
+      if (filesToAdd.length > 0) {
+        await addEmbeddedFilesToContextGroup(contextGroup.id, filesToAdd)
       }
 
-      for (const fileId of currentFileIds) {
-        if (!selectedFiles.some(file => file.id === fileId)) {
-          await removeEmbeddedFileFromContextGroup(contextGroup.id, fileId)
-        }
+      if (filesToRemove.length > 0) {
+        await removeEmbeddedFilesFromContextGroup(
+          contextGroup.id,
+          filesToRemove
+        )
       }
 
       router.refresh()
