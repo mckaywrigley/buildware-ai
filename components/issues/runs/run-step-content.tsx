@@ -22,6 +22,8 @@ interface RunStepContentProps {
   onUpdateSpecification: (specification: ParsedSpecification) => void
   onUpdatePlan: (plan: ParsedPlan) => void
   onUpdateImplementation: (implementation: ParsedImplementation) => void
+  runId?: string
+  stepId?: string
 }
 
 export const RunStepContent = ({
@@ -32,35 +34,41 @@ export const RunStepContent = ({
   implementation,
   onUpdateSpecification,
   onUpdatePlan,
-  onUpdateImplementation
+  onUpdateImplementation,
+  runId,
+  stepId
 }: RunStepContentProps) => {
   switch (stepName) {
     case "started":
-      return <StartedStep />
+      return <StartedStep runId={runId} stepId={stepId} />
     case "embedding":
-      return <EmbeddingStep />
+      return <EmbeddingStep runId={runId} stepId={stepId} />
     case "retrieval":
-      return <RetrievalStep />
+      return <RetrievalStep runId={runId} stepId={stepId} />
     case "specification":
       return (
         <SpecificationStep
           specification={specification}
           onUpdateSpecification={onUpdateSpecification}
+          runId={runId}
+          stepId={stepId}
         />
       )
     case "plan":
-      return <PlanStep plan={plan} onUpdatePlan={onUpdatePlan} />
+      return <PlanStep plan={plan} onUpdatePlan={onUpdatePlan} runId={runId} stepId={stepId} />
     case "implementation":
       return (
         <ImplementationStep
           implementation={implementation}
           onUpdateImplementation={onUpdateImplementation}
+          runId={runId}
+          stepId={stepId}
         />
       )
     case "pr":
-      return <PRStep />
+      return <PRStep runId={runId} stepId={stepId} />
     case "completed":
-      return <CompletedStep prLink={prLink} />
+      return <CompletedStep prLink={prLink} runId={runId} stepId={stepId} />
     default:
       return null
   }

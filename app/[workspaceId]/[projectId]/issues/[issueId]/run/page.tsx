@@ -6,18 +6,22 @@ import {
   getProjectById
 } from "@/db/queries"
 
+export const revalidate = 0
+
 export default async function RunIssuePage({
-  params: { issueId, projectId }
+  params,
+  searchParams
 }: {
   params: {
     workspaceId: string
     projectId: string
     issueId: string
   }
+  searchParams: { [key: string]: string | string[] | undefined }
 }) {
-  const issue = await getIssueById(issueId)
-  const project = await getProjectById(projectId)
-  const instructionsData = await getInstructionsByIssueId(issueId)
+  const issue = await getIssueById(params.issueId)
+  const project = await getProjectById(params.projectId)
+  const instructionsData = await getInstructionsByIssueId(params.issueId)
   const instructions = instructionsData.map(item => item.instruction)
 
   if (!issue) {
@@ -28,7 +32,14 @@ export default async function RunIssuePage({
     return <NotFound message="Project not found" />
   }
 
+  const runId = searchParams.runId as string | undefined
+
   return (
-    <RunDashboard issue={issue} project={project} instructions={instructions} />
+    <RunDashboard 
+      issue={issue} 
+      project={project} 
+      instructions={instructions} 
+      runId={runId}
+    />
   )
 }
