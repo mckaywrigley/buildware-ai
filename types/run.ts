@@ -1,24 +1,14 @@
 import { SelectInstruction, SelectIssue, SelectProject } from "@/db/schema"
-import {
-  AIClarificationItem,
-  AIFileInfo,
-  AIParsedActResponse,
-  AIPlanStep,
-  AIThought
-} from "@/types/ai"
 
 export type StepName =
   | "started"
   | "embedding"
   | "retrieval"
-  | "think"
+  | "specification"
   | "plan"
-  | "act"
+  | "implementation"
   | "pr"
   | "completed"
-  // unimplemented steps
-  | "clarify"
-  | "verify"
 
 export type StepStatus = "not_started" | "in_progress" | "done" | "error"
 
@@ -27,43 +17,56 @@ export type RunStepStatuses = {
 }
 
 export interface RunStepParams {
-  // Core data
+  codebaseFiles: { path: string; content: string }[]
   issue: SelectIssue
-  project: SelectProject
-  attachedInstructions: {
+  instructions: {
     instructionId: string
     issueId: string
     instruction: SelectInstruction
   }[]
-
-  // State setters
-  setCurrentStep: (step: StepName) => void
-  setClarifications: (clarifications: AIClarificationItem[]) => void
-  setThoughts: (thoughts: AIThought[]) => void
-  setPlanSteps: (planSteps: AIPlanStep[]) => void
-  setGeneratedFiles: (files: AIFileInfo[]) => void
-  setCodebaseFiles: React.Dispatch<
-    React.SetStateAction<{ path: string; content: string }[]>
-  >
-  setInstructionsContext: React.Dispatch<React.SetStateAction<string>>
-  setAIResponses: (
-    type: "clarify" | "think" | "plan" | "act",
-    response: string
-  ) => void
-
-  // Current state
-  codebaseFiles: { path: string; content: string }[]
   instructionsContext: string
-
-  // AI responses
-  clarifyAIResponse: string
-  thinkAIResponse: string
-  planAIResponse: string
-  actAIResponse: string
-  parsedActResponse: AIParsedActResponse | null
-
-  // Step statuses
+  parsedPlan: ParsedPlan
+  planResponse: string
+  parsedSpecification: ParsedSpecification
+  specificationResponse: string
+  parsedImplementation: ParsedImplementation
+  implementationResponse: string
+  project: SelectProject
   stepStatuses: RunStepStatuses
+  setParsedImplementation: (implementation: ParsedImplementation) => void
+  setImplementationResponse: (implementation: string) => void
+  setParsedPlan: (plan: ParsedPlan) => void
+  setPlanResponse: (plan: string) => void
+  setParsedSpecification: (specification: ParsedSpecification) => void
+  setSpecificationResponse: (specification: string) => void
   setStepStatuses: React.Dispatch<React.SetStateAction<RunStepStatuses>>
-  updateStepStatus: (status: StepStatus) => void
+  setPrLink: (prLink: string) => void
+}
+
+export interface GeneratedFile {
+  status: "new" | "modified" | "deleted"
+  path: string
+  content: string
+}
+
+export interface ParsedSpecification {
+  steps: SpecificationStep[]
+}
+
+export interface SpecificationStep {
+  text: string
+}
+
+export interface ParsedPlan {
+  steps: PlanStep[]
+}
+
+export interface PlanStep {
+  text: string
+}
+
+export interface ParsedImplementation {
+  files: GeneratedFile[]
+  prTitle: string
+  prDescription: string
 }

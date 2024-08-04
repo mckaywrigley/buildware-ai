@@ -18,6 +18,7 @@ export interface GitHubFile {
   git_url: string | null
   html_url: string | null
   download_url: string | null
+  encoding: string | null
   _links: {
     self: string
     git: string | null

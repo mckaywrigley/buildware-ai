@@ -1,18 +1,22 @@
 "use client"
 
-import { AIPlanStep } from "@/types/ai"
+import { ParsedPlan, PlanStep as PlanStepType } from "@/types/run"
 import { EditableStep } from "./editable-step"
 
 interface PlanStepProps {
-  plans: AIPlanStep[]
-  onUpdatePlans: (updatedPlans: AIPlanStep[]) => void
+  plan: ParsedPlan
+  onUpdatePlan: (updatedPlan: ParsedPlan) => void
 }
 
-export const PlanStep = ({ plans, onUpdatePlans }: PlanStepProps) => {
+export const PlanStep = ({ plan, onUpdatePlan }: PlanStepProps) => {
+  const handleUpdateItems = (updatedItems: PlanStepType[]) => {
+    onUpdatePlan({ ...plan, steps: updatedItems })
+  }
+
   return (
     <EditableStep
-      items={plans}
-      onUpdateItems={onUpdatePlans}
+      items={plan.steps}
+      onUpdateItems={handleUpdateItems}
       title="Plan"
       description="Edit the AI's plans if needed."
       itemName="plan"

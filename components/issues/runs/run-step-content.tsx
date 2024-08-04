@@ -1,48 +1,66 @@
-import { ThinkStep } from "@/components/issues/runs/steps/think-step"
-import { AIClarificationItem, AIPlanStep, AIThought } from "@/types/ai"
-import { StepName } from "@/types/run"
-import { ActStep } from "./steps/act-step"
+import {
+  ParsedImplementation,
+  ParsedPlan,
+  ParsedSpecification,
+  StepName
+} from "@/types/run"
 import { CompletedStep } from "./steps/completed-step"
 import { EmbeddingStep } from "./steps/embedding-step"
+import { ImplementationStep } from "./steps/implementation-step"
 import { PlanStep } from "./steps/plan-step"
 import { PRStep } from "./steps/pr-step"
 import { RetrievalStep } from "./steps/retrieval-step"
+import { SpecificationStep } from "./steps/specification-step"
 import { StartedStep } from "./steps/started-step"
 
 interface RunStepContentProps {
-  step: StepName | null
-  clarifications: AIClarificationItem[]
-  thoughts: AIThought[]
-  planSteps: AIPlanStep[]
-  setClarifications: (clarifications: AIClarificationItem[]) => void
-  setThoughts: (thoughts: AIThought[]) => void
-  setPlanSteps: (planSteps: AIPlanStep[]) => void
+  stepName: StepName | null
+  prLink: string
+  specification: ParsedSpecification
+  plan: ParsedPlan
+  implementation: ParsedImplementation
+  onUpdateSpecification: (specification: ParsedSpecification) => void
+  onUpdatePlan: (plan: ParsedPlan) => void
+  onUpdateImplementation: (implementation: ParsedImplementation) => void
 }
 
 export const RunStepContent = ({
-  step,
-  thoughts,
-  planSteps,
-  setThoughts,
-  setPlanSteps
+  stepName,
+  prLink,
+  specification,
+  plan,
+  implementation,
+  onUpdateSpecification,
+  onUpdatePlan,
+  onUpdateImplementation
 }: RunStepContentProps) => {
-  switch (step) {
+  switch (stepName) {
     case "started":
       return <StartedStep />
     case "embedding":
       return <EmbeddingStep />
     case "retrieval":
       return <RetrievalStep />
-    case "think":
-      return <ThinkStep thoughts={thoughts} onUpdateThoughts={setThoughts} />
+    case "specification":
+      return (
+        <SpecificationStep
+          specification={specification}
+          onUpdateSpecification={onUpdateSpecification}
+        />
+      )
     case "plan":
-      return <PlanStep plans={planSteps} onUpdatePlans={setPlanSteps} />
-    case "act":
-      return <ActStep />
+      return <PlanStep plan={plan} onUpdatePlan={onUpdatePlan} />
+    case "implementation":
+      return (
+        <ImplementationStep
+          implementation={implementation}
+          onUpdateImplementation={onUpdateImplementation}
+        />
+      )
     case "pr":
       return <PRStep />
     case "completed":
-      return <CompletedStep />
+      return <CompletedStep prLink={prLink} />
     default:
       return null
   }

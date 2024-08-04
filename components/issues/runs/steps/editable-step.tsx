@@ -5,27 +5,28 @@ import {
   PopoverContent,
   PopoverTrigger
 } from "@/components/ui/popover"
-import { AIThought } from "@/types/ai"
+import { PlanStep } from "@/types/run"
 import { Edit, MoreHorizontal, Plus, Trash2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import ReactTextareaAutosize from "react-textarea-autosize"
 import { StepLoader } from "./step-loader"
 
-interface EditableStepProps<T extends { number: number; text: string }> {
+interface EditableStepProps<T extends { text: string }> {
   items: T[]
   onUpdateItems: (updatedItems: T[]) => void
   title: string
   description: string
   itemName: string
 }
+
 export const EditableStep = ({
   items,
   onUpdateItems,
   title,
   description,
   itemName
-}: EditableStepProps<AIThought>) => {
-  const [localItems, setLocalItems] = useState<AIThought[]>(items)
+}: EditableStepProps<PlanStep>) => {
+  const [localItems, setLocalItems] = useState<PlanStep[]>(items)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
 
   useEffect(() => {
@@ -48,8 +49,7 @@ export const EditableStep = ({
       return // Don't add a new item if the last one is empty
     }
 
-    const newItem: AIThought = {
-      number: localItems.length + 1,
+    const newItem: PlanStep = {
       text: ""
     }
     const updatedItems = [...localItems, newItem]
@@ -60,12 +60,8 @@ export const EditableStep = ({
   const handleRemoveItem = (index: number) => {
     if (localItems.length === 1) return // Prevent removing the only item
     const updatedItems = localItems.filter((_, i) => i !== index)
-    const renumberedItems = updatedItems.map((item, i) => ({
-      ...item,
-      number: i + 1
-    }))
-    setLocalItems(renumberedItems)
-    onUpdateItems(renumberedItems)
+    setLocalItems(updatedItems)
+    onUpdateItems(updatedItems)
   }
 
   const handleEditItem = (index: number) => {
@@ -89,10 +85,7 @@ export const EditableStep = ({
       </div>
 
       {localItems.map((item, index) => (
-        <div key={item.number} className="relative pt-6">
-          <div className="text-muted-foreground absolute left-1 top-0 text-sm font-medium">
-            Step {item.number}
-          </div>
+        <div key={index} className="relative pt-6">
           <div className="absolute -top-2 right-0">
             <Popover>
               <PopoverTrigger asChild>

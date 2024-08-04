@@ -1,21 +1,18 @@
-import { embedTargetBranch } from "@/actions/github/embed-target-branch"
-import { updateIssue } from "@/db/queries"
-import { RunStepParams } from "@/types/run"
+import { checkAndEmbedTargetBranch } from "@/actions/github/check-and-embed-target-branch"
+import { SelectProject } from "@/db/schema"
 
 export const runEmbeddingStep = async ({
-  issue,
-  project,
-  setCurrentStep
-}: RunStepParams) => {
+  project
+}: {
+  project: SelectProject
+}) => {
   if (!project.githubRepoFullName || !project.githubTargetBranch) {
     alert("Project has no target branch configured.")
     return
   }
 
   try {
-    setCurrentStep("embedding")
-    await updateIssue(issue.id, { status: "embedding" })
-    await embedTargetBranch({
+    await checkAndEmbedTargetBranch({
       projectId: project.id,
       githubRepoFullName: project.githubRepoFullName,
       branchName: project.githubTargetBranch,
@@ -23,7 +20,6 @@ export const runEmbeddingStep = async ({
     })
   } catch (error) {
     console.error("Error running embedding step:", error)
-    await updateIssue(issue.id, { status: "failed" })
     throw error
   }
 }

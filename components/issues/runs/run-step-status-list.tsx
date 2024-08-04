@@ -21,9 +21,17 @@ const messages = [
     icon: <CirclePlus className="size-4" />,
     step: "retrieval"
   },
-  { text: "Think", icon: <List className="size-4" />, step: "think" },
+  {
+    text: "Specification",
+    icon: <List className="size-4" />,
+    step: "specification"
+  },
   { text: "Plan", icon: <ListChecks className="size-4" />, step: "plan" },
-  { text: "Act", icon: <ChevronsLeftRight className="size-4" />, step: "act" },
+  {
+    text: "Implementation",
+    icon: <ChevronsLeftRight className="size-4" />,
+    step: "implementation"
+  },
   { text: "PR", icon: <DiamondPlus className="size-4" />, step: "pr" },
   { text: "Completed", icon: <Check className="size-4" />, step: "completed" }
 ]
@@ -87,7 +95,7 @@ export const RunStepStatusList = ({
                   }
                 >
                   <div
-                    className={`relative z-10 mr-4 rounded-full p-1 ${
+                    className={`relative z-10 mr-4 rounded-full p-1 text-white ${
                       status === "in_progress"
                         ? "bg-yellow-600"
                         : status === "done"
@@ -106,7 +114,14 @@ export const RunStepStatusList = ({
                     )}
                   </div>
 
-                  <div className={cn(isCurrentStep && "animate-pulse")}>
+                  <div
+                    className={cn(
+                      isCurrentStep && "font-extrabold",
+                      isCurrentStep &&
+                        !waitingForConfirmation &&
+                        "animate-pulse"
+                    )}
+                  >
                     {text}
                   </div>
                 </div>

@@ -6,21 +6,31 @@ import Anthropic from "@anthropic-ai/sdk"
 
 const anthropic = new Anthropic()
 
-export const generateCodegenAIMessage = async ({
+export const generateRunResponse = async ({
   system,
   messages,
-  model
+  model,
+  prefill
 }: {
   system: string
   messages: Anthropic.Messages.MessageParam[]
   model: "claude-3-5-sonnet-20240620" | "claude-3-haiku-20240307"
+  prefill: string
 }) => {
+  const finalMessages = [
+    ...messages,
+    { role: "assistant", content: prefill.trimEnd() }
+  ] as Anthropic.Messages.MessageParam[]
+
   const message = await anthropic.messages.create(
     {
       model,
       system,
-      messages,
-      max_tokens: BUILDWARE_MAX_OUTPUT_TOKENS
+      messages: finalMessages,
+      max_tokens: model.includes("haiku")
+        ? Math.min(BUILDWARE_MAX_OUTPUT_TOKENS, 4096)
+        : BUILDWARE_MAX_OUTPUT_TOKENS,
+      temperature: 0.5
     },
     {
       headers: {
@@ -28,6 +38,8 @@ export const generateCodegenAIMessage = async ({
       }
     }
   )
+
+  const isComplete = message.stop_reason !== "max_tokens"
 
   const cost = calculateLLMCost({
     llmId: model,
@@ -37,5 +49,8 @@ export const generateCodegenAIMessage = async ({
   console.warn("usage", message.usage)
   console.warn("cost", cost)
 
-  return message.content[0].type === "text" ? message.content[0].text : ""
+  return {
+    content: message.content[0].type === "text" ? message.content[0].text : "",
+    isComplete
+  }
 }

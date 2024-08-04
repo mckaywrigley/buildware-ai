@@ -1,4 +1,4 @@
-import { RunIssue } from "@/components/issues/runs/run-issue"
+import { RunDashboard } from "@/components/issues/runs/run-dashboard"
 import { NotFound } from "@/components/utility/not-found"
 import {
   getInstructionsByIssueId,
@@ -17,7 +17,8 @@ export default async function RunIssuePage({
 }) {
   const issue = await getIssueById(issueId)
   const project = await getProjectById(projectId)
-  const attachedInstructions = await getInstructionsByIssueId(issueId)
+  const instructionsData = await getInstructionsByIssueId(issueId)
+  const instructions = instructionsData.map(item => item.instruction)
 
   if (!issue) {
     return <NotFound message="Issue not found" />
@@ -28,10 +29,6 @@ export default async function RunIssuePage({
   }
 
   return (
-    <RunIssue
-      issue={issue}
-      project={project}
-      attachedInstructions={attachedInstructions}
-    />
+    <RunDashboard issue={issue} project={project} instructions={instructions} />
   )
 }

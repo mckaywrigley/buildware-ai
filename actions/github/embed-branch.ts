@@ -2,11 +2,11 @@
 
 import { fetchFiles } from "@/actions/github/fetch-files"
 import {
-  createEmbeddedFiles,
-  deleteAllEmbeddedFilesByEmbeddedBranchId
+  createEmbeddedFile,
+  deleteEmbeddedFile,
+  updateEmbeddedFile
 } from "@/db/queries/embedded-files-queries"
 import { embedFiles } from "./embed-files"
-import { fetchCodebaseForBranch } from "./fetch-codebase"
 import { tokenizeFiles } from "./tokenize-files"
 
 export async function embedBranch(data: {
@@ -15,45 +15,64 @@ export async function embedBranch(data: {
   branchName: string
   embeddedBranchId: string
   installationId: number | null
+  changedFiles: { filename: string; status?: string }[]
 }) {
   const {
     projectId,
     githubRepoFullName,
     branchName,
     embeddedBranchId,
-    installationId
+    installationId,
+    changedFiles
   } = data
 
   try {
-    // clear branch embeddings
-    await deleteAllEmbeddedFilesByEmbeddedBranchId(embeddedBranchId)
+    const deletedFiles = changedFiles.filter(file => file.status === "removed")
+    const filesToUpdate = await fetchFiles(
+      installationId,
+      changedFiles
+        .filter(file => file.status !== "removed")
+        .map(file => ({
+          path: file.filename,
+          owner: githubRepoFullName.split("/")[0],
+          repo: githubRepoFullName.split("/")[1],
+          ref: branchName
+        }))
+    )
 
-    // fetch codebase for branch
-    const codebase = await fetchCodebaseForBranch({
-      githubRepoFullName,
-      path: "",
-      branch: branchName,
-      installationId
-    })
-
-    // fetch file content
-    const files = await fetchFiles(installationId, codebase)
-
-    // tokenize files
-    const tokenizedFiles = await tokenizeFiles(files)
-
-    // embed files
-    const embeddedFiles = await embedFiles(tokenizedFiles)
-
-    // insert embedded files with data
-    await createEmbeddedFiles(
-      embeddedFiles.map(file => ({
+    const tokenizedFiles = await tokenizeFiles(
+      filesToUpdate.map(file => ({
         ...file,
-        projectId,
-        embeddedBranchId,
-        githubRepoFullName
+        content: file.content || "",
+        status: changedFiles.find(cf => cf.filename === file.path)?.status
       }))
     )
+
+    const embeddedFiles = await embedFiles(tokenizedFiles)
+
+    // Handle deleted files
+    for (const file of deletedFiles) {
+      await deleteEmbeddedFile(embeddedBranchId, file.filename)
+    }
+
+    // Update database for non-deleted files
+    for (const file of embeddedFiles) {
+      if (file.status === "added" || !file.status) {
+        await createEmbeddedFile({
+          ...file,
+          projectId,
+          embeddedBranchId,
+          githubRepoFullName
+        })
+      } else {
+        await updateEmbeddedFile({
+          ...file,
+          projectId,
+          embeddedBranchId,
+          githubRepoFullName
+        })
+      }
+    }
   } catch (error) {
     console.error("Error in embedBranch:", error)
     throw error

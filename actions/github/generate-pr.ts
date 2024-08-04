@@ -2,12 +2,12 @@
 
 import { getAuthenticatedOctokit } from "@/actions/github/auth"
 import { SelectProject } from "@/db/schema"
-import { AIParsedActResponse } from "@/types/ai"
+import { ParsedImplementation } from "@/types/run"
 
 export async function generatePR(
   branchName: string,
   project: SelectProject,
-  parsedResponse: AIParsedActResponse
+  parsedImplementation: ParsedImplementation
 ): Promise<{ prLink: string | null; branchName: string }> {
   const octokit = await getAuthenticatedOctokit(project.githubInstallationId!)
   const [owner, repo] = project.githubRepoFullName!.split("/")
@@ -55,7 +55,7 @@ export async function generatePR(
 
   // Prepare changes
   const changes = []
-  for (const file of parsedResponse.files) {
+  for (const file of parsedImplementation.files) {
     if (file.status === "new" || file.status === "modified") {
       if (file.status === "modified") {
         try {
@@ -137,7 +137,7 @@ export async function generatePR(
     const pr = await octokit.pulls.create({
       owner,
       repo,
-      title: parsedResponse.prTitle || `AI: Update for ${branchName}`,
+      title: parsedImplementation.prTitle || `AI: Update for ${branchName}`,
       head: newBranch,
       base: baseBranch,
       body: `AI: Update for ${branchName}`

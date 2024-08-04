@@ -11,7 +11,7 @@ export async function saveCodegenEval(
   type: "prompt" | "response"
 ) {
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-")
-  const fileName = `${step}-${type}-${timestamp}.md`
+  const fileName = `${timestamp}-${step}-${type}.md`
   const dirPath = path.join(process.cwd(), "buildware-evals", issueName)
   const filePath = path.join(dirPath, fileName)
 
