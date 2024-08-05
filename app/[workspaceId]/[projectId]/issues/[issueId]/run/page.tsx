@@ -31,7 +31,7 @@ export default async function RunIssuePage({
   }
 
   return (
-    <div className="flex flex-col space-y-8">
+    <div className="flex h-full flex-col">
       <RunDashboard
         issue={issue}
         project={project}
