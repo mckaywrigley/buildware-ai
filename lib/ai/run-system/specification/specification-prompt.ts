@@ -42,20 +42,13 @@ export const buildSpecificationPrompt = async ({
 
     The specification should **NOT**:
     - Include specific code snippets or implementation details
-    - Include steps like performance, testing, deployment, documentation, etc, unless specifically asked to`
+    - Include steps like performance, testing, deployment, documentation, etc, unless specifically asked to
 
-  const userMessageTemplate = endent`
-    # Codebase
-
-    First, review the codebase you'll be working with:
-
-    <codebase>
-      {{CODEBASE_PLACEHOLDER}}
-    </codebase>
-
+    ---
+    
     # Task
 
-    Now, here's the task you need to complete:
+    First, review the task information:
 
     <task>
       <task_name>${issue.name || "No name provided."}</task_name>
@@ -64,6 +57,8 @@ export const buildSpecificationPrompt = async ({
       </task_details>
     </task>
 
+    ---
+
     # Instructions and Guidelines
 
     Keep in mind these general instructions and guidelines while working on the task:
@@ -71,6 +66,8 @@ export const buildSpecificationPrompt = async ({
     <instructions>
       ${instructionsContext || "No additional instructions provided."}
     </instructions>
+
+    ---
 
     # Response Instructions
 
@@ -99,8 +96,21 @@ export const buildSpecificationPrompt = async ({
     <specification>
       <step>Step text here...</step>
       <step>Step text here...</step>
-      ...
+      ...remaining steps...
     </specification>`
+
+  const userMessageTemplate = endent`
+    # Codebase
+
+    First, review the codebase you'll be working with:
+
+    <codebase>
+      {{CODEBASE_PLACEHOLDER}}
+    </codebase>
+    
+    ---
+
+    Now, based on the task information, codebase, and instructions provided, create a high-level specification for implementing the task. Present your specification in the format described above.`
 
   const systemPromptTokens = estimateClaudeTokens(systemPrompt)
   const userMessageTemplateTokens = estimateClaudeTokens(userMessageTemplate)

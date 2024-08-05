@@ -40,22 +40,13 @@ export const buildImplementationPrompt = async ({
     4. Ensure your code integrates seamlessly with the existing codebase.
     5. If you need to create new files, provide the full file path and full file content.
     6. For modified files, provide the full file path and full updated file content.
-    7. For deleted files, only provide the full file path.`
-
-  const userMessageTemplate = endent`
-    # Codebase
-
-    First, review the codebase you'll be working with:
-
-    <codebase>
-      {{CODEBASE_PLACEHOLDER}}
-    </codebase>
-
+    7. For deleted files, only provide the full file path.
+    
     ---
 
     # Task
 
-    Now, here's the task you need to complete:
+    First, review the task information:
 
     <task>
       <task_name>${issue.name || "No title provided."}</task_name>
@@ -135,9 +126,22 @@ export const buildImplementationPrompt = async ({
             file content here...
           </file_content>
         </file>
-        ...
+        ...remaining files...
       </file_list>
     </pull_request>`
+
+  const userMessageTemplate = endent`
+    # Codebase
+
+    First, review the codebase you'll be working with:
+
+    <codebase>
+      {{CODEBASE_PLACEHOLDER}}
+    </codebase>
+
+    ---
+
+    Now, based on the task information, codebase, plan, and instructions provided, create the implementation for the task. Present your implementation in the format described above.`
 
   const systemPromptTokens = estimateClaudeTokens(systemPrompt)
   const userMessageTemplateTokens = estimateClaudeTokens(userMessageTemplate)

@@ -93,10 +93,6 @@ ${instruction.content}
   }
 
   const runNextStep = async (step: RunStepName) => {
-    if (!currentRunId) {
-      return
-    }
-
     const stepStatus = stepStatuses[step]
 
     if (stepStatus === null) {
@@ -205,8 +201,8 @@ ${instruction.content}
   const handleRun = async () => {
     setIsRunning(true)
     setWaitingForConfirmation(false)
-    setCurrentStep("started")
-    runNextStep("started")
+    setCurrentStep(stepOrder[0])
+    runNextStep(stepOrder[0])
   }
 
   const handleStepClick = (step: RunStepName) => {

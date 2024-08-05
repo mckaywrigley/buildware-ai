@@ -49,22 +49,13 @@ export const buildPlanPrompt = async ({
     5. Ensure your plan addresses all aspects of the task specification.
 
     The plan should **NOT**:
-    - Include steps like performance, testing, deployment, documentation, etc, unless specifically asked to`
-
-  const userMessageTemplate = endent`
-    # Codebase
-
-    First, review the codebase you'll be working with:
-
-    <codebase>
-      {{CODEBASE_PLACEHOLDER}}
-    </codebase>
-
+    - Include steps like performance, testing, deployment, documentation, etc, unless specifically asked to
+    
     ---
 
     # Task
 
-    Now, here's the task you need to complete:
+    First, review the task information:
 
     <task>
       <task_name>${issue.name || "No title provided."}</task_name>
@@ -120,8 +111,21 @@ export const buildPlanPrompt = async ({
     <plan>
       <step>Step text here...</step>
       <step>Step text here...</step>
-      ...
+      ...remaining steps...
     </plan>`
+
+  const userMessageTemplate = endent`
+    # Codebase
+
+    First, review the codebase you'll be working with:
+
+    <codebase>
+      {{CODEBASE_PLACEHOLDER}}
+    </codebase>
+
+    ---
+
+    Now, based on the task information, codebase, specification, and instructions provided, create a high-level plan for implementing the task. Present your plan in the format described above.`
 
   const systemPromptTokens = estimateClaudeTokens(systemPrompt)
   const userMessageTemplateTokens = estimateClaudeTokens(userMessageTemplate)
