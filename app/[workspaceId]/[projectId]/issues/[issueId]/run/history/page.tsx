@@ -10,6 +10,10 @@ export default async function RunHistoryPage({
 }) {
   const runsWithSteps = await getRunsWithStepsByIssueId(params.issueId)
 
+  if (runsWithSteps.length === 0) {
+    return <div>No runs found</div>
+  }
+
   return (
     <div>
       <RunHistory runsWithSteps={runsWithSteps} />

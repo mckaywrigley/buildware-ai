@@ -15,7 +15,7 @@ import {
   SelectIssue,
   SelectProject
 } from "@/db/schema"
-import { Eye, File, Folder, Pencil, Play } from "lucide-react"
+import { Eye, File, Folder, List, Pencil, Play } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
@@ -75,13 +75,17 @@ export const IssueView = ({
         <div className="flex w-full flex-col gap-4">
           <div className="flex justify-between">
             <div className="flex gap-2">
-              <Link
-                href={`/${workspaceId}/${project.id}/issues/${item.id}/run`}
-                passHref
-              >
+              <Link href={`./${item.id}/run`}>
                 <Button variant="create">
                   <Play className="mr-2 size-4" />
                   Run
+                </Button>
+              </Link>
+
+              <Link href={`./${item.id}/run/history`}>
+                <Button>
+                  <List className="mr-2 size-4" />
+                  View Run History
                 </Button>
               </Link>
 
@@ -97,7 +101,6 @@ export const IssueView = ({
 
             <Button
               variant="outline"
-              size="sm"
               onClick={() =>
                 router.push(
                   `/${workspaceId}/${item.projectId}/issues/${item.id}/edit`
