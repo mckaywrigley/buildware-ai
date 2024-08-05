@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils"
-import { RunStepStatuses, StepName } from "@/types/run"
+import { RunStepName, RunStepStatus, RunStepStatuses } from "@/types/run"
 import {
   AlertTriangle,
   Check,
@@ -37,17 +37,20 @@ const messages = [
 ]
 
 interface RunStepStatusListProps {
-  currentStep: StepName | null
+  currentStep: RunStepName | null
   waitingForConfirmation: boolean
   stepStatuses: RunStepStatuses
-  onStepClick?: (step: StepName) => void
+  onStepClick?: (step: RunStepName) => void
 }
 
-const getGradientClass = (currentStatus: string, nextStatus: string) => {
-  if (currentStatus === "done") {
+const getGradientClass = (
+  currentStatus: RunStepStatus | null,
+  nextStatus: RunStepStatus | null
+) => {
+  if (currentStatus === "completed") {
     if (nextStatus === "in_progress") {
       return "bg-gradient-to-b from-green-500 to-yellow-600"
-    } else if (nextStatus === "done") {
+    } else if (nextStatus === "completed") {
       return "bg-gradient-to-b from-green-500 to-green-600"
     } else {
       return "bg-gradient-to-b from-green-500 to-zinc-700"
@@ -62,22 +65,23 @@ export const RunStepStatusList = ({
   stepStatuses,
   onStepClick
 }: RunStepStatusListProps) => {
-  const getStepStatus = (step: StepName) => {
+  const getStepStatus = (step: RunStepName): RunStepStatus => {
     if (waitingForConfirmation && step === currentStep) {
       return "in_progress"
     }
-    return stepStatuses[step]
+
+    return stepStatuses[step] ?? "waiting"
   }
 
   return (
     <div className="col-span-1 p-6">
       <div className="bg-secondary rounded-lg p-4">
         {messages.map(({ text, icon, step }, index) => {
-          const status = getStepStatus(step as StepName)
+          const status = getStepStatus(step as RunStepName)
           const nextStatus =
             index < messages.length - 1
-              ? getStepStatus(messages[index + 1].step as StepName)
-              : "not_started"
+              ? getStepStatus(messages[index + 1].step as RunStepName)
+              : null
           const isCurrentStep = step === currentStep
 
           return (
@@ -86,19 +90,19 @@ export const RunStepStatusList = ({
                 <div
                   className={cn(
                     "flex items-center",
-                    (status === "done" || status === "in_progress") &&
+                    (status === "completed" || status === "in_progress") &&
                       "cursor-pointer hover:underline"
                   )}
                   onClick={() =>
-                    (status === "done" || status === "in_progress") &&
-                    onStepClick?.(step as StepName)
+                    (status === "completed" || status === "in_progress") &&
+                    onStepClick?.(step as RunStepName)
                   }
                 >
                   <div
                     className={`relative z-10 mr-4 rounded-full p-1 text-white ${
                       status === "in_progress"
                         ? "bg-yellow-600"
-                        : status === "done"
+                        : status === "completed"
                           ? "bg-green-600"
                           : "bg-zinc-600"
                     }`}
@@ -133,9 +137,10 @@ export const RunStepStatusList = ({
                     className={cn(
                       "-z-11 absolute left-[0.70rem] top-7 h-[calc(100%+0.5rem)] w-[2px]",
                       getGradientClass(status, nextStatus),
-                      status === "done" && "animate-line-grow"
+                      status === "completed" && "animate-line-grow"
                     )}
                   />
+
                   <div className="pl-8">
                     <div className="my-2 border-t border-zinc-700" />
                   </div>

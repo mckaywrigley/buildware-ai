@@ -1,19 +1,16 @@
-import { SelectInstruction, SelectIssue, SelectProject } from "@/db/schema"
-import { runStatusEnum } from "./../db/schema/runs-schema"
+import {
+  runStepNameEnum,
+  runStepStatusEnum,
+  SelectInstruction,
+  SelectIssue,
+  SelectProject
+} from "@/db/schema"
 
-export type StepName =
-  | "started"
-  | "embedding"
-  | "retrieval"
-  | "specification"
-  | "plan"
-  | "implementation"
-  | "pr"
-  | "completed"
+export type RunStepName = (typeof runStepNameEnum.enumValues)[number]
 
-export type RunStepStatuses = {
-  [key in StepName]: typeof runStatusEnum.enumValues
-}
+export type RunStepStatus = (typeof runStepStatusEnum.enumValues)[number]
+
+export type RunStepStatuses = Record<RunStepName, RunStepStatus | null>
 
 export interface RunStepParams {
   codebaseFiles: { path: string; content: string }[]

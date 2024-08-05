@@ -1,13 +1,13 @@
 "use server"
 
-import { StepName } from "@/types/run"
+import { RunStepName } from "@/types/run"
 import { promises as fs } from "fs"
 import path from "path"
 
 export async function saveCodegenEval(
   prompt: string,
   issueName: string,
-  step: StepName,
+  step: RunStepName,
   type: "prompt" | "response"
 ) {
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-")

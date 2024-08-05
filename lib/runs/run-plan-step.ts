@@ -7,17 +7,13 @@ import {
   buildPlanPrompt,
   PLAN_PREFILL
 } from "../ai/run-system/plan/plan-prompt"
-import { updateRunStep } from "@/actions/runs/manage-runs"
-import { calculateAndStoreCost } from "@/actions/ai/calculate-llm-cost"
 
 export const runPlanStep = async ({
-  runId,
   issue,
   codebaseFiles,
   instructionsContext,
   specification
 }: {
-  runId: string,
   issue: SelectIssue
   codebaseFiles: { path: string; content: string }[]
   instructionsContext: string
@@ -76,16 +72,6 @@ ${planUserMessage}`,
       "prompt"
     )
     await saveCodegenEval(planResponse, issue.name, "plan", "response")
-
-    const cost = await calculateAndStoreCost(
-      runId,
-      "plan",
-      BUILDWARE_PLAN_LLM,
-      planSystemPrompt.length + planUserMessage.length,
-      planResponse.length
-    )
-
-    await updateRunStep(runId, "plan", "completed", cost.toString(), JSON.stringify(parsedPlan))
 
     return {
       planResponse,

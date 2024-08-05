@@ -1,33 +1,41 @@
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger
+} from "@/components/ui/accordion"
 import { SelectRun, SelectRunStep } from "@/db/schema"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { formatDistanceToNow } from "date-fns"
 
 interface RunHistoryProps {
-  runs: (SelectRun & { steps: SelectRunStep[] })[]
+  runsWithSteps: (SelectRun & { steps: SelectRunStep[] })[]
 }
 
-export const RunHistory = ({ runs }: RunHistoryProps) => {
+export const RunHistory = ({ runsWithSteps }: RunHistoryProps) => {
   return (
     <div className="space-y-4">
-      <h2 className="text-2xl font-bold">Run History</h2>
+      <div className="text-2xl font-bold">Run History</div>
       <Accordion type="single" collapsible className="w-full">
-        {runs.map((run, index) => (
+        {runsWithSteps.map((run, index) => (
           <AccordionItem key={run.id} value={`item-${index}`}>
             <AccordionTrigger>
-              Run {index + 1} - {formatDistanceToNow(new Date(run.createdAt), { addSuffix: true })}
+              Run {index + 1} -{" "}
+              {formatDistanceToNow(new Date(run.createdAt), {
+                addSuffix: true
+              })}
             </AccordionTrigger>
             <AccordionContent>
               <div className="space-y-2">
-                <p>Status: {run.status}</p>
-                <p>Total Cost: ${run.totalCost}</p>
-                <h3 className="font-semibold">Steps:</h3>
-                <ul className="list-inside list-disc">
+                <div>Status: {run.status}</div>
+                <div>Total Cost: ${run.cost}</div>
+                <div className="font-semibold">Steps:</div>
+                <div>
                   {run.steps.map(step => (
-                    <li key={step.id}>
-                      {step.stepName} - Status: {step.status}, Cost: ${step.cost}
-                    </li>
+                    <div key={step.id}>
+                      {step.name} - Status: {step.status}, Cost: ${step.cost}
+                    </div>
                   ))}
-                </ul>
+                </div>
               </div>
             </AccordionContent>
           </AccordionItem>

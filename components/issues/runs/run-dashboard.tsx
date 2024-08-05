@@ -1,27 +1,13 @@
 "use client"
 
-import {
-  startNewRun,
-  updateRunStatus,
-  updateRunStep
-} from "@/actions/runs/manage-runs"
-import { MessageMarkdown } from "@/components/instructions/message-markdown"
 import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from "@/components/ui/dialog"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger
-} from "@/components/ui/tooltip"
 import { updateIssue } from "@/db/queries"
-import { SelectInstruction, SelectIssue, SelectProject } from "@/db/schema"
+import {
+  SelectInstruction,
+  SelectIssue,
+  SelectProject,
+  stepOrder
+} from "@/db/schema"
 import { runCompletedStep } from "@/lib/runs/run-completed-step"
 import { runEmbeddingStep } from "@/lib/runs/run-embedding-step"
 import { runImplementationStep } from "@/lib/runs/run-implementation-step"
@@ -34,26 +20,17 @@ import {
   ParsedImplementation,
   ParsedPlan,
   ParsedSpecification,
-  RunStepStatuses,
-  StepName,
-  StepStatus
+  RunStepName,
+  RunStepStatus,
+  RunStepStatuses
 } from "@/types/run"
-import { ArrowLeft, Info, Loader2, Play, RefreshCw } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import { RunButton } from "./run-button"
 import { RunStepContent } from "./run-step-content"
 import { RunStepStatusList } from "./run-step-status-list"
-
-export const stepOrder: StepName[] = [
-  "started",
-  "embedding",
-  "retrieval",
-  "specification",
-  "plan",
-  "implementation",
-  "pr",
-  "completed"
-]
+import { RunTooltip } from "./run-tooltip"
 
 interface RunDashboardProps {
   issue: SelectIssue
@@ -67,18 +44,18 @@ export const RunDashboard = ({
   instructions
 }: RunDashboardProps) => {
   const router = useRouter()
-  const [selectedStep, setSelectedStep] = useState<StepName | null>(null)
+  const [selectedStep, setSelectedStep] = useState<RunStepName | null>(null)
   const [isRunning, setIsRunning] = useState(false)
-  const [currentStep, setCurrentStep] = useState<StepName | null>(null)
+  const [currentStep, setCurrentStep] = useState<RunStepName | null>(null)
   const [stepStatuses, setStepStatuses] = useState<RunStepStatuses>({
-    started: "not_started",
-    embedding: "not_started",
-    retrieval: "not_started",
-    specification: "not_started",
-    plan: "not_started",
-    implementation: "not_started",
-    pr: "not_started",
-    completed: "not_started"
+    started: null,
+    embedding: null,
+    retrieval: null,
+    specification: null,
+    plan: null,
+    implementation: null,
+    pr: null,
+    completed: null
   })
   const [waitingForConfirmation, setWaitingForConfirmation] = useState(false)
   const [prLink, setPrLink] = useState("")
@@ -111,23 +88,24 @@ ${instruction.content}
     setSelectedStep(null)
   }, [currentStep])
 
-  const updateStepStatus = (step: StepName, status: StepStatus) => {
+  const updateStepStatus = (step: RunStepName, status: RunStepStatus) => {
     setStepStatuses(prevSteps => ({ ...prevSteps, [step]: status }))
   }
 
-  const runNextStep = async (step: StepName) => {
+  const runNextStep = async (step: RunStepName) => {
     if (!currentRunId) {
       return
     }
 
     const stepStatus = stepStatuses[step]
 
-    if (stepStatus === "not_started") {
+    if (stepStatus === null) {
       updateStepStatus(step, "in_progress")
+
       try {
         switch (step) {
           case "started":
-            await runStartStep(currentRunId!)
+            await runStartStep()
             break
           case "embedding":
             await runEmbeddingStep({ project })
@@ -147,7 +125,6 @@ ${instruction.content}
             return
           case "specification":
             const specificationStepResponse = await runSpecificationStep({
-              runId: currentRunId,
               issue,
               codebaseFiles: latestCodebaseFiles,
               instructionsContext
@@ -162,7 +139,6 @@ ${instruction.content}
             return
           case "plan":
             const planStepResponse = await runPlanStep({
-              runId: currentRunId,
               issue,
               codebaseFiles: latestCodebaseFiles,
               instructionsContext,
@@ -174,7 +150,6 @@ ${instruction.content}
             return
           case "implementation":
             const implementationStepResponse = await runImplementationStep({
-              runId: currentRunId,
               issue,
               codebaseFiles: latestCodebaseFiles,
               instructionsContext,
@@ -187,7 +162,6 @@ ${instruction.content}
             return
           case "pr":
             const prStepResponse = await runPRStep({
-              runId: currentRunId,
               issue,
               project,
               parsedImplementation
@@ -197,19 +171,13 @@ ${instruction.content}
           case "completed":
             await runCompletedStep()
             updateIssue(issue.id, { status: "completed" })
-            await updateRunStep(
-              currentRunId,
-              "completed",
-              "completed",
-              cost.toString()
-            )
             break
         }
 
         handleStepCompletion(step, stepOrder.indexOf(step))
       } catch (error) {
         console.error("Error running step:", error)
-        updateStepStatus(step, "error")
+        updateStepStatus(step, "failed")
       }
     }
   }
@@ -221,14 +189,13 @@ ${instruction.content}
     }
   }
 
-  const handleStepCompletion = (stepName: StepName, stepIndex: number) => {
-    updateStepStatus(stepName, "done")
+  const handleStepCompletion = (stepName: RunStepName, stepIndex: number) => {
+    updateStepStatus(stepName, "completed")
     const nextStep = stepOrder[stepIndex + 1]
     const isLastStep = stepIndex === stepOrder.length - 1
 
     if (isLastStep) {
       setIsRunning(false)
-      updateRunStatus(currentRunId!, "completed", calculateTotalCost())
     } else {
       setCurrentStep(nextStep)
       runNextStep(nextStep)
@@ -238,13 +205,11 @@ ${instruction.content}
   const handleRun = async () => {
     setIsRunning(true)
     setWaitingForConfirmation(false)
-    const run = await startNewRun(issue.id)
-    setCurrentRunId(run.id)
     setCurrentStep("started")
     runNextStep("started")
   }
 
-  const handleStepClick = (step: StepName) => {
+  const handleStepClick = (step: RunStepName) => {
     const currentStepIndex = currentStep ? stepOrder.indexOf(currentStep) : -1
     const clickedStepIndex = stepOrder.indexOf(step)
 
@@ -281,13 +246,6 @@ ${updatedPlan.steps.map(step => `  <step>${step.text}</step>`).join("\n")}
     setParsedImplementation(updatedImplementation)
   }
 
-  const calculateTotalCost = (): string => {
-    // Implement the logic to calculate the total cost of the run
-    // This should sum up the costs of all completed steps
-    // For now, we'll return a placeholder value
-    return "0.00"
-  }
-
   return (
     <>
       <div className="w-full border-b">
@@ -302,68 +260,18 @@ ${updatedPlan.steps.map(step => `  <step>${step.text}</step>`).join("\n")}
               Back
             </Button>
 
-            <TooltipProvider>
-              <Tooltip>
-                <Dialog>
-                  <TooltipTrigger asChild>
-                    <DialogTrigger asChild>
-                      <Button variant="ghost" size="icon" className="mr-2">
-                        <Info className="size-4" />
-                      </Button>
-                    </DialogTrigger>
-                  </TooltipTrigger>
-
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>{issue.name}</DialogTitle>
-                    </DialogHeader>
-                    <MessageMarkdown content={issue.content} />
-                  </DialogContent>
-                </Dialog>
-
-                <TooltipContent>
-                  <div>View your issue</div>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <RunTooltip issueName={issue.name} issueContent={issue.content} />
 
             <div className="truncate font-bold">{issue.name}</div>
           </div>
 
-          {waitingForConfirmation ? (
-            <Button
-              variant="create"
-              onClick={handleConfirmation}
-              className="ml-4"
-            >
-              <Play className="mr-2 size-4" />
-              Confirm and Continue
-            </Button>
-          ) : (
-            <Button
-              variant="create"
-              onClick={handleRun}
-              disabled={isRunning}
-              className="ml-4"
-            >
-              {isRunning ? (
-                <>
-                  <Loader2 className="mr-2 size-4 animate-spin" />
-                  Running
-                </>
-              ) : issue.status === "completed" ? (
-                <>
-                  <RefreshCw className="mr-2 size-4" />
-                  Redo Run
-                </>
-              ) : (
-                <>
-                  <Play className="mr-2 size-4" />
-                  Begin Run
-                </>
-              )}
-            </Button>
-          )}
+          <RunButton
+            isRunning={isRunning}
+            issueStatus={issue.status}
+            waitingForConfirmation={waitingForConfirmation}
+            onRun={handleRun}
+            onConfirm={handleConfirmation}
+          />
         </div>
       </div>
 

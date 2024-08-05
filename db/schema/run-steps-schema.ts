@@ -20,6 +20,8 @@ export const runStepNameEnum = pgEnum("run_step_name", [
   "completed"
 ])
 
+export const stepOrder = runStepNameEnum.enumValues
+
 export const runStepStatusEnum = pgEnum("run_step_status", [
   "in_progress",
   "waiting",
