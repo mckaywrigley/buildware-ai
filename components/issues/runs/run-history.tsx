@@ -15,6 +15,7 @@ export const RunHistory = ({ runsWithSteps }: RunHistoryProps) => {
   return (
     <div className="space-y-4">
       <div className="text-2xl font-bold">Run History</div>
+
       <Accordion type="single" collapsible className="w-full">
         {runsWithSteps.map((run, index) => (
           <AccordionItem key={run.id} value={`item-${index}`}>
@@ -24,6 +25,7 @@ export const RunHistory = ({ runsWithSteps }: RunHistoryProps) => {
                 addSuffix: true
               })}
             </AccordionTrigger>
+
             <AccordionContent>
               <div className="space-y-2">
                 <div>Status: {run.status}</div>
