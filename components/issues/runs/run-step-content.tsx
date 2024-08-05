@@ -32,41 +32,38 @@ export const RunStepContent = ({
   plan,
   implementation,
   onUpdateSpecification,
-  onUpdate
-      onUpdatePlan,
-      onUpdateImplementation,
-      stepCost
-    }: RunStepContentProps) => {
-      switch (stepName) {
-        case "started":
-          return <StartedStep />
-        case "embedding":
-          return <EmbeddingStep />
-        case "retrieval":
-          return <RetrievalStep />
-        case "specification":
-          return (
-            <SpecificationStep
-              specification={specification}
-              onUpdateSpecification={onUpdateSpecification}
-              stepCost={stepCost}
-            />
-          )
-        case "plan":
-          return <PlanStep plan={plan} onUpdatePlan={onUpdatePlan} stepCost={stepCost} />
-        case "implementation":
-          return (
-            <ImplementationStep
-              implementation={implementation}
-              onUpdateImplementation={onUpdateImplementation}
-              stepCost={stepCost}
-            />
-          )
-        case "pr":
-          return <PRStep stepCost={stepCost} />
-        case "completed":
-          return <CompletedStep prLink={prLink} stepCost={stepCost} />
-        default:
-          return null
-      }
-    }
+  onUpdatePlan,
+  onUpdateImplementation,
+  stepCost
+}: RunStepContentProps) => {
+  switch (stepName) {
+    case "started":
+      return <StartedStep />
+    case "embedding":
+      return <EmbeddingStep />
+    case "retrieval":
+      return <RetrievalStep />
+    case "specification":
+      return (
+        <SpecificationStep
+          specification={specification}
+          onUpdateSpecification={onUpdateSpecification}
+        />
+      )
+    case "plan":
+      return <PlanStep plan={plan} onUpdatePlan={onUpdatePlan} />
+    case "implementation":
+      return (
+        <ImplementationStep
+          implementation={implementation}
+          onUpdateImplementation={onUpdateImplementation}
+        />
+      )
+    case "pr":
+      return <PRStep />
+    case "completed":
+      return <CompletedStep prLink={prLink} />
+    default:
+      return null
+  }
+}

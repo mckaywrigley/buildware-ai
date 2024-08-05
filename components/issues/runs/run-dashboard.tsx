@@ -1,5 +1,10 @@
 "use client"
 
+import {
+  startNewRun,
+  updateRunStatus,
+  updateRunStep
+} from "@/actions/runs/manage-runs"
 import { MessageMarkdown } from "@/components/instructions/message-markdown"
 import { Button } from "@/components/ui/button"
 import {
@@ -38,7 +43,6 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { RunStepContent } from "./run-step-content"
 import { RunStepStatusList } from "./run-step-status-list"
-import { startNewRun, updateRunStatus, getRunWithSteps } from "@/actions/runs/manage-runs"
 
 export const stepOrder: StepName[] = [
   "started",
@@ -112,6 +116,10 @@ ${instruction.content}
   }
 
   const runNextStep = async (step: StepName) => {
+    if (!currentRunId) {
+      return
+    }
+
     const stepStatus = stepStatuses[step]
 
     if (stepStatus === "not_started") {
@@ -139,6 +147,7 @@ ${instruction.content}
             return
           case "specification":
             const specificationStepResponse = await runSpecificationStep({
+              runId: currentRunId,
               issue,
               codebaseFiles: latestCodebaseFiles,
               instructionsContext
@@ -153,6 +162,7 @@ ${instruction.content}
             return
           case "plan":
             const planStepResponse = await runPlanStep({
+              runId: currentRunId,
               issue,
               codebaseFiles: latestCodebaseFiles,
               instructionsContext,
@@ -164,6 +174,7 @@ ${instruction.content}
             return
           case "implementation":
             const implementationStepResponse = await runImplementationStep({
+              runId: currentRunId,
               issue,
               codebaseFiles: latestCodebaseFiles,
               instructionsContext,
@@ -176,6 +187,7 @@ ${instruction.content}
             return
           case "pr":
             const prStepResponse = await runPRStep({
+              runId: currentRunId,
               issue,
               project,
               parsedImplementation
@@ -185,6 +197,12 @@ ${instruction.content}
           case "completed":
             await runCompletedStep()
             updateIssue(issue.id, { status: "completed" })
+            await updateRunStep(
+              currentRunId,
+              "completed",
+              "completed",
+              cost.toString()
+            )
             break
         }
 
