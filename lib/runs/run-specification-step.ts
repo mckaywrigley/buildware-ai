@@ -62,7 +62,9 @@ export const runSpecificationStep = async ({
     )
 
     await saveCodegenEval(
-      `${specificationSystemPrompt}\n\n${specificationUserMessage}`,
+      `${specificationSystemPrompt}
+
+${specificationUserMessage}`,
       issue.name,
       "specification",
       "prompt"

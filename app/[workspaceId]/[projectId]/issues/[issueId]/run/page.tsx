@@ -6,6 +6,8 @@ import {
   getProjectById
 } from "@/db/queries"
 
+export const revalidate = 0
+
 export default async function RunIssuePage({
   params: { issueId, projectId }
 }: {
@@ -29,6 +31,12 @@ export default async function RunIssuePage({
   }
 
   return (
-    <RunDashboard issue={issue} project={project} instructions={instructions} />
+    <div className="flex h-full flex-col">
+      <RunDashboard
+        issue={issue}
+        project={project}
+        instructions={instructions}
+      />
+    </div>
   )
 }

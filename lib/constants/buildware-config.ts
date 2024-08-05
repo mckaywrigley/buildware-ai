@@ -1,3 +1,8 @@
+export type BuildwareModel =
+  | typeof BUILDWARE_SPECIFICATION_LLM
+  | typeof BUILDWARE_PLAN_LLM
+  | typeof BUILDWARE_IMPLEMENTATION_LLM
+
 const isDev = process.env.NEXT_PUBLIC_CONFIG_MODE === "dev"
 
 // text-embedding-3-small or text-embedding-3-large

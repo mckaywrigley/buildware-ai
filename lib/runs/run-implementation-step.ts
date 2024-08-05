@@ -66,7 +66,9 @@ export const runImplementationStep = async ({
     )
 
     await saveCodegenEval(
-      `${implementationSystemPrompt}\n\n${implementationUserMessage}`,
+      `${implementationSystemPrompt}
+
+${implementationUserMessage}`,
       issue.name,
       "implementation",
       "prompt"

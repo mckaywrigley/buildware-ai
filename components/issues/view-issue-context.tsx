@@ -50,7 +50,7 @@ export const ViewIssueContext = ({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger>
-        <Button onClick={() => setIsOpen(true)}>
+        <Button variant="outline" onClick={() => setIsOpen(true)}>
           <Eye className="mr-2 size-4" />
           View Context
         </Button>

@@ -2,7 +2,7 @@ import {
   ParsedImplementation,
   ParsedPlan,
   ParsedSpecification,
-  StepName
+  RunStepName
 } from "@/types/run"
 import { CompletedStep } from "./steps/completed-step"
 import { EmbeddingStep } from "./steps/embedding-step"
@@ -14,7 +14,7 @@ import { SpecificationStep } from "./steps/specification-step"
 import { StartedStep } from "./steps/started-step"
 
 interface RunStepContentProps {
-  stepName: StepName | null
+  stepName: RunStepName | null
   prLink: string
   specification: ParsedSpecification
   plan: ParsedPlan

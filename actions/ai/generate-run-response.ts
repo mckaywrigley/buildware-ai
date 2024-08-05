@@ -1,7 +1,10 @@
 "use server"
 
 import { calculateLLMCost } from "@/lib/ai/calculate-llm-cost"
-import { BUILDWARE_MAX_OUTPUT_TOKENS } from "@/lib/constants/buildware-config"
+import {
+  BUILDWARE_MAX_OUTPUT_TOKENS,
+  BuildwareModel
+} from "@/lib/constants/buildware-config"
 import Anthropic from "@anthropic-ai/sdk"
 
 const anthropic = new Anthropic()
@@ -14,7 +17,7 @@ export const generateRunResponse = async ({
 }: {
   system: string
   messages: Anthropic.Messages.MessageParam[]
-  model: "claude-3-5-sonnet-20240620" | "claude-3-haiku-20240307"
+  model: BuildwareModel
   prefill: string
 }) => {
   const finalMessages = [

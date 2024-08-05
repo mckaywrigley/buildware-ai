@@ -64,7 +64,9 @@ export const runPlanStep = async ({
     const parsedPlan = parsePlanResponse(planResponse)
 
     await saveCodegenEval(
-      `${planSystemPrompt}\n\n${planUserMessage}`,
+      `${planSystemPrompt}
+
+${planUserMessage}`,
       issue.name,
       "plan",
       "prompt"
