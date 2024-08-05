@@ -28,6 +28,8 @@ const dbSchema = {
   contextGroups: schema.contextGroups,
   contextGroupsToEmbeddedFiles: schema.contextGroupsToEmbeddedFiles,
   issuesToContextGroups: schema.issuesToContextGroups,
+  runs: schema.runsTable,
+  runSteps: schema.runStepsTable,
 
   // Relations
   projectsRelations: schema.projectsRelations,
@@ -42,7 +44,9 @@ const dbSchema = {
   contextGroupsRelations: schema.contextGroupsRelations,
   contextGroupsToEmbeddedFilesRelations:
     schema.contextGroupsToEmbeddedFilesRelations,
-  issuesToContextGroupsRelations: schema.issuesToContextGroupsRelations
+  issuesToContextGroupsRelations: schema.issuesToContextGroupsRelations,
+  runsRelations: schema.runsRelations,
+  runStepsRelations: schema.runStepsRelations
 }
 
 function initializeDb(url: string) {
