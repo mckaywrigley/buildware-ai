@@ -41,6 +41,8 @@ export const buildImplementationPrompt = async ({
     5. If you need to create new files, provide the full file path and full file content.
     6. For modified files, provide the full file path and full updated file content.
     7. For deleted files, only provide the full file path.
+
+    Use <scratchpad> tags to think through the process as you create the implementation.
     
     ---
 
@@ -110,6 +112,8 @@ export const buildImplementationPrompt = async ({
       ...
       </file_list>
     </pull_request>
+
+    (Use <scratchpad> tags to think through the process as you create the implementation.)
   
     ## Response Example
 

@@ -7,7 +7,12 @@ export function parseSpecificationResponse(response: string) {
   )
 
   if (specificationMatch) {
-    const stepMatches = specificationMatch[1].matchAll(
+    const cleanedSpecification = specificationMatch[1].replace(
+      /<scratchpad>[\s\S]*?<\/scratchpad>/g,
+      ""
+    )
+
+    const stepMatches = cleanedSpecification.matchAll(
       /<step>([\s\S]*?)<\/step>/g
     )
 

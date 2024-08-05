@@ -31,12 +31,16 @@ export const buildPlanPrompt = async ({
 
     Your goal is to use this information to create a detailed implementation plan for the given task.
 
-    Each step should be a bullet point that includes the file path, the file status (created, modified, deleted), and a list of todos for the file.
+    This plan will be passed to the implementation step, which will use it to create the implementation (writing the code) for the task.
+
+    Each step should include the following information:
+    - The file path
+    - The file status (created, modified, deleted)
+    - A list of todos for the file
 
     Together, the steps should form a complete implementation plan for the given task.
 
     Your implementation plan should:
-    - Be focused solely on the task at hand 
     - Provide clear, actionable steps for implementation
     - Include detailed pseudocode where appropriate
     - Address all requirements specified in the task and specification
@@ -50,6 +54,8 @@ export const buildPlanPrompt = async ({
 
     The plan should **NOT**:
     - Include steps like performance, testing, deployment, documentation, etc, unless specifically asked to
+
+    Use <scratchpad> tags to think through the process as you create the plan.
     
     ---
 
@@ -103,6 +109,8 @@ export const buildPlanPrompt = async ({
       <step>__STEP_TEXT__</step>
       ...
     </plan>
+
+    (Use <scratchpad> tags to think through the process as you create the plan.)
 
     ## Response Example
 

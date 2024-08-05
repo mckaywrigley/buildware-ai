@@ -24,7 +24,8 @@ const LLM_MODELS = {
     implementation: "claude-3-haiku-20240307"
   },
   prod: {
-    specification: "claude-3-haiku-20240307",
+    // specification: "claude-3-haiku-20240307",
+    specification: "claude-3-5-sonnet-20240620",
     plan: "claude-3-5-sonnet-20240620",
     implementation: "claude-3-5-sonnet-20240620"
   }

@@ -3,7 +3,15 @@ import { GeneratedFile, ParsedImplementation } from "@/types/run"
 export function parseImplementationResponse(
   response: string
 ): ParsedImplementation {
-  const pullRequestContent = extractBalancedContent(response, "pull_request")
+  const cleanedResponse = response.replace(
+    /<scratchpad>[\s\S]*?<\/scratchpad>/g,
+    ""
+  )
+
+  const pullRequestContent = extractBalancedContent(
+    cleanedResponse,
+    "pull_request"
+  )
   if (!pullRequestContent) {
     throw new Error(
       "Invalid response format: Missing or unbalanced <pull_request> tags"

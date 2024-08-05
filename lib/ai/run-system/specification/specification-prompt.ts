@@ -28,11 +28,16 @@ export const buildSpecificationPrompt = async ({
     You will be given a codebase to work with, a task to complete, general instructions & guidelines for the task, and response instructions.
 
     Your goal is to use this information to build a specification for the task.
+
+    This specification will be passed to the plan step, which will use it to create a plan for implementing the task.
     
     The specification should be a high-level outline or plan for implementing the task.
 
-    Each step should be a bullet point that briefly but completely describes the step in markdown format. Keep the steps short and concise. 3 sentences or less per step.
-    
+    Each step should include the following information:
+    - The file path(s) that the step will need
+    - The file status(es) that the step will need (created, modified, deleted)
+    - A list of todos for the step
+
     To create the specification:
     - Focus on the task at hand
     - Break down the task into clear, logical steps
@@ -41,8 +46,11 @@ export const buildSpecificationPrompt = async ({
     - Serve as a roadmap for developers to follow when implementing the task
 
     The specification should **NOT**:
-    - Include specific code snippets or implementation details
+    - Include work that is already done in the codebase
+    - Include specific code snippets
     - Include steps like performance, testing, deployment, documentation, etc, unless specifically asked to
+
+    Use <scratchpad> tags to think through the process as you create the specification.
 
     ---
     
@@ -88,6 +96,8 @@ export const buildSpecificationPrompt = async ({
       <step>__STEP_TEXT__</step>
       ...
     </specification>
+
+    (Use <scratchpad> tags to think through the process as you create the specification.)
 
     ## Response Example
 
