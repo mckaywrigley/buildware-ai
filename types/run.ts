@@ -1,4 +1,5 @@
 import { SelectInstruction, SelectIssue, SelectProject } from "@/db/schema"
+import { runStatusEnum } from "./../db/schema/runs-schema"
 
 export type StepName =
   | "started"
@@ -10,10 +11,8 @@ export type StepName =
   | "pr"
   | "completed"
 
-export type StepStatus = "not_started" | "in_progress" | "done" | "error"
-
 export type RunStepStatuses = {
-  [key in StepName]: StepStatus
+  [key in StepName]: typeof runStatusEnum.enumValues
 }
 
 export interface RunStepParams {
