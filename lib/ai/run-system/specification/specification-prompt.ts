@@ -23,9 +23,9 @@ export const buildSpecificationPrompt = async ({
   partialResponse?: string
 }) => {
   const systemPrompt = endent`
-    You are a world-class project manager and software engineer.
+    You are an expert software engineer.
 
-    You will be given a codebase to work with, a task to complete, general instructions & guidelines for the task, and response instructions.
+    You will be given an existing codebase to work with, a task to complete, general instructions & guidelines for the task, and response instructions.
 
     Your goal is to use this information to build a high-level specification for the task.
 
@@ -54,9 +54,9 @@ export const buildSpecificationPrompt = async ({
     Use <scratchpad> tags to think through the process as you create the specification.`
 
   const userMessageTemplate = endent`
-    # Codebase
+    # Existing Codebase
 
-    First, review the codebase you'll be working with:
+    First, review the existing codebase you'll be working with:
 
     <codebase>
       {{CODEBASE_PLACEHOLDER}}
@@ -96,51 +96,35 @@ export const buildSpecificationPrompt = async ({
     Respond with the following information:
 
     - SPECIFICATION: The specification for the task.
-      - SCRATCHPAD: A scratchpad for your thoughts.
-        - THOUGHTS: Your thoughts on the step.
-        - IS_COMPLETED: Boolean value with reason indicating whether or not the step is already done in the existing codebase.
-        - OTHER_CONTEXT: Any additional context for the step.
+      - SCRATCHPAD: A scratchpad for your thoughts. Scratchpad tags can be used anywhere in the response where you need to think. This includes at the beginning of the steps, in the middle of the steps, and at the end of the steps. There is no limit to the number of scratchpad tags you can use.
       - STEP: A step in the specification. Contains the step text in markdown format.
-
-    (Remember: Use <scratchpad> tags to think through the process as you create the specification.)
 
     ## Response Format
 
     Respond in the following format:
 
     <specification>
-      <scratchpad>
-        <thoughts>__SCRATCHPAD_TEXT__</thoughts>
-        <is_completed>__IS_COMPLETED__</is_completed>
-        <other_context>__OTHER_CONTEXT__</other_context>
-      </scratchpad>
       <step>__STEP_TEXT__</step>
       ...remaining steps...
     </specification>
+
+    (remember to include as many scratchpad tags as needed within the response)
 
     ## Response Example
 
     An example response:
 
     <specification>
-      <scratchpad>
-        <thoughts>Your thoughts here...</thoughts>
-        <is_completed>Boolean value with reason here...</is_completed>
-        <other_context>Additional context here...</other_context>
-      </scratchpad>
       <step>Step text here...</step>
-      <scratchpad>
-        <thoughts>Your thoughts here...</thoughts>
-        <is_completed>Boolean value with reason here...</is_completed>
-        <other_context>Additional context here...</other_context>
-      </scratchpad>
       <step>Step text here...</step>
       ...remaining steps...
     </specification>
 
+    (and any scratchpad tags you need throughout the response)
+
     ---
 
-    Now, based on the task information, codebase, and instructions provided, create a high-level specification for implementing the task. Present your specification in the format described above.`
+    Now, based on the task information, existing codebase, and instructions provided, create a high-level specification for implementing the task. Present your specification in the format described above.`
 
   const systemPromptTokens = estimateClaudeTokens(systemPrompt)
   const userMessageTemplateTokens = estimateClaudeTokens(userMessageTemplate)

@@ -25,9 +25,9 @@ export const buildImplementationPrompt = async ({
   partialResponse?: string
 }) => {
   const systemPrompt = endent`
-    You are a world-class software engineer.
+    You are an expert software engineer.
 
-    You will be given a codebase to work with, a task to complete, general instructions & guidelines for the task, a plan for the task, and response instructions.
+    You will be given an existing codebase to work with, a task to complete, general instructions & guidelines for the task, a plan for the task, and response instructions.
 
     Your goal is to use this information to write all of the code needed to complete the given task.
 
@@ -50,9 +50,9 @@ export const buildImplementationPrompt = async ({
     Use <scratchpad> tags to think through the process as you create the implementation.`
 
   const userMessageTemplate = endent`
-    # Codebase
+    # Existing Codebase
 
-    First, review the codebase you'll be working with:
+    First, review the existing codebase you'll be working with:
 
     <codebase>
       {{CODEBASE_PLACEHOLDER}}
@@ -100,6 +100,7 @@ export const buildImplementationPrompt = async ({
     Respond with the following information:
 
     - PULL_REQUEST: The full content for the PR.
+      - SCRATCHPAD: A scratchpad for your thoughts. Scratchpad tags can be used anywhere in the response where you need to think. This includes at the beginning of the steps, in the middle of the steps, and at the end of the steps. There is no limit to the number of scratchpad tags you can use.
       - PR_TITLE: The title of the PR. Maximum 100 characters.
       - PR_DESCRIPTION: The description of the PR. Maximum 500 characters.
       - FILE_LIST: Enclose your response in <file_list> tags to help with parsing.
@@ -115,11 +116,9 @@ export const buildImplementationPrompt = async ({
     Respond in the following format:
 
     <pull_request>
-      <scratchpad>Your thoughts here...</scratchpad>
       <pr_title>__PR_TITLE__</pr_title>
       <pr_description>__PR_DESCRIPTION__</pr_description>
       <file_list>
-        <scratchpad>Your thoughts here...</scratchpad>
         <file>
           <file_status>__STATUS__</file_status>
           <file_path>__FILE_PATH__</file_path>
@@ -130,17 +129,17 @@ export const buildImplementationPrompt = async ({
         ...remaining files... 
       </file_list>
     </pull_request>
+
+    (remember to include as many scratchpad tags as needed within the response)
   
     ## Response Example
 
     An example response:
 
     <pull_request>
-      <scratchpad>Your thoughts here...</scratchpad>
       <pr_title>PR title here...</pr_title>
       <pr_description>PR description here...</pr_description>
       <file_list>
-        <scratchpad>Your thoughts here...</scratchpad>
         <file>
           <file_status>file status here...</file_status>
           <file_path>file path here...</file_path>
@@ -152,9 +151,11 @@ export const buildImplementationPrompt = async ({
       </file_list>
     </pull_request>
 
+    (and any scratchpad tags you need throughout the response)
+
     ---
 
-    Now, based on the task information, codebase, plan, and instructions provided, create the implementation for the task. Present your implementation in the format described above.`
+    Now, based on the task information, existingcodebase, plan, and instructions provided, create the implementation for the task. Present your implementation in the format described above.`
 
   const systemPromptTokens = estimateClaudeTokens(systemPrompt)
   const userMessageTemplateTokens = estimateClaudeTokens(userMessageTemplate)
