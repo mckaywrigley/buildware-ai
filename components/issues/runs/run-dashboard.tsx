@@ -31,6 +31,8 @@ import { RunButton } from "./run-button"
 import { RunStepContent } from "./run-step-content"
 import { RunStepStatusList } from "./run-step-status-list"
 import { RunTooltip } from "./run-tooltip"
+import { createRun, getRunsByIssueId, updateRun } from "@/db/queries/runs-queries"
+import { createRunStep } from "@/db/queries/run-steps-queries"
 
 interface RunDashboardProps {
   issue: SelectIssue
@@ -87,6 +89,19 @@ ${instruction.content}
   useEffect(() => {
     setSelectedStep(null)
   }, [currentStep])
+
+  useEffect(() => {
+    const fetchExistingRun = async () => {
+      const runs = await getRunsByIssueId(issue.id)
+      const latestRun = runs[0]
+      if (latestRun && latestRun.status === "in_progress") {
+        setCurrentRunId(latestRun.id)
+        setCurrentStep(latestRun.currentStep)
+        setIsRunning(true)
+      }
+    }
+    fetchExistingRun()
+  }, [issue.id])
 
   const updateStepStatus = (step: RunStepName, status: RunStepStatus) => {
     setStepStatuses(prevSteps => ({ ...prevSteps, [step]: status }))
@@ -185,13 +200,33 @@ ${instruction.content}
     }
   }
 
-  const handleStepCompletion = (stepName: RunStepName, stepIndex: number) => {
+  const handleStepCompletion = async (stepName: RunStepName, stepIndex: number) => {
+    if (currentRunId) {
+      await updateRun(currentRunId, { currentStep: stepName })
+      await createRunStep({
+        runId: currentRunId,
+        name: stepName,
+        status: "completed",
+        content: JSON.stringify(
+          stepName === "specification"
+            ? parsedSpecification
+            : stepName === "plan"
+            ? parsedPlan
+            : stepName === "implementation"
+            ? parsedImplementation
+            : null
+        )
+      })
+    }
     updateStepStatus(stepName, "completed")
     const nextStep = stepOrder[stepIndex + 1]
     const isLastStep = stepIndex === stepOrder.length - 1
 
     if (isLastStep) {
       setIsRunning(false)
+      if (currentRunId) {
+        await updateRun(currentRunId, { status: "completed" })
+      }
     } else {
       setCurrentStep(nextStep)
       runNextStep(nextStep)
@@ -201,6 +236,12 @@ ${instruction.content}
   const handleRun = async () => {
     setIsRunning(true)
     setWaitingForConfirmation(false)
+    const run = await createRun({
+      issueId: issue.id,
+      status: "in_progress",
+      currentStep: stepOrder[0]
+    })
+    setCurrentRunId(run.id)
     setCurrentStep(stepOrder[0])
     runNextStep(stepOrder[0])
   }
