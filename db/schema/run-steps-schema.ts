@@ -1,12 +1,5 @@
 import { relations } from "drizzle-orm"
-import {
-  decimal,
-  pgEnum,
-  pgTable,
-  text,
-  timestamp,
-  uuid
-} from "drizzle-orm/pg-core"
+import { pgEnum, pgTable, text, timestamp, uuid, decimal } from "drizzle-orm/pg-core"
 import { runsTable } from "./runs-schema"
 
 export const runStepNameEnum = pgEnum("run_step_name", [

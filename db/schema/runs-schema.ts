@@ -1,14 +1,7 @@
 import { relations } from "drizzle-orm"
-import {
-  decimal,
-  pgEnum,
-  pgTable,
-  text,
-  timestamp,
-  uuid
-} from "drizzle-orm/pg-core"
+import { pgEnum, pgTable, text, timestamp, uuid, decimal } from "drizzle-orm/pg-core"
 import { issuesTable } from "./issues-schema"
-import { runStepNameEnum, runStepsTable } from "./run-steps-schema"
+import { runStepsTable } from "./run-steps-schema"
 
 export const runStatusEnum = pgEnum("run_status", [
   "in_progress",

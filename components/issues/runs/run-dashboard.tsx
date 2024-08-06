@@ -31,6 +31,8 @@ import { RunButton } from "./run-button"
 import { RunStepContent } from "./run-step-content"
 import { RunStepStatusList } from "./run-step-status-list"
 import { RunTooltip } from "./run-tooltip"
+import { createRun, updateRun, getRunsByIssueId, getRunWithStepsById } from "@/db/queries/runs-queries"
+import { createRunStep, updateRunStep } from "@/db/queries/run-steps-queries"
 
 interface RunDashboardProps {
   issue: SelectIssue
@@ -88,17 +90,53 @@ ${instruction.content}
     setSelectedStep(null)
   }, [currentStep])
 
+  useEffect(() => {
+    const checkForIncompleteRun = async () => {
+      const runs = await getRunsByIssueId(issue.id)
+      const incompleteRun = runs.find(run => run.status === "in_progress")
+      if (incompleteRun) {
+        await loadIncompleteRun(incompleteRun.id)
+      }
+    }
+    checkForIncompleteRun()
+  }, [issue.id])
+
+  const loadIncompleteRun = async (runId: string) => {
+    const run = await getRunWithStepsById(runId)
+    if (run && run.status === "in_progress") {
+      setCurrentRunId(run.id)
+      setCurrentStep(run.currentStep as RunStepName)
+      setStepStatuses(prevStatuses => {
+        const newStatuses = { ...prevStatuses }
+        run.steps.forEach(step => {
+          newStatuses[step.name as RunStepName] = step.status as RunStepStatus
+        })
+        return newStatuses
+      })
+      setIsRunning(true)
+      runNextStep(run.currentStep as RunStepName)
+    }
+  }
+
   const updateStepStatus = (step: RunStepName, status: RunStepStatus) => {
     setStepStatuses(prevSteps => ({ ...prevSteps, [step]: status }))
   }
 
   const runNextStep = async (step: RunStepName) => {
+    if (!currentRunId) return
+
     const stepStatus = stepStatuses[step]
 
     if (stepStatus === null) {
       updateStepStatus(step, "in_progress")
 
       try {
+        const runStep = await createRunStep({
+          runId: currentRunId,
+          name: step,
+          status: "in_progress"
+        })
+
         switch (step) {
           case "started":
             await runStartStep()
@@ -170,10 +208,13 @@ ${instruction.content}
             break
         }
 
+        await updateRunStep(runStep.id, { status: "completed" })
         handleStepCompletion(step, stepOrder.indexOf(step))
       } catch (error) {
         console.error("Error running step:", error)
         updateStepStatus(step, "failed")
+        await updateRunStep(runStep.id, { status: "failed" })
+        await updateRun(currentRunId, { status: "failed" })
       }
     }
   }
@@ -185,14 +226,18 @@ ${instruction.content}
     }
   }
 
-  const handleStepCompletion = (stepName: RunStepName, stepIndex: number) => {
+  const handleStepCompletion = async (stepName: RunStepName, stepIndex: number) => {
+    if (!currentRunId) return
+
     updateStepStatus(stepName, "completed")
     const nextStep = stepOrder[stepIndex + 1]
     const isLastStep = stepIndex === stepOrder.length - 1
 
     if (isLastStep) {
       setIsRunning(false)
+      await updateRun(currentRunId, { status: "completed" })
     } else {
+      await updateRun(currentRunId, { currentStep: nextStep })
       setCurrentStep(nextStep)
       runNextStep(nextStep)
     }
@@ -201,6 +246,14 @@ ${instruction.content}
   const handleRun = async () => {
     setIsRunning(true)
     setWaitingForConfirmation(false)
+    
+    const newRun = await createRun({
+      issueId: issue.id,
+      status: "in_progress",
+      currentStep: stepOrder[0]
+    })
+    setCurrentRunId(newRun.id)
+    
     setCurrentStep(stepOrder[0])
     runNextStep(stepOrder[0])
   }

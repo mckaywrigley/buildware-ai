@@ -20,10 +20,7 @@ export const RunHistory = ({ runsWithSteps }: RunHistoryProps) => {
         {runsWithSteps.map((run, index) => (
           <AccordionItem key={run.id} value={`item-${index}`}>
             <AccordionTrigger>
-              Run {index + 1} -{" "}
-              {formatDistanceToNow(new Date(run.createdAt), {
-                addSuffix: true
-              })}
+              Run {index + 1} - {formatDistanceToNow(new Date(run.createdAt), { addSuffix: true })}
             </AccordionTrigger>
 
             <AccordionContent>
