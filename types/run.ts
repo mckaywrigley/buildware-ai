@@ -3,7 +3,9 @@ import {
   runStepStatusEnum,
   SelectInstruction,
   SelectIssue,
-  SelectProject
+  SelectProject,
+  SelectRun,
+  SelectRunStep
 } from "@/db/schema"
 
 export type RunStepName = (typeof runStepNameEnum.enumValues)[number]
@@ -65,4 +67,8 @@ export interface ParsedImplementation {
   files: GeneratedFile[]
   prTitle: string
   prDescription: string
+}
+
+export interface Run extends SelectRun {
+  steps: SelectRunStep[]
 }

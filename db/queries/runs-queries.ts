@@ -4,9 +4,7 @@ import { getUserId } from "@/actions/auth/auth"
 import { and, desc, eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { db } from "../db"
-import { SelectRunStep } from "../schema"
 import { InsertRun, SelectRun, runsTable } from "../schema/runs-schema"
-import { getRunStepsByRunId } from "./run-steps-queries"
 
 export async function createRun(
   data: Omit<InsertRun, "userId">
@@ -37,36 +35,6 @@ export async function getRunById(id: string): Promise<SelectRun | undefined> {
   }
 }
 
-export async function getRunWithStepsById(id: string) {
-  try {
-    const run = db.query.runs.findFirst({
-      where: eq(runsTable.id, id),
-      with: {
-        steps: true
-      }
-    })
-    return run
-  } catch (error) {
-    console.error("Error getting run with steps:", error)
-    throw error
-  }
-}
-
-export async function getRunsWithStepsByIssueId(issueId: string) {
-  try {
-    const run = db.query.runs.findMany({
-      where: eq(runsTable.issueId, issueId),
-      with: {
-        steps: true
-      }
-    })
-    return run
-  } catch (error) {
-    console.error("Error getting run with steps:", error)
-    throw error
-  }
-}
-
 export async function getRunsByIssueId(issueId: string): Promise<SelectRun[]> {
   try {
     return await db.query.runs.findMany({
@@ -75,22 +43,6 @@ export async function getRunsByIssueId(issueId: string): Promise<SelectRun[]> {
     })
   } catch (error) {
     console.error("Error getting runs for issue:", error)
-    throw error
-  }
-}
-
-export async function getRunWithSteps(
-  runId: string
-): Promise<SelectRun & { steps: SelectRunStep[] }> {
-  try {
-    const run = await getRunById(runId)
-    if (!run) {
-      throw new Error("Run not found")
-    }
-    const steps = await getRunStepsByRunId(runId)
-    return { ...run, steps }
-  } catch (error) {
-    console.error("Error getting run with steps:", error)
     throw error
   }
 }

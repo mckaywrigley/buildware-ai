@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { updateIssue } from "@/db/queries"
+import { createRun, updateIssue, updateRun } from "@/db/queries"
 import {
   SelectInstruction,
   SelectIssue,
@@ -31,6 +31,7 @@ import { RunButton } from "./run-button"
 import { RunStepContent } from "./run-step-content"
 import { RunStepStatusList } from "./run-step-status-list"
 import { RunTooltip } from "./run-tooltip"
+import Link from "next/link"
 
 interface RunDashboardProps {
   issue: SelectIssue
@@ -92,11 +93,18 @@ ${instruction.content}
     setStepStatuses(prevSteps => ({ ...prevSteps, [step]: status }))
   }
 
+  const saveRunProgress = async (step: RunStepName, status: RunStepStatus) => {
+    if (currentRunId) {
+      await updateRun(currentRunId, { status, currentStep: step })
+    }
+  }
+
   const runNextStep = async (step: RunStepName) => {
     const stepStatus = stepStatuses[step]
 
     if (stepStatus === null) {
       updateStepStatus(step, "in_progress")
+      await saveRunProgress(step, "in_progress")
 
       try {
         switch (step) {
@@ -174,6 +182,7 @@ ${instruction.content}
       } catch (error) {
         console.error("Error running step:", error)
         updateStepStatus(step, "failed")
+        await saveRunProgress(step, "failed")
       }
     }
   }
@@ -185,13 +194,17 @@ ${instruction.content}
     }
   }
 
-  const handleStepCompletion = (stepName: RunStepName, stepIndex: number) => {
+  const handleStepCompletion = async (stepName: RunStepName, stepIndex: number) => {
     updateStepStatus(stepName, "completed")
+    await saveRunProgress(stepName, "completed")
     const nextStep = stepOrder[stepIndex + 1]
     const isLastStep = stepIndex === stepOrder.length - 1
 
     if (isLastStep) {
       setIsRunning(false)
+      if (currentRunId) {
+        await updateRun(currentRunId, { status: "completed" })
+      }
     } else {
       setCurrentStep(nextStep)
       runNextStep(nextStep)
@@ -202,6 +215,14 @@ ${instruction.content}
     setIsRunning(true)
     setWaitingForConfirmation(false)
     setCurrentStep(stepOrder[0])
+
+    const newRun = await createRun({
+      issueId: issue.id,
+      status: "in_progress",
+      currentStep: stepOrder[0]
+    })
+    setCurrentRunId(newRun.id)
+
     runNextStep(stepOrder[0])
   }
 
@@ -261,13 +282,19 @@ ${updatedPlan.steps.map(step => `  <step>${step.text}</step>`).join("\n")}
             <div className="truncate font-bold">{issue.name}</div>
           </div>
 
-          <RunButton
-            isRunning={isRunning}
-            issueStatus={issue.status}
-            waitingForConfirmation={waitingForConfirmation}
-            onRun={handleRun}
-            onConfirm={handleConfirmation}
-          />
+          <div className="flex items-center space-x-2">
+            <Link href={`./run/history`}>
+              <Button variant="outline">View Run History</Button>
+            </Link>
+
+            <RunButton
+              isRunning={isRunning}
+              issueStatus={issue.status}
+              waitingForConfirmation={waitingForConfirmation}
+              onRun={handleRun}
+              onConfirm={handleConfirmation}
+            />
+          </div>
         </div>
       </div>
 
