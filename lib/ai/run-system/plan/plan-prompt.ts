@@ -123,23 +123,22 @@ export const buildPlanPrompt = async ({
     Respond in the following format:
 
     <plan>
+      <scratchpad>__SCRATCHPAD_TEXT__</scratchpad>
       <step>__STEP_TEXT__</step>
       ...remaining steps...
     </plan>
-
-    (remember to include as many scratchpad tags as needed within the response)
 
     ## Response Example
 
     An example response:
 
     <plan>
+      <scratchpad>__SCRATCHPAD_TEXT__</scratchpad>
       <step>Step text here...</step>
+      <scratchpad>__SCRATCHPAD_TEXT__</scratchpad>
       <step>Step text here...</step>
       ...remaining steps...
     </plan>
-
-    (and any scratchpad tags you need throughout the response)
 
     ---
 

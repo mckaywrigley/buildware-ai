@@ -116,9 +116,13 @@ export const buildImplementationPrompt = async ({
     Respond in the following format:
 
     <pull_request>
+      <scratchpad>__SCRATCHPAD_TEXT__</scratchpad>
       <pr_title>__PR_TITLE__</pr_title>
+      <scratchpad>__SCRATCHPAD_TEXT__</scratchpad>
       <pr_description>__PR_DESCRIPTION__</pr_description>
+      <scratchpad>__SCRATCHPAD_TEXT__</scratchpad>
       <file_list>
+        <scratchpad>__SCRATCHPAD_TEXT__</scratchpad>
         <file>
           <file_status>__STATUS__</file_status>
           <file_path>__FILE_PATH__</file_path>
@@ -129,17 +133,19 @@ export const buildImplementationPrompt = async ({
         ...remaining files... 
       </file_list>
     </pull_request>
-
-    (remember to include as many scratchpad tags as needed within the response)
   
     ## Response Example
 
     An example response:
 
     <pull_request>
+      <scratchpad>__SCRATCHPAD_TEXT__</scratchpad>
       <pr_title>PR title here...</pr_title>
+      <scratchpad>__SCRATCHPAD_TEXT__</scratchpad>
       <pr_description>PR description here...</pr_description>
+      <scratchpad>__SCRATCHPAD_TEXT__</scratchpad>
       <file_list>
+        <scratchpad>__SCRATCHPAD_TEXT__</scratchpad>
         <file>
           <file_status>file status here...</file_status>
           <file_path>file path here...</file_path>
@@ -151,11 +157,9 @@ export const buildImplementationPrompt = async ({
       </file_list>
     </pull_request>
 
-    (and any scratchpad tags you need throughout the response)
-
     ---
 
-    Now, based on the task information, existingcodebase, plan, and instructions provided, create the implementation for the task. Present your implementation in the format described above.`
+    Now, based on the task information, existing codebase, plan, and instructions provided, create the implementation for the task. Present your implementation in the format described above.`
 
   const systemPromptTokens = estimateClaudeTokens(systemPrompt)
   const userMessageTemplateTokens = estimateClaudeTokens(userMessageTemplate)

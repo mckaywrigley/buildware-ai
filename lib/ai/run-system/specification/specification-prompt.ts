@@ -104,23 +104,22 @@ export const buildSpecificationPrompt = async ({
     Respond in the following format:
 
     <specification>
+      <scratchpad>__SCRATCHPAD_TEXT__</scratchpad>
       <step>__STEP_TEXT__</step>
       ...remaining steps...
     </specification>
-
-    (remember to include as many scratchpad tags as needed within the response)
 
     ## Response Example
 
     An example response:
 
     <specification>
+      <scratchpad>__SCRATCHPAD_TEXT__</scratchpad>
       <step>Step text here...</step>
+      <scratchpad>__SCRATCHPAD_TEXT__</scratchpad>
       <step>Step text here...</step>
       ...remaining steps...
     </specification>
-
-    (and any scratchpad tags you need throughout the response)
 
     ---
 
