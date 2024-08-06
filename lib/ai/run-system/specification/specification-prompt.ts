@@ -53,6 +53,7 @@ export const buildSpecificationPrompt = async ({
 
     Before each step:
     - Double-check the codebase to ensure the proposed change doesn't already exist
+    - If the existing codebase already includes the needed change(s), skip the step
 
     Use <scratchpad> tags to think through the process as you create the specification.`
 
