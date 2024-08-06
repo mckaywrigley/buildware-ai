@@ -1,5 +1,6 @@
 import { estimateClaudeTokens } from "@/lib/ai/estimate-claude-tokens"
 import { limitCodebaseTokens } from "@/lib/ai/limit-codebase-tokens"
+import { removeScratchpadTags } from "@/lib/ai/run-system/specification/specification-parser"
 import { BUILDWARE_MAX_INPUT_TOKENS } from "@/lib/constants/buildware-config"
 import endent from "endent"
 
@@ -100,7 +101,7 @@ export const buildPlanPrompt = async ({
 
     To help you complete the task, here's a specification to follow:
     
-    ${specification}
+    ${removeScratchpadTags(specification)}
 
     ---
 
@@ -115,8 +116,6 @@ export const buildPlanPrompt = async ({
     - PLAN: The plan for the task.
       - SCRATCHPAD: A scratchpad for your thoughts. Scratchpad tags can be used anywhere in the response where you need to think. This includes at the beginning of the steps, in the middle of the steps, and at the end of the steps. There is no limit to the number of scratchpad tags you can use.
       - STEP: A step in the plan. Contains the step text in markdown format.
-
-    (Remember: Use <scratchpad> tags to think through the process as you create the plan.)
 
     ## Response Format
 

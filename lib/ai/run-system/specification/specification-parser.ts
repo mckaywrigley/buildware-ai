@@ -29,3 +29,7 @@ export function parseSpecificationResponse(response: string) {
 
   return parsedSpecification
 }
+
+export function removeScratchpadTags(response: string): string {
+  return response.replace(/<scratchpad>[\s\S]*?<\/scratchpad>\s*/g, "")
+}

@@ -1,5 +1,6 @@
 import { estimateClaudeTokens } from "@/lib/ai/estimate-claude-tokens"
 import { limitCodebaseTokens } from "@/lib/ai/limit-codebase-tokens"
+import { removeScratchpadTags } from "@/lib/ai/run-system/plan/plan-parser"
 import { BUILDWARE_MAX_INPUT_TOKENS } from "@/lib/constants/buildware-config"
 import endent from "endent"
 
@@ -87,7 +88,7 @@ export const buildImplementationPrompt = async ({
 
     To help you complete the task, here's a plan to follow:
 
-    ${plan}
+    ${removeScratchpadTags(plan)}
 
     ---
 
@@ -108,8 +109,6 @@ export const buildImplementationPrompt = async ({
           - FILE_STATUS: Use 'new' for newly created files, 'modified' for existing files that are being updated, and 'deleted' for files that are being deleted.
           - FILE_PATH: The full path from the project root, including the file extension.
           - FILE_CONTENT: The complete file content, including all necessary imports, function definitions, and exports.
-
-    (Remember: Use <scratchpad> tags to think through the process as you create the implementation.)
           
     ## Response Format
   

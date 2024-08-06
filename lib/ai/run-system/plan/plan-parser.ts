@@ -6,7 +6,7 @@ export function parsePlanResponse(response: string) {
 
   if (planMatch) {
     const cleanedPlan = planMatch[1].replace(
-      /<scratchpad>[\s\S]*?<\/scratchpad>/g,
+      /<scratchpad>[\s\S]*?<\/scratchpad>\s*/g,
       ""
     )
 
@@ -24,4 +24,8 @@ export function parsePlanResponse(response: string) {
   }
 
   return parsedPlan
+}
+
+export function removeScratchpadTags(response: string): string {
+  return response.replace(/<scratchpad>[\s\S]*?<\/scratchpad>\s*/g, "")
 }
