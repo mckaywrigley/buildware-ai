@@ -43,12 +43,16 @@ export const buildSpecificationPrompt = async ({
     - Break down the task into clear, logical steps
     - Provide an overview of what needs to be done without diving into code-level details
     - Focus on the "what" rather than the "how"
-    - Serve as a roadmap for developers to follow when implementing the task
+    - Carefully review the existing codebase to avoid duplicating work
+    - Only include steps that introduce new changes or modifications to the codebase
 
     The specification should **NOT**:
     - Include work that is already done in the codebase
     - Include specific code snippets
     - Include steps like performance, testing, deployment, documentation, etc, unless specifically asked to
+
+    Before each step:
+    - Double-check the codebase to ensure the proposed change doesn't already exist
 
     Use <scratchpad> tags to think through the process as you create the specification.`
 

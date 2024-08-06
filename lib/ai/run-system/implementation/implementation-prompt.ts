@@ -41,6 +41,11 @@ export const buildImplementationPrompt = async ({
     5. If you need to create new files, provide the full file path and full file content.
     6. For modified files, provide the full file path and full updated file content.
     7. For deleted files, only provide the full file path.
+    8. Carefully review the existing codebase to avoid duplicating work
+    9. Only include steps that introduce new changes or modifications to the codebase
+
+    Before each file:
+    - Double-check the codebase to ensure the proposed change doesn't already exist
 
     Use <scratchpad> tags to think through the process as you create the implementation.`
 

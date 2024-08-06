@@ -51,9 +51,14 @@ export const buildPlanPrompt = async ({
     3. Focus on implementation details, providing a step-by-step guide on how to complete the task.
     4. Use pseudocode instead of actual code when describing implementation details.
     5. Ensure your plan addresses all aspects of the task specification.
+    6. Carefully review the existing codebase to avoid duplicating work
+    7. Only include steps that introduce new changes or modifications to the codebase
 
     The plan should **NOT**:
     - Include steps like performance, testing, deployment, documentation, etc, unless specifically asked to
+
+    Before each step:
+    - Double-check the codebase to ensure the proposed change doesn't already exist
 
     Use <scratchpad> tags to think through the process as you create the plan.`
 
