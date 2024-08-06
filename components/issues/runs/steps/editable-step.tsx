@@ -93,6 +93,7 @@ export const EditableStep = ({
                   <MoreHorizontal className="size-4" />
                 </Button>
               </PopoverTrigger>
+
               <PopoverContent className="bg-secondary mr-2 w-40 border p-2">
                 <div className="flex flex-col space-y-2">
                   <Button
@@ -103,6 +104,7 @@ export const EditableStep = ({
                     <Edit className="mr-2 size-4" />
                     Edit
                   </Button>
+
                   <Button
                     variant="ghost"
                     className="hover:bg-secondary-foreground/10 justify-start text-red-500"
@@ -116,6 +118,7 @@ export const EditableStep = ({
               </PopoverContent>
             </Popover>
           </div>
+
           {editingIndex === index ? (
             <>
               <ReactTextareaAutosize
@@ -125,6 +128,7 @@ export const EditableStep = ({
                 minRows={2}
                 maxRows={10}
               />
+
               <Button
                 variant="outline"
                 className="mt-2"

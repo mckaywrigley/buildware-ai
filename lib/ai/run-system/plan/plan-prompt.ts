@@ -55,8 +55,17 @@ export const buildPlanPrompt = async ({
     The plan should **NOT**:
     - Include steps like performance, testing, deployment, documentation, etc, unless specifically asked to
 
-    Use <scratchpad> tags to think through the process as you create the plan.
-    
+    Use <scratchpad> tags to think through the process as you create the plan.`
+
+  const userMessageTemplate = endent`
+    # Codebase
+
+    First, review the codebase you'll be working with:
+
+    <codebase>
+      {{CODEBASE_PLACEHOLDER}}
+    </codebase>
+
     ---
 
     # Task
@@ -120,16 +129,7 @@ export const buildPlanPrompt = async ({
       <step>Step text here...</step>
       <step>Step text here...</step>
       ...remaining steps...
-    </plan>`
-
-  const userMessageTemplate = endent`
-    # Codebase
-
-    First, review the codebase you'll be working with:
-
-    <codebase>
-      {{CODEBASE_PLACEHOLDER}}
-    </codebase>
+    </plan>
 
     ---
 

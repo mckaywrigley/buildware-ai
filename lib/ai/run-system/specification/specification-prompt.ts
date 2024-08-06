@@ -50,10 +50,19 @@ export const buildSpecificationPrompt = async ({
     - Include specific code snippets
     - Include steps like performance, testing, deployment, documentation, etc, unless specifically asked to
 
-    Use <scratchpad> tags to think through the process as you create the specification.
+    Use <scratchpad> tags to think through the process as you create the specification.`
 
-    ---
+  const userMessageTemplate = endent`
+    # Codebase
+
+    First, review the codebase you'll be working with:
+
+    <codebase>
+      {{CODEBASE_PLACEHOLDER}}
+    </codebase>
     
+    ---
+
     # Task
 
     First, review the task information:
@@ -107,17 +116,8 @@ export const buildSpecificationPrompt = async ({
       <step>Step text here...</step>
       <step>Step text here...</step>
       ...remaining steps...
-    </specification>`
+    </specification>
 
-  const userMessageTemplate = endent`
-    # Codebase
-
-    First, review the codebase you'll be working with:
-
-    <codebase>
-      {{CODEBASE_PLACEHOLDER}}
-    </codebase>
-    
     ---
 
     Now, based on the task information, codebase, and instructions provided, create a high-level specification for implementing the task. Present your specification in the format described above.`

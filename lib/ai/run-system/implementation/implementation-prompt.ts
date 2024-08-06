@@ -42,8 +42,17 @@ export const buildImplementationPrompt = async ({
     6. For modified files, provide the full file path and full updated file content.
     7. For deleted files, only provide the full file path.
 
-    Use <scratchpad> tags to think through the process as you create the implementation.
-    
+    Use <scratchpad> tags to think through the process as you create the implementation.`
+
+  const userMessageTemplate = endent`
+    # Codebase
+
+    First, review the codebase you'll be working with:
+
+    <codebase>
+      {{CODEBASE_PLACEHOLDER}}
+    </codebase>
+
     ---
 
     # Task
@@ -132,16 +141,7 @@ export const buildImplementationPrompt = async ({
         </file>
         ...remaining files...
       </file_list>
-    </pull_request>`
-
-  const userMessageTemplate = endent`
-    # Codebase
-
-    First, review the codebase you'll be working with:
-
-    <codebase>
-      {{CODEBASE_PLACEHOLDER}}
-    </codebase>
+    </pull_request>
 
     ---
 

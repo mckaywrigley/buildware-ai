@@ -33,7 +33,7 @@ export const generateRunResponse = async ({
       max_tokens: model.includes("haiku")
         ? Math.min(BUILDWARE_MAX_OUTPUT_TOKENS, 4096)
         : BUILDWARE_MAX_OUTPUT_TOKENS,
-      temperature: 1
+      temperature: 0.5
     },
     {
       headers: {
