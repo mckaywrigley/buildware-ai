@@ -55,7 +55,7 @@ export const buildSpecificationPrompt = async ({
     - Double-check the codebase to ensure the proposed change doesn't already exist
     - If the existing codebase already includes the needed change(s), skip the step
 
-    Use <scratchpad> tags to think through the process as you create the specification.`
+    Use <scratchpad> tags to think through the process as you create the specification. Each scratchpad thought should make note of whether or not the step is already done in the existing codebase.`
 
   const userMessageTemplate = endent`
     # Codebase
