@@ -65,7 +65,7 @@ export const buildSpecificationPrompt = async ({
 
     # Task
 
-    First, review the task information:
+    Next, review the task information:
 
     <task>
       <task_name>${issue.name || "No name provided."}</task_name>
