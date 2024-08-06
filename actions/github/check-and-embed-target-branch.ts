@@ -1,6 +1,5 @@
 "use server"
 
-import { embedBranch } from "@/actions/github/embed-branch"
 import {
   createEmbeddedBranch,
   findEmbeddedBranch,
@@ -8,6 +7,7 @@ import {
 } from "@/db/queries/embedded-branches-queries"
 import { Octokit } from "@octokit/rest"
 import { getAuthenticatedOctokit } from "./auth"
+import { handleBranchEmbeddings } from "./handle-branch-embeddings"
 
 interface EmbedTargetBranchParams {
   projectId: string
@@ -129,7 +129,7 @@ export async function checkAndEmbedTargetBranch({
 
     if (embeddedBranch.lastEmbeddedCommitHash !== latestCommitHash) {
       console.warn("Branch needs updating")
-      await embedBranch({
+      await handleBranchEmbeddings({
         projectId,
         githubRepoFullName,
         branchName,

@@ -9,7 +9,7 @@ import {
 import { embedFiles } from "./embed-files"
 import { tokenizeFiles } from "./tokenize-files"
 
-export async function embedBranch(data: {
+export async function handleBranchEmbeddings(data: {
   projectId: string
   githubRepoFullName: string
   branchName: string
@@ -58,6 +58,7 @@ export async function embedBranch(data: {
     // Handle deleted files
     for (const file of deletedFiles) {
       await deleteEmbeddedFile(embeddedBranchId, file.filename)
+      console.warn(`Deleted file: ${file.filename}`)
     }
 
     // Handle renamed files
@@ -74,6 +75,9 @@ export async function embedBranch(data: {
             },
             file.previous_filename
           )
+          console.warn(
+            `Renamed file: ${file.previous_filename} -> ${file.filename}`
+          )
         }
       }
     }
@@ -87,6 +91,7 @@ export async function embedBranch(data: {
           embeddedBranchId,
           githubRepoFullName
         })
+        console.warn(`Created file: ${file.path}`)
       } else {
         await updateEmbeddedFile({
           ...file,
@@ -94,10 +99,11 @@ export async function embedBranch(data: {
           embeddedBranchId,
           githubRepoFullName
         })
+        console.warn(`Updated file: ${file.path}`)
       }
     }
   } catch (error) {
-    console.error("Error in embedBranch:", error)
+    console.error("Error in handleBranchEmbeddings:", error)
     throw error
   }
 }
