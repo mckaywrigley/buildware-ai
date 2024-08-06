@@ -1,7 +1,7 @@
-import { estimateClaudeTokens } from "@/lib/ai/estimate-claude-tokens"
-import { limitCodebaseTokens } from "@/lib/ai/limit-codebase-tokens"
 import { BUILDWARE_MAX_INPUT_TOKENS } from "@/lib/constants/buildware-config"
 import endent from "endent"
+import { estimateClaudeTokens } from "../../estimate-claude-tokens"
+import { limitCodebaseTokens } from "../../limit-codebase-tokens"
 
 export const SPECIFICATION_PREFILL = "<specification>"
 
@@ -27,13 +27,12 @@ export const buildSpecificationPrompt = async ({
 
     You will be given a codebase to work with, a task to complete, general instructions & guidelines for the task, and response instructions.
 
-    Your goal is to use this information to build a specification for the task.
+    Your goal is to use this information to build a high-level specification for the task.
 
     This specification will be passed to the plan step, which will use it to create a plan for implementing the task.
-    
-    The specification should be a high-level outline or plan for implementing the task.
 
     Each step should include the following information:
+    - A scratchpad for your thoughts including thoughts on the step, whether or not the step is already done in the existing codebase, and any additional context
     - The file path(s) that the step will need
     - The file status(es) that the step will need (created, modified, deleted)
     - A list of todos for the step
@@ -45,17 +44,14 @@ export const buildSpecificationPrompt = async ({
     - Focus on the "what" rather than the "how"
     - Carefully review the existing codebase to avoid duplicating work
     - Only include steps that introduce new changes or modifications to the codebase
-
+    - Only include steps that are not already done in the existing codebase
+    
     The specification should **NOT**:
     - Include work that is already done in the codebase
     - Include specific code snippets
     - Include steps like performance, testing, deployment, documentation, etc, unless specifically asked to
 
-    Before each step:
-    - Double-check the codebase to ensure the proposed change doesn't already exist
-    - If the existing codebase already includes the needed change(s), skip the step
-
-    Use <scratchpad> tags to think through the process as you create the specification. Each scratchpad thought should make note of whether or not the step is already done in the existing codebase.`
+    Use <scratchpad> tags to think through the process as you create the specification.`
 
   const userMessageTemplate = endent`
     # Codebase
@@ -100,6 +96,10 @@ export const buildSpecificationPrompt = async ({
     Respond with the following information:
 
     - SPECIFICATION: The specification for the task.
+      - SCRATCHPAD: A scratchpad for your thoughts.
+        - THOUGHTS: Your thoughts on the step.
+        - IS_COMPLETED: Boolean value with reason indicating whether or not the step is already done in the existing codebase.
+        - OTHER_CONTEXT: Any additional context for the step.
       - STEP: A step in the specification. Contains the step text in markdown format.
 
     (Remember: Use <scratchpad> tags to think through the process as you create the specification.)
@@ -109,7 +109,11 @@ export const buildSpecificationPrompt = async ({
     Respond in the following format:
 
     <specification>
-      <scratchpad>__SCRATCHPAD_TEXT__</scratchpad>
+      <scratchpad>
+        <thoughts>__SCRATCHPAD_TEXT__</thoughts>
+        <is_completed>__IS_COMPLETED__</is_completed>
+        <other_context>__OTHER_CONTEXT__</other_context>
+      </scratchpad>
       <step>__STEP_TEXT__</step>
       ...remaining steps...
     </specification>
@@ -119,9 +123,17 @@ export const buildSpecificationPrompt = async ({
     An example response:
 
     <specification>
-      <scratchpad>Your thoughts here...</scratchpad>
+      <scratchpad>
+        <thoughts>Your thoughts here...</thoughts>
+        <is_completed>Boolean value with reason here...</is_completed>
+        <other_context>Additional context here...</other_context>
+      </scratchpad>
       <step>Step text here...</step>
-      <scratchpad>Your thoughts here...</scratchpad>
+      <scratchpad>
+        <thoughts>Your thoughts here...</thoughts>
+        <is_completed>Boolean value with reason here...</is_completed>
+        <other_context>Additional context here...</other_context>
+      </scratchpad>
       <step>Step text here...</step>
       ...remaining steps...
     </specification>
