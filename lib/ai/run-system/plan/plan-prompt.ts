@@ -110,23 +110,26 @@ export const buildPlanPrompt = async ({
     - PLAN: The plan for the task.
       - STEP: A step in the plan. Contains the step text in markdown format.
 
+    (Remember: Use <scratchpad> tags to think through the process as you create the plan.)
+
     ## Response Format
 
     Respond in the following format:
 
     <plan>
+      <scratchpad>__SCRATCHPAD_TEXT__</scratchpad>
       <step>__STEP_TEXT__</step>
-      ...
+      ...remaining steps...
     </plan>
-
-    (Use <scratchpad> tags to think through the process as you create the plan.)
 
     ## Response Example
 
     An example response:
 
     <plan>
+      <scratchpad>Your thoughts here...</scratchpad>
       <step>Step text here...</step>
+      <scratchpad>Your thoughts here...</scratchpad>
       <step>Step text here...</step>
       ...remaining steps...
     </plan>

@@ -97,23 +97,26 @@ export const buildSpecificationPrompt = async ({
     - SPECIFICATION: The specification for the task.
       - STEP: A step in the specification. Contains the step text in markdown format.
 
+    (Remember: Use <scratchpad> tags to think through the process as you create the specification.)
+
     ## Response Format
 
     Respond in the following format:
 
     <specification>
+      <scratchpad>__SCRATCHPAD_TEXT__</scratchpad>
       <step>__STEP_TEXT__</step>
-      ...
+      ...remaining steps...
     </specification>
-
-    (Use <scratchpad> tags to think through the process as you create the specification.)
 
     ## Response Example
 
     An example response:
 
     <specification>
+      <scratchpad>Your thoughts here...</scratchpad>
       <step>Step text here...</step>
+      <scratchpad>Your thoughts here...</scratchpad>
       <step>Step text here...</step>
       ...remaining steps...
     </specification>

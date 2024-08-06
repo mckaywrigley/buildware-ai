@@ -102,15 +102,19 @@ export const buildImplementationPrompt = async ({
           - FILE_STATUS: Use 'new' for newly created files, 'modified' for existing files that are being updated, and 'deleted' for files that are being deleted.
           - FILE_PATH: The full path from the project root, including the file extension.
           - FILE_CONTENT: The complete file content, including all necessary imports, function definitions, and exports.
+
+    (Remember: Use <scratchpad> tags to think through the process as you create the implementation.)
           
     ## Response Format
   
     Respond in the following format:
 
     <pull_request>
+      <scratchpad>Your thoughts here...</scratchpad>
       <pr_title>__PR_TITLE__</pr_title>
       <pr_description>__PR_DESCRIPTION__</pr_description>
       <file_list>
+        <scratchpad>Your thoughts here...</scratchpad>
         <file>
           <file_status>__STATUS__</file_status>
           <file_path>__FILE_PATH__</file_path>
@@ -118,20 +122,20 @@ export const buildImplementationPrompt = async ({
             __FILE_CONTENT__
           </file_content>
         </file>
-      ...
+        ...remaining files... 
       </file_list>
     </pull_request>
-
-    (Use <scratchpad> tags to think through the process as you create the implementation.)
   
     ## Response Example
 
     An example response:
 
     <pull_request>
+      <scratchpad>Your thoughts here...</scratchpad>
       <pr_title>PR title here...</pr_title>
       <pr_description>PR description here...</pr_description>
       <file_list>
+        <scratchpad>Your thoughts here...</scratchpad>
         <file>
           <file_status>file status here...</file_status>
           <file_path>file path here...</file_path>
