@@ -84,22 +84,27 @@ export async function handleBranchEmbeddings(data: {
 
     // Update database for non-deleted and non-renamed files
     for (const file of embeddedFiles) {
-      if (file.status === "added" || !file.status) {
-        await createEmbeddedFile({
-          ...file,
-          projectId,
-          embeddedBranchId,
-          githubRepoFullName
-        })
-        console.warn(`Created file: ${file.path}`)
-      } else {
-        await updateEmbeddedFile({
-          ...file,
-          projectId,
-          embeddedBranchId,
-          githubRepoFullName
-        })
-        console.warn(`Updated file: ${file.path}`)
+      try {
+        if (file.status === "added" || !file.status) {
+          await createEmbeddedFile({
+            ...file,
+            projectId,
+            embeddedBranchId,
+            githubRepoFullName
+          })
+          console.warn(`Created file: ${file.path}`)
+        } else {
+          await updateEmbeddedFile({
+            ...file,
+            projectId,
+            embeddedBranchId,
+            githubRepoFullName
+          })
+          console.warn(`Updated file: ${file.path}`)
+        }
+      } catch (fileError) {
+        console.error(`Error processing file ${file.path}:`, fileError)
+        // Continue with the next file
       }
     }
   } catch (error) {

@@ -35,31 +35,22 @@ export const buildPlanPrompt = async ({
     This plan will be passed to the implementation step, which will use it to create the implementation (writing the code) for the task.
 
     Each step should include the following information:
-    - The file path
+    - A scratchpad for your thoughts on the step
+    - The full file path
     - The file status (created, modified, deleted)
     - A list of todos for the file
 
-    Together, the steps should form a complete implementation plan for the given task.
-
-    Your implementation plan should:
-    - Provide clear, actionable steps for implementation
-    - Include detailed pseudocode where appropriate
-    - Address all requirements specified in the task and specification
-    
     To create the plan:
-    1. Carefully analyze the codebase, task description, general instructions, and specification.
-    2. Break down the task into clear, logical steps.
-    3. Focus on implementation details, providing a step-by-step guide on how to complete the task.
-    4. Use pseudocode instead of actual code when describing implementation details.
-    5. Ensure your plan addresses all aspects of the task specification.
-    6. Carefully review the existing codebase to avoid duplicating work
-    7. Only include steps that introduce new changes or modifications to the codebase
+    - Break down the task into clear, logical steps
+    - Provide complete, actionable steps for implementation
+    - Use pseudocode where appropriate
+    - Address all requirements specified in the task and specification
+    - Carefully analyze the codebase, task description, general instructions, and specification
+    - Focus on implementation details, providing a step-by-step guide on how to complete the task
+    - Ensure your plan addresses all aspects of the task specification.
 
     The plan should **NOT**:
-    - Include steps like performance, testing, deployment, documentation, etc, unless specifically asked to
-
-    Before each step:
-    - Double-check the codebase to ensure the proposed change doesn't already exist
+    - Include work that is already done in the codebase
 
     Use <scratchpad> tags to think through the process as you create the plan.`
 

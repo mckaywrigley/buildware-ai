@@ -104,6 +104,11 @@ export async function createEmbeddedFile(
   const userId = await getUserId()
 
   try {
+    // Check if content is valid UTF-8
+    if (!isValidUTF8(data.content || "")) {
+      throw new Error("Invalid UTF-8 content")
+    }
+
     await db.insert(embeddedFilesTable).values({ ...data, userId })
     revalidatePath("/")
   } catch (error) {
@@ -117,6 +122,11 @@ export async function updateEmbeddedFile(
   oldPath?: string
 ) {
   try {
+    // Check if content is valid UTF-8
+    if (!isValidUTF8(data.content || "")) {
+      throw new Error("Invalid UTF-8 content")
+    }
+
     if (oldPath && oldPath !== data.path) {
       // Handle renamed file
       await db
@@ -150,5 +160,16 @@ export async function updateEmbeddedFile(
   } catch (error) {
     console.error("Error updating embedded file:", error)
     throw error
+  }
+}
+
+function isValidUTF8(str: string): boolean {
+  try {
+    new TextDecoder("utf-8", { fatal: true }).decode(
+      new TextEncoder().encode(str)
+    )
+    return true
+  } catch {
+    return false
   }
 }

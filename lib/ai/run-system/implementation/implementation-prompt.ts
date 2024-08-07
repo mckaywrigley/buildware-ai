@@ -33,20 +33,21 @@ export const buildImplementationPrompt = async ({
     Your goal is to use this information to write all of the code needed to complete the given task.
 
     Ensure your code is of the highest quality, follows best practices, and fully & effectively completes the given task.
-        
-    Follow these guidelines:
-    1. Carefully analyze the existing codebase and understand its structure.
-    2. Identify which files need to be created, modified, or deleted to accomplish the task.
-    3. Write clean, efficient, and well-commented code that adheres to best practices and the general instructions provided.
-    4. Ensure your code integrates seamlessly with the existing codebase.
-    5. If you need to create new files, provide the full file path and full file content.
-    6. For modified files, provide the full file path and full updated file content.
-    7. For deleted files, only provide the full file path.
-    8. Carefully review the existing codebase to avoid duplicating work
-    9. Only include steps that introduce new changes or modifications to the codebase
 
-    Before each file:
-    - Double-check the codebase to ensure the proposed change doesn't already exist
+    Each file should include the following information:
+    - A scratchpad for your thoughts on the file
+    - The full file path
+    - The file status (created, modified, deleted)
+    - The full file content
+
+    To create the implementation:
+    - Carefully analyze the existing codebase and understand its structure
+    - Identify which files need to be created, modified, or deleted to accomplish the task
+    - Write code that adheres to best practices and the instructions provided
+    - Ensure your code integrates seamlessly with the existing codebase
+    - For created files, provide the full file path and full file content
+    - For modified files, provide the full file path and full file content
+    - For deleted files, only provide the full file path
 
     Use <scratchpad> tags to think through the process as you create the implementation.`
 

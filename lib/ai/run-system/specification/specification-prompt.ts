@@ -32,24 +32,17 @@ export const buildSpecificationPrompt = async ({
     This specification will be passed to the plan step, which will use it to create a plan for implementing the task.
 
     Each step should include the following information:
-    - A scratchpad for your thoughts including thoughts on the step, whether or not the step is already done in the existing codebase, and any additional context
-    - The file path(s) that the step will need
-    - The file status(es) that the step will need (created, modified, deleted)
+    - A scratchpad for your thoughts on the step
     - A list of todos for the step
 
     To create the specification:
-    - Focus on the task at hand
     - Break down the task into clear, logical steps
     - Provide an overview of what needs to be done without diving into code-level details
     - Focus on the "what" rather than the "how"
-    - Carefully review the existing codebase to avoid duplicating work
-    - Only include steps that introduce new changes or modifications to the codebase
-    - Only include steps that are not already done in the existing codebase
     
     The specification should **NOT**:
     - Include work that is already done in the codebase
     - Include specific code snippets
-    - Include steps like performance, testing, deployment, documentation, etc, unless specifically asked to
 
     Use <scratchpad> tags to think through the process as you create the specification.`
 
