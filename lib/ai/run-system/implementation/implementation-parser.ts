@@ -1,27 +1,5 @@
 import { GeneratedFile, ParsedImplementation } from "@/types/run"
 
-/**
- * Removes common leading whitespace from each line.
- * @param str The string to dedent.
- * @returns The dedented string.
- */
-function dedent(str: string): string {
-  const lines = str.split("\n")
-  let minIndent = Infinity
-
-  for (const line of lines) {
-    if (line.trim()) {
-      const match = line.match(/^(\s*)\S+/)
-      if (match) {
-        minIndent = Math.min(minIndent, match[1].length)
-      }
-    }
-  }
-
-  if (minIndent === Infinity) return str
-  return lines.map(line => line.slice(minIndent)).join("\n")
-}
-
 export function parseImplementationResponse(
   response: string
 ): ParsedImplementation {
@@ -65,7 +43,7 @@ function extractFiles(content: string): GeneratedFile[] {
       const path = extractContent(fileContent, "file_path")
       const status = extractContent(fileContent, "file_status")
       const rawContent = extractContent(fileContent, "file_content")
-      const contentText = rawContent ? dedent(rawContent) : ""
+      const contentText = rawContent ? rawContent : ""
 
       files.push({
         path,
